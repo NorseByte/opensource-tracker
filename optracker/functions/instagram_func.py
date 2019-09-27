@@ -5,14 +5,21 @@ class InstagramFunc():
         self.instagram = instagram
         self.user = user
 
+    def page_size_check(self, totalFollow):
+        page_size = 100
+        if totalFollow < page_size:
+            page_size = totalFollow
+        return page_size
+
+
     def get_insta_follow_by(self, totalFollow, insta_id):
         followers = []
-        followers = self.instagram.get_followers(insta_id, totalFollow, 100, delayed=True)
+        followers = self.instagram.get_followers(insta_id, totalFollow, self.page_size_check(totalFollow), delayed=True)
         return followers
 
     def get_insta_following(self, totalFollow, insta_id):
         following = []
-        following = self.instagram.get_following(insta_id, totalFollow, 100, delayed=True)
+        following = self.instagram.get_following(insta_id, totalFollow, self.page_size_check(totalFollow), delayed=True)
         return following
 
     def get_insta_media(self):

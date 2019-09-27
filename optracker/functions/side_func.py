@@ -27,20 +27,19 @@ class sideFunc():
 
     def lastSearch(self):
         print("\n- Loading last scraper for Instagram from DB")
-        INN_DATA = ("value", "last_insta")
-        lastInsta = self.dbTool.getValueSQL(self.dbConn, DB_SELECT_OPTIONS, INN_DATA)
+        lastInsta = self.dbTool.getValueSQL(self.dbConn, DB_SELECT_OPTIONS, ("last_insta", ))
         if lastInsta == 0:
             print("+ No last search for Instagram found")
             self.addLastInsta(False)
 
         else:
-            print("+ Last user scraped: {}".format(lastInsta[0][0]))
+            print("+ Last user scraped: {}".format(lastInsta[0][1]))
             goon = input("+ Continue with user? (D:Y, Y/N) ")
 
             if goon.lower().strip() == "n":
                 self.addLastInsta(True)
             else:
-                zerodata.INSTA_USER = lastInsta[0][0]
+                zerodata.INSTA_USER = lastInsta[0][1]
 
     def setupLogin(self):
         print("\n- Loading INSTAGRAM user list from DB")
@@ -78,7 +77,7 @@ class sideFunc():
                 count = 0
                 for i in userList:
                     count += 1
-                    print("\t{}. {} ({})".format(count, i[0], i[3]))
+                    print("[{}] {} ({})".format(count, i[0], i[3]))
                 selectUser = input("+ Select user (1-{}): ".format(count))
 
                 if not selectUser.isnumeric():
@@ -93,7 +92,7 @@ class sideFunc():
 
                 zerodata.LOGIN_PASSWORD_INSTA = userList[newNumber][1].strip()
                 zerodata.LOGIN_USERNAME_INSTA = userList[newNumber][0].strip()
-                print("+ Setting user to: {} and password to: {}".format(LOGIN_USERNAME_INSTA, LOGIN_PASSWORD_INSTA))
+                print("+ Setting user to: {} and password to: {}".format(zerodata.LOGIN_USERNAME_INSTA, zerodata.LOGIN_PASSWORD_INSTA))
 
 
     def loadLoginText(self):

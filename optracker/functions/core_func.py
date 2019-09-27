@@ -1,4 +1,4 @@
-from zerodata import *
+import zerodata
 from functions.instagram_func import *
 
 class coreFunc():
@@ -44,12 +44,15 @@ class coreFunc():
         self.check_user_db_node(self.currentUser, False)
 
         #Getting current NODE ID for source
-        self.sourceID = self.dbTool.getValueSQL(self.dbConn, DB_SELECT_ID_NODE, (self.currentUser.identifier, ))[0][0]
+        self.sourceID = self.dbTool.getValueSQL(self.dbConn, zerodata.DB_SELECT_ID_NODE, (self.currentUser.identifier, ))[0][0]
         print("+ Recived node ID:", self.sourceID, "for zeroPoint:", self.currentUser.username)
+
+        #Setting global INSTA # IDEA
+        zerodata.INSTA_USER_ID = self.currentUser.identifier
 
     def check_user_db_node(self, user, getInfo):
         print("+ Checking NODE DB for id: {} ({})".format(user.identifier, user.username,))
-        if self.dbTool.getValueSQL(self.dbConn, DB_SELECT_ID_NODE, (user.identifier, )) == 0:
+        if self.dbTool.getValueSQL(self.dbConn, zerodata.DB_SELECT_ID_NODE, (user.identifier, )) == 0:
             print("+ NOT found in node")
             tempID = user.identifier;
 
@@ -61,14 +64,14 @@ class coreFunc():
             if user.full_name:
                 print("NO")
                 print("+ Using: {} for label.".format(user.full_name))
-                INSERT_DATA = (user.full_name, user.full_name, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url)
+                zerodata.INSERT_DATA = (user.full_name, user.full_name, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url)
             else:
                 print("YES")
                 print("+ Using: {} for label.".format(user.username))
-                INSERT_DATA = (user.full_name, user.username, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url)
+                zerodata.INSERT_DATA = (user.full_name, user.username, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url)
 
             print("+ ADDING to NODE db")
-            self.dbTool.inserttoTabel(self.dbConn, DB_INSERT_NODE, INSERT_DATA)
+            self.dbTool.inserttoTabel(self.dbConn, zerodata.DB_INSERT_NODE, zerodata.INSERT_DATA)
         else:
             print("+ FOUND in NODE list moving on")
 
@@ -83,12 +86,12 @@ class coreFunc():
 
             #Check if this is a new node that havent been search
             print("+ Checking new_insta DB for: {}".format(following.identifier))
-            getNewinsta = self.dbTool.getValueSQL(self.dbConn, DB_SELECT_DONE_NEW_INSTA, (following.identifier, ))
+            getNewinsta = self.dbTool.getValueSQL(self.dbConn, zerodata.DB_SELECT_DONE_NEW_INSTA, (following.identifier, ))
             if getNewinsta == 0:
-                insert_username = self.dbTool.getValueSQL(self.dbConn, DB_SELECT_USERNAME_NODE, (following.identifier, ))[0][0]
+                insert_username = self.dbTool.getValueSQL(self.dbConn, zerodata.DB_SELECT_USERNAME_NODE, (following.identifier, ))[0][0]
                 print("+ NOT found in new_insta adding user_id: {} ({})".format(following.identifier, insert_username))
-                INSERT_DATA = (following.identifier, insert_username)
-                self.dbTool.inserttoTabel(self.dbConn, DB_INSERT_NEW_INSTA, INSERT_DATA)
+                zerodata.INSERT_DATA = (following.identifier, insert_username)
+                self.dbTool.inserttoTabel(self.dbConn, zerodata.DB_INSERT_NEW_INSTA, zerodata.INSERT_DATA)
             else:
                 print("+ FOUND in new_insta STATUS = ", end = " ")
                 if getNewinsta[0][0] == 1:
@@ -100,23 +103,23 @@ class coreFunc():
                         print("IN LINE")
 
             #Get node ID
-            tempID = self.dbTool.getValueSQL(self.dbConn, DB_SELECT_ID_NODE, (following.identifier, ))[0][0]
+            tempID = self.dbTool.getValueSQL(self.dbConn, zerodata.DB_SELECT_ID_NODE, (following.identifier, ))[0][0]
             print("+ Recived node ID: {} ({})".format(tempID, following.username))
 
             #Add in egdes_insta
             if inOut == True:
                 print("+ Checking insta_edges DB. Source: {} ({}), Target: {} ({})".format(tempID, following.username, self.sourceID, self.currentUser.username))
-                if self.dbTool.getValueSQL(self.dbConn, DB_SELECT_TARGET_EDGE, (tempID, self.sourceID, )) == 0:
+                if self.dbTool.getValueSQL(self.dbConn, zerodata.DB_SELECT_TARGET_EDGE, (tempID, self.sourceID, )) == 0:
                     print("+ NOT found in insta_edges adding data.")
-                    INSERT_DATA = (tempID, self.sourceID)
-                    self.dbTool.inserttoTabel(self.dbConn, DB_INSERT_INSTA_EGDE, INSERT_DATA)
+                    zerodata.INSERT_DATA = (tempID, self.sourceID)
+                    self.dbTool.inserttoTabel(self.dbConn, zerodata.DB_INSERT_INSTA_EGDE, zerodata.INSERT_DATA)
                 else:
                     print("+ FOUND in insta_edges list moving on")
             else:
                 print("+ Checking insta_edges DB. Source: {} ({}), Target: {} ({})".format(self.sourceID, self.currentUser.full_name, tempID, following.username))
-                if self.dbTool.getValueSQL(self.dbConn, DB_SELECT_TARGET_EDGE, (self.sourceID, tempID, )) == 0:
+                if self.dbTool.getValueSQL(self.dbConn, zerodata.DB_SELECT_TARGET_EDGE, (self.sourceID, tempID, )) == 0:
                     print("+ NOT found in insta_edges adding data.")
-                    INSERT_DATA = (self.sourceID, tempID)
-                    self.dbTool.inserttoTabel(self.dbConn, DB_INSERT_INSTA_EGDE, INSERT_DATA)
+                    zerodata.INSERT_DATA = (self.sourceID, tempID)
+                    self.dbTool.inserttoTabel(self.dbConn, zerodata.DB_INSERT_INSTA_EGDE, zerodata.INSERT_DATA)
                 else:
                     print("+ FOUND in insta_edges list moving on")
