@@ -112,6 +112,8 @@ DB_SELECT_LOGIN_INSTA = 'SELECT * FROM "main"."accounts" WHERE account_type = "i
 DB_SELECT_LOGIN_PASSWORD_INSTA = 'SELECT password FROM "main"."accounts" WHERE ("username") = ? AND account_type = "instagram"'
 DB_SELECT_OPTIONS = 'SELECT * FROM "main"."options" WHERE what = ?'
 
+DB_SELECT_FOLLOW_OF = 'SELECT * FROM "main"."nodes" as Node INNER JOIN "main"."egdes_insta" as Edge ON Node.id = Edge.source WHERE Node.insta_private = 0 AND Edge.target = ?'
+
 #Startpoint information
 INSTA_USER = ""
 INSTA_USER_ID = ""
