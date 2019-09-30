@@ -1,12 +1,84 @@
 import os
 import zerodata
 from zerodata import *
+from datetime import datetime, timedelta
 
 
 class sideFunc():
     def __init__(self, dbTool, dbConn):
         self.dbTool = dbTool
         self.dbConn = dbConn
+
+    def setCurrentUserUpdate(self, user, password):
+        zerodata.LOGIN_PASSWORD_INSTA = password
+        zerodata.LOGIN_USERNAME_INSTA = user
+        print("+ Setting user to: {} and password to: {}".format(zerodata.LOGIN_USERNAME_INSTA, zerodata.LOGIN_PASSWORD_INSTA))
+
+        #Update time in account
+        currentTime = datetime.today()
+        self.dbTool.inserttoTabel(self.dbConn, DB_UPDATE_ACCOUNT_LAST_USED, (currentTime, user,))
+        print("+ Updating last time for: {} to: {}".format(user, currentTime))
+
+    def autoSelectLogin(self):
+        userList = self.runUserCheck()
+        print("\n- Auto selecting login USER")
+
+        count = 0
+        currentSelect = 0
+        oldestTime = datetime.strptime(str(datetime.today()), zerodata.DATETIME_MASK) #Setting current time
+        for i in userList:
+            lastTime = i[6]
+            print("+ User: {}, last used: {}".format(i[0], lastTime))
+            datetimelasttime = datetime.strptime(str(datetime.today()), zerodata.DATETIME_MASK)
+
+            if not lastTime:
+                print("+ Setting {} to oldest".format(i[0]))
+                oldestTime = datetimelasttime
+                currentSelect = count
+                break
+            else:
+                datetimelasttime = datetime.strptime(lastTime, zerodata.DATETIME_MASK)
+
+            if oldestTime >= datetimelasttime:
+                #oldestTime er nyere så setter forløpig denne til eldste
+                print("+ Setting {} to oldest".format(i[0]))
+                oldestTime = datetimelasttime
+                currentSelect = count
+
+            count += 1
+
+        self.setCurrentUserUpdate(userList[currentSelect][0].strip(), userList[currentSelect][1].strip())
+
+    def runUserCheck(self):
+        print("\n- Loading INSTAGRAM user list from DB")
+        userList = self.dbTool.getValueSQLnoinput(self.dbConn, DB_SELECT_LOGIN_INSTA)
+        if userList == 0:
+            print("+ No user for Instagram found, please add one")
+            user = input("+ Username: ")
+            password = input("+ Password: ")
+            email = input("+ Email: ")
+            fullname = input("+ Fullname: ")
+
+            print("+ Adding {} to DB".format(user))
+            INSERT_DATA = (user, password, email, fullname, "instagram")
+            self.dbTool.inserttoTabel(self.dbConn, DB_INSERT_LOGIN_INSTA, INSERT_DATA)
+            password = self.dbTool.getValueSQL(self.dbConn, DB_SELECT_LOGIN_PASSWORD_INSTA , (user,))
+
+            if password == 0:
+                #Add loop for user
+                print("+ Not able to add user")
+
+            else:
+                print("+ User add OK")
+                self.setCurrentUserUpdate(user, password[0][0])
+            return True
+        else:
+            if len(userList) == 1:
+                print("+ One user found using: {}".format(userList[0][0]))
+                self.setCurrentUserUpdate(userList[0][0].strip(), userList[0][1].strip())
+                return True
+            else:
+                return userList
 
     def addLastInsta(self, update):
         lastInsta = input("+ Enter account to scrape: ")
@@ -42,58 +114,25 @@ class sideFunc():
                 zerodata.INSTA_USER = lastInsta[0][1]
 
     def setupLogin(self):
-        print("\n- Loading INSTAGRAM user list from DB")
-        userList = self.dbTool.getValueSQLnoinput(self.dbConn, DB_SELECT_LOGIN_INSTA)
-        if userList == 0:
-            print("+ No user for Instagram found, please add one")
-            user = input("+ Username: ")
-            password = input("+ Password: ")
-            email = input("+ Email: ")
-            fullname = input("+ Fullname: ")
+        userList = self.runUserCheck()
+        if userList != True:
+            print("+ User list imported")
+            count = 0
+            for i in userList:
+                count += 1
+                print("[{}] {} ({})".format(count, i[0], i[3]))
+            selectUser = input("+ Select user (1-{}): ".format(count))
 
-            print("+ Adding {} to DB".format(user))
-            INSERT_DATA = (user, password, email, fullname, "instagram")
-            self.dbTool.inserttoTabel(self.dbConn, DB_INSERT_LOGIN_INSTA, INSERT_DATA)
-            password = self.dbTool.getValueSQL(self.dbConn, DB_SELECT_LOGIN_PASSWORD_INSTA , (user,))
+            if not selectUser.isnumeric():
+                print("+ Invalid input, #1 selected")
+                selectUser = 1
 
-            if password == 0:
-                #Add loop for user
-                print("+ Not able to add user")
+            if int(selectUser) > count:
+                print("+ Invalid input, #1 selected")
+                selectUser = 1
 
-            else:
-                zerodata.LOGIN_PASSWORD_INSTA = password[0][0]
-                zerodata.LOGIN_USERNAME_INSTA = user
-                print("+ User add OK")
-                print("+ Setting user to: {} and password to: {}".format(password[0][0], user))
-
-        else:
-            if len(userList) == 1:
-                print("+ One user found using: {}".format(userList[0][0]))
-                zerodata.LOGIN_PASSWORD_INSTA = userList[0][1].strip()
-                zerodata.LOGIN_USERNAME_INSTA = userList[0][0].strip()
-                print("+ Setting user to: {} and password to: {}".format(LOGIN_USERNAME_INSTA, LOGIN_PASSWORD_INSTA))
-            else:
-                print("+ User list imported")
-                count = 0
-                for i in userList:
-                    count += 1
-                    print("[{}] {} ({})".format(count, i[0], i[3]))
-                selectUser = input("+ Select user (1-{}): ".format(count))
-
-                if not selectUser.isnumeric():
-                    print("+ Invalid input, #1 selected")
-                    selectUser = 1
-
-                if int(selectUser) > count:
-                    print("+ Invalid input, #1 selected")
-                    selectUser = 1
-
-                newNumber = int(selectUser) - 1
-
-                zerodata.LOGIN_PASSWORD_INSTA = userList[newNumber][1].strip()
-                zerodata.LOGIN_USERNAME_INSTA = userList[newNumber][0].strip()
-                print("+ Setting user to: {} and password to: {}".format(zerodata.LOGIN_USERNAME_INSTA, zerodata.LOGIN_PASSWORD_INSTA))
-
+            newNumber = int(selectUser) - 1
+            self.setCurrentUserUpdate(userList[newNumber][0].strip(), userList[newNumber][1].strip())
 
     def loadLoginText(self):
         print("\n- Loading user and password from file")

@@ -13,14 +13,36 @@ from functions.core_func import *
 from functions.side_func import *
 from context import Instagram
 
+def tryInstagram(instagram, method, maxAttempts):
+    for x in range(maxAttempts):
+        try:
+            method()
+            return true
+        except InstagramException:
+            print("Need new User")
+            #// todo: cycle to next login
+    return false
+
 #Core Functions to main
 def runSingelScan():
     #Setup zeroPoint
     sideTool.lastSearch()
-    mainFunc.setCurrentUser(zerodata.INSTA_USER)
 
-    #rRun Scan
+    #Run Scan from zeroPoint
+    mainFunc.setCurrentUser(zerodata.INSTA_USER)
     runCurrentScan()
+
+def selectUserAndLogin():
+    #Setusername
+    sideTool.setupLogin()
+    #Login Instagram
+    loginInstagram(instagram)
+
+def autoSelectAndLogin():
+    #Find user
+    sideTool.autoSelectLogin()
+    #Login instagram
+    loginInstagram(instagram)
 
 def runCurrentScan():
     #Extract info from following list
@@ -44,10 +66,19 @@ def dispHelp():
     print(zerodata.HELP_TEXT)
     input("\nPress [Enter] to continue...")
 
+def loginInstagram(instagram):
+    #Iniatlaize Instagram login
+    print("\n- Connecting to Instagram")
+    instagram.with_credentials(zerodata.LOGIN_USERNAME_INSTA, zerodata.LOGIN_PASSWORD_INSTA, '/cachepath')
+    instagram.login(force=False,two_step_verificator=True)
+    sleep(2) # Delay to mimic user
+    print("+ Connected to Instagram with user:", zerodata.LOGIN_USERNAME_INSTA)
+
 MENU_ITEMS = [
     { zerodata.HELP_TEXT_DISP: dispHelp },
     { zerodata.RUN_CURRENT_DISP: runSingelScan },
     { zerodata.RUN_FOLLOW_DISP: runFollowScan },
+    { zerodata.RUN_CHANGE_USER: selectUserAndLogin },
 	{ zerodata.RUN_EXIT_DISP: exit},
 ]
 
@@ -68,15 +99,13 @@ try:
     #Get usernames
     sideTool = sideFunc(dbTool, dbConn)
     sideTool.loadLoginText()
-    sideTool.setupLogin()
 
-    #Iniatlaize Instagram login
-    print("\n- Connecting to Instagram")
+    #Init INSTAGRAM
     instagram = Instagram()
-    instagram.with_credentials(zerodata.LOGIN_USERNAME_INSTA, zerodata.LOGIN_PASSWORD_INSTA, '/cachepath')
-    instagram.login(force=False,two_step_verificator=True)
-    sleep(2) # Delay to mimic user
-    print("+ Connected to Instagram with user:", zerodata.LOGIN_USERNAME_INSTA)
+
+    #User Select and Login
+    #selectUserAndLogin()
+    autoSelectAndLogin()
 
     #Setup coreFunc
     print("+ Setting up core functions")

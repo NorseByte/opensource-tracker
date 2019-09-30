@@ -13,6 +13,7 @@ USER_FILES = (	["user_insta.txt"],
 HELP_TEXT_DISP = "Display Help"
 RUN_CURRENT_DISP = "Singel Scan"
 RUN_FOLLOW_DISP = "Scan Folow to user"
+RUN_CHANGE_USER = "Change user Instagram"
 RUN_EXIT_DISP = "Exit"
 
 HELP_TEXT = """
@@ -24,6 +25,9 @@ HELP_TEXT = """
 {} - Scan all follower
 	You will be presented with a list of users that you have finnished adding to your database. The program til then scan all the connections it has as it was a first time use and add the data to the database. Short and sweet scan the follow to the follow for a user.
 
+{} - Allow you to change users
+	This will give you a list of all avalible users so you can change before the scan if you are not happy with the choice from startup.
+
 Nodes - Main database
 	The node database is a collection of all the users that have been scanned. It contains basic data as ID, username, instagram description with more.
 
@@ -31,7 +35,7 @@ Edges - connections
 	The edges database is a database with connections between nodes. This is used to create a visual display for how a social nettwork are connected.
 
 SQLite - The Database
-	All data are saved in the database found in folder 'db/'. You need to open it in a SQL browser and then export the data in node table and edges table to a .CSV file witch you can import into a visualising program (eks. gephi).""".format(PROGRAM_NAME, RUN_CURRENT_DISP, RUN_FOLLOW_DISP)
+	All data are saved in the database found in folder 'db/'. You need to open it in a SQL browser and then export the data in node table and edges table to a .CSV file witch you can import into a visualising program (eks. gephi).""".format(PROGRAM_NAME, RUN_CURRENT_DISP, RUN_FOLLOW_DISP, RUN_CHANGE_USER)
 
 #Database setup
 DB_DATABASE = "openSource-tracker.db"
@@ -77,7 +81,9 @@ CREATE TABLE IF NOT EXISTS "accounts" (
 	"password"	TEXT,
 	"email"	TEXT,
 	"fullname"	TEXT,
-	"account_type"	TEXT
+	"account_type"	TEXT,
+	"current_run"	INTEGER DEFAULT 0,
+	"last_used"	TEXT
 );
 """
 
@@ -103,6 +109,7 @@ DB_INSERT_OPTIONS_LASTINSTA = 'INSERT INTO "main"."options" ("value", "what") VA
 DB_UPDATE_LAST_INSTA = 'UPDATE "main"."options" SET "value" = (?) WHERE "what" = "last_insta";'
 DB_UPDATE_NEW_INSTA_DONE_TRUE = 'UPDATE "main"."new_insta" SET "done" = 1 WHERE "insta_id" = ?;'
 DB_UPDATE_NEW_INSTA_DONE_FALSE = 'UPDATE "main"."new_insta" SET "done" = 0 WHERE "insta_id" = ?;'
+DB_UPDATE_ACCOUNT_LAST_USED = 'UPDATE "main"."accounts" SET ("last_used") = ? WHERE username = ?'
 
 DB_SELECT_ID_NODE = 'SELECT id FROM "main"."nodes" WHERE ("insta_id") = ?'
 DB_SELECT_USERNAME_NODE = 'SELECT insta_username FROM "main"."nodes" WHERE insta_id = ?'
@@ -118,3 +125,4 @@ DB_SELECT_FOLLOW_OF = 'SELECT * FROM "main"."nodes" as Node INNER JOIN "main"."e
 INSTA_USER = ""
 INSTA_USER_ID = ""
 INSERT_DATA = ""
+DATETIME_MASK = "%Y-%m-%d %H:%M:%S.%f"
