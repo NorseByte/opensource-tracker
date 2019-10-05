@@ -13,7 +13,8 @@ setuptools.setup(
     author='suxSx',
     url='https://github.com/suxSx/openSource-tracker',
     install_requires=[
-        'igramscraper==0.3.2'
+        'igramscraper==0.3.2',
+        'unicodecsv==0.14.1'
     ],
     classifiers=[
         'Development Status :: 1 - Beta',
