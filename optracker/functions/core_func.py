@@ -15,6 +15,89 @@ class coreFunc():
         except ValueError:
             return ""
 
+    def exportDBData(self):
+        print("\n- Loading current data from DB")
+        totalNodes = self.dbTool.getValueSQLnoinput(self.dbConn, zerodata.DB_SELECT_COUNT_NODES)[0][0]
+        totalEdgesInsta = self.dbTool.getValueSQLnoinput(self.dbConn, zerodata.DB_SELECT_COUNT_EDES_INSTA)[0][0]
+        print("+ Total nodes: {}\n+ Total egdes from instagram:{}".format(totalNodes, totalEdgesInsta))
+        exportyes = input("+ Do you want to export? (D:Y Y/N) ")
+
+        if exportyes.lower().strip() != "n":
+            print("+ Exporting NODES")
+            self.dbTool.exportNode(self.dbConn, zerodata.DB_SELECT_ALL_NODE, zerodata.DB_DATABASE_EXPORT_NODES)
+            print("+ NODES exported to: {}".format(zerodata.DB_DATABASE_EXPORT_NODES))
+
+            print("+ Exporting EDGES")
+            self.dbTool.exportNode(self.dbConn, zerodata.DB_SELECT_ALL_INSTA_EDGES, zerodata.DB_DATABASE_EXPORT_INSTA_EGDE)
+            print("+ EDGES exported to: {}".format(zerodata.DB_DATABASE_EXPORT_INSTA_EGDE))
+
+    def getDoneUserIDFromInsta(self):
+        print("\n- Loading done user from instagram")
+        userList = self.dbTool.getValueSQLnoinput(self.dbConn, zerodata.DB_SELECT_ALL_DONE_NEW_INSTA)
+
+        if userList == 0:
+            print("+ No users in database that have been scannet 100%")
+            return 0
+
+        else:
+            print("+ User list imported")
+            count = 0
+            for i in userList:
+                count += 1
+                print("[{}] {} ({})".format(count, i[0], i[1].strip()))
+            selectUser = input("+ Select user (1-{}): ".format(count))
+
+            if not selectUser.isnumeric():
+                print("+ Invalid input, #1 selected")
+                selectUser = 1
+
+            if int(selectUser) > count:
+                print("+ Invalid input, #1 selected")
+                selectUser = 1
+
+            newNumber = int(selectUser) - 1
+            return userList[newNumber]
+
+    def scanFollowToInstaID(self):
+        currentInstaID = self.getDoneUserIDFromInsta()
+
+        print("\n- Starting scan by follow")
+        if currentInstaID == 0:
+            print("+ No users could be selected.\n+ Run a full scan of a user to continue.")
+
+        else:
+            currentUser = currentInstaID[1]
+            currentID = currentInstaID[0]
+
+            print("+ Current insta id: {} ({})".format(currentID, currentUser))
+            print("+ Looking up NODE ID.")
+            currentNode = self.dbTool.getValueSQL(self.dbConn, zerodata.DB_SELECT_ID_NODE, (currentID, ))[0][0]
+            print("+ Node ID found: {}".format(currentNode))
+            print("+ Loading followed by list where PRIVATE = 0")
+            followList = self.dbTool.getValueSQL(self.dbConn, zerodata.DB_SELECT_FOLLOW_OF, (currentNode, ))
+            if followList == 0:
+                print("+ Are followed nobody that have PUBLIC profile.")
+            else:
+                lenFollowList = len(followList)
+                counter = 0
+                print("+ Loaded {} users from: {} where private = 0".format(lenFollowList, currentUser))
+
+                #TODO: ADD SORTING OF USER BASED ON KEY WORD FROM BIO
+                for i in followList:
+                    counter += 1
+                    print("\n- {} of {} :: {}".format(counter, lenFollowList, i[8])),
+                    print("+ Checking search status for: {}".format(i[3]))
+                    moveON = self.dbTool.getValueSQL(self.dbConn, zerodata.DB_SELECT_DONE_NEW_INSTA, (i[3],))
+                    print(moveON)
+                    if moveON[0][0] == 1:
+                        print("+ User SCAN are allready DONE.")
+                    else:
+                        if moveON[0][1] == 1:
+                            print("+ User NOT scanned but set on WAIT")
+                        else:
+                            print("+ User VALID for singel scan.")
+
+
     def loadFollowlist(self, inOut): #False load Follow, True Load followers
         if inOut == False:
             #Getting following

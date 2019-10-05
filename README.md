@@ -46,7 +46,33 @@ my_username3, my_password3, my_email3, my_fullname3, instagram
 **User list** will update each time you start the program, so new users can be added directly into the .txt document or you can add them manually into the program at start up.
 
 ### 3. First time scraping
-The first time you scrape all the users will be saved as nodes. This will take some time, since we also want to save all the info we can get for each node. During this a lot of request will be send to the target server for the scrape, and as a result some of your user account may be blocked because of to many request in a short time. Laster when you scrape instagram as an example it will check if the node all ready exist in your database, if so it only add the connections it finds and your request to the server fall. Conclusion is that the bigger node base you have the faster you can scrape, and less request will be made.  
+The first time you scrape all the users will be saved as nodes. This will take some time, since we also want to save all the info we can get for each node. During this a lot of request will be send to the target server for the scrape, and as a result some of your user account may be blocked because of to many request in a short time. Laster when you scrape instagram as an example it will check if the node all ready exist in your database, if so it only add the connections it finds and your request to the server fall. Conclusion is that the bigger node base you have the faster you can scrape, and less request will be made.
+
+## Database Information
+All the data are stored in **db/**
+
+**The database consist of the following tabels:**
+- accounts
+- edges_insta
+- nodes
+- options
+- new_insta
+
+### 1. Accounts
+Stores all your usernames and password for the different openSource sites.
+
+### 2. Edges_insta
+Have list of all the connections. Rows are target, source, weight and type. This is all made to be used with gephi for visualising the data in graph form. The numbers are connected to ID in nodes. Show how is following or connected to who.
+
+### 3. nodes
+List of all the nodes created. They all have their own ID. It also contain all information scraped on a single user like username, email, bio and so on found in the dirrent scraping sites.
+
+### 4. Options
+Tempory table to store information like follow list, last search and so on for the program to use.
+
+### 5. New_insta
+This table have a list of all instagram accounts that have been found during scraping. The program will used this to see witch account have not yet been fully scraped. When it is finnish are the account set to DONE. If you dont want the account to be scraped set the WAIT value to True. 0 = False, 1 = True. 
+
 
 ## Todo:
 ```
@@ -59,6 +85,9 @@ The first time you scrape all the users will be saved as nodes. This will take s
 - Add try and catch in get user info. To enable error handeling.
 - Make database for followers, and follower for easy rolback on error
   (delete when current user are done, and keypoint for insta user.)
+- Add functions scan keywords.
+  (Look for specfic keywords in user profiles (node) and then use a full singel scan)
+- Add max follower critera in search options.
 ```
 
 ## Other

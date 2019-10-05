@@ -1,12 +1,13 @@
 import os
 import sqlite3
+import unicodecsv as csv
+import sys
+import zerodata
 from sqlite3 import Error
-from zerodata import *
-
 
 class dbFunc():
     def __init__(self, dbname):
-        self.dbname = DB_DATABASE_FOLDER + dbname
+        self.dbname = zerodata.DB_DATABASE_FOLDER + dbname
         self.createDBfolder()
 
     def create_connection(self):
@@ -50,6 +51,22 @@ class dbFunc():
         else:
             return 0
 
+    def exportNode(self, conn, sql, filename):
+        if os.path.exists(filename):
+            print("+ File: {} exist, deleting it.".format(filename))
+            os.remove(filename)
+
+        cur = conn.cursor()
+        cur.execute(sql)
+        with open(filename, 'wb') as csvfile:
+            print("+ Creating and writing to: {}".format(filename))
+            writer = csv.writer(csvfile, encoding=zerodata.WRITE_ENCODING)
+            writer.writerow([ i[0] for i in cur.description ])
+            writer.writerows(cur.fetchall())
+
     def createDBfolder(self):
-        if not os.path.exists(DB_DATABASE_FOLDER):
-            os.mkdir(DB_DATABASE_FOLDER)
+        if not os.path.exists(zerodata.DB_DATABASE_FOLDER):
+            os.mkdir(zerodata.DB_DATABASE_FOLDER)
+
+        if not os.path.exists(zerodata.DB_DATABASE_EXPORT_FOLDER):
+            os.mkdir(zerodata.DB_DATABASE_EXPORT_FOLDER)

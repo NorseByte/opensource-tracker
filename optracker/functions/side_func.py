@@ -21,18 +21,19 @@ class sideFunc():
 
     def autoSelectLogin(self):
         userList = self.runUserCheck()
-        print("\n- Auto selecting login USER")
+        print("\n- Auto selecting login user")
 
         count = 0
         currentSelect = 0
         oldestTime = datetime.strptime(str(datetime.today()), zerodata.DATETIME_MASK) #Setting current time
         for i in userList:
             lastTime = i[6]
-            print("+ User: {}, last used: {}".format(i[0], lastTime))
+            #Print function to list time and date, not needed.
+            #print("+ User: {}, last used: {}".format(i[0], lastTime))
             datetimelasttime = datetime.strptime(str(datetime.today()), zerodata.DATETIME_MASK)
 
             if not lastTime:
-                print("+ Setting {} to oldest".format(i[0]))
+                print("+ {} oldest so far.".format(i[0]))
                 oldestTime = datetimelasttime
                 currentSelect = count
                 break
@@ -41,7 +42,7 @@ class sideFunc():
 
             if oldestTime >= datetimelasttime:
                 #oldestTime er nyere så setter forløpig denne til eldste
-                print("+ Setting {} to oldest".format(i[0]))
+                print("+ {} oldest so far.".format(i[0]))
                 oldestTime = datetimelasttime
                 currentSelect = count
 
@@ -78,6 +79,7 @@ class sideFunc():
                 self.setCurrentUserUpdate(userList[0][0].strip(), userList[0][1].strip())
                 return True
             else:
+                print("+ User list loaded.")
                 return userList
 
     def addLastInsta(self, update):
@@ -120,7 +122,7 @@ class sideFunc():
             count = 0
             for i in userList:
                 count += 1
-                print("[{}] {} ({})".format(count, i[0], i[3]))
+                print("[{}] {} ({}) (Last used: {})".format(count, i[0], i[3].strip(), i[6]))
             selectUser = input("+ Select user (1-{}): ".format(count))
 
             if not selectUser.isnumeric():
@@ -133,6 +135,14 @@ class sideFunc():
 
             newNumber = int(selectUser) - 1
             self.setCurrentUserUpdate(userList[newNumber][0].strip(), userList[newNumber][1].strip())
+
+    def countCurrentUser(self):
+        userList = self.dbTool.getValueSQLnoinput(self.dbConn, DB_SELECT_LOGIN_INSTA)
+        count = 0
+        for i in userList:
+            count =+ 1
+
+        zerodata.TOTAL_USER_COUNT = count
 
     def loadLoginText(self):
         print("\n- Loading user and password from file")

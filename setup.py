@@ -16,11 +16,12 @@ setuptools.setup(
         'igramscraper==0.3.2'
     ],
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 1 - Beta',
         'Operating System :: OS Independent',
         'Intended Audience :: Developers',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3.6',
-        'Topic :: Software Development :: Libraries'
+        'Topic :: Software Development :: Libraries',
+        "License :: OSI Approved :: MIT License"
     ],
 )

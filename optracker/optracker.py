@@ -11,17 +11,29 @@ from time import sleep
 from functions.db_func import *
 from functions.core_func import *
 from functions.side_func import *
-from context import Instagram
+from igramscraper.instagram import Instagram
 
-def tryInstagram(instagram, method, maxAttempts):
+def tryInstagram(method, maxAttempts):
     for x in range(maxAttempts):
         try:
             method()
-            return true
-        except InstagramException:
-            print("Need new User")
-            #// todo: cycle to next login
-    return false
+            return True
+        except Exception as e:
+            print("\n- ERROR! 002 - Need to change user (GENERAL EXCEPTION)")
+            autoSelectAndLogin()
+        except KeyError as e:
+            print("\n- ERROR! 001 - Need to change user (KEY ERROR)")
+            autoSelectAndLogin()
+        except "KeyError: 'ProfilePage'":
+            print("\n- ERROR! 001 - Need to change user (KEY ERROR)")
+            autoSelectAndLogin()
+        except UnboundLocalError as e:
+            print("\n- ERROR! 003 - Need to change user (UNBOUND ERROR)")
+            autoSelectAndLogin()
+        except JSONDecodeError as e:
+            print("\n- ERROR! 004 - Need to change user (JSON ERROR)")
+
+    return False
 
 #Core Functions to main
 def runSingelScan():
@@ -59,12 +71,16 @@ def runCurrentScan():
     dbTool.inserttoTabel(dbConn, zerodata.DB_UPDATE_NEW_INSTA_DONE_TRUE, (zerodata.INSTA_USER_ID,))
 
 def runFollowScan():
-    print("Follow Scan")
-    input("Press [Enter] to continue...")
+    mainFunc.scanFollowToInstaID()
+    input("+ Press [Enter] to continue...")
 
 def dispHelp():
     print(zerodata.HELP_TEXT)
     input("\nPress [Enter] to continue...")
+
+def dispExport():
+    mainFunc.exportDBData()
+    input("+ Press [Enter] to continue...")
 
 def loginInstagram(instagram):
     #Iniatlaize Instagram login
@@ -79,52 +95,60 @@ MENU_ITEMS = [
     { zerodata.RUN_CURRENT_DISP: runSingelScan },
     { zerodata.RUN_FOLLOW_DISP: runFollowScan },
     { zerodata.RUN_CHANGE_USER: selectUserAndLogin },
+    { zerodata.RUN_EXPORT_DATA: dispExport},
 	{ zerodata.RUN_EXIT_DISP: exit},
 ]
 
-try:
-    #Starting up
-    print("- Starting {}".format(zerodata.PROGRAM_NAME))
+#Starting up
+print("- Starting {}".format(zerodata.PROGRAM_NAME))
 
-    #Iniatlaize DB_DATABASE
-    print("+ Setting up DB")
-    dbTool = dbFunc(zerodata.DB_DATABASE)
-    dbConn =  dbTool.create_connection()
-    dbTool.createTabels(dbConn, zerodata.DB_TABLE_NODES)
-    dbTool.createTabels(dbConn, zerodata.DB_TABLE_EGDES)
-    dbTool.createTabels(dbConn, zerodata.DB_TABLE_NEW_INSTA)
-    dbTool.createTabels(dbConn, zerodata.DB_TABLE_LOGIN_INSTA)
-    print("+ DB setup complete")
+#Iniatlaize DB_DATABASE
+print("+ Setting up DB")
+dbTool = dbFunc(zerodata.DB_DATABASE)
+dbConn =  dbTool.create_connection()
+dbTool.createTabels(dbConn, zerodata.DB_TABLE_NODES)
+dbTool.createTabels(dbConn, zerodata.DB_TABLE_EGDES)
+dbTool.createTabels(dbConn, zerodata.DB_TABLE_NEW_INSTA)
+dbTool.createTabels(dbConn, zerodata.DB_TABLE_LOGIN_INSTA)
+print("+ DB setup complete")
 
-    #Get usernames
-    sideTool = sideFunc(dbTool, dbConn)
-    sideTool.loadLoginText()
+#Get usernames
+sideTool = sideFunc(dbTool, dbConn)
+sideTool.loadLoginText()
+sideTool.countCurrentUser()
 
-    #Init INSTAGRAM
-    instagram = Instagram()
+#Init INSTAGRAM
+instagram = Instagram()
 
-    #User Select and Login
-    #selectUserAndLogin()
-    autoSelectAndLogin()
+#User Select and Login
+#selectUserAndLogin()
+autoSelectAndLogin()
 
-    #Setup coreFunc
-    print("+ Setting up core functions")
-    mainFunc = coreFunc(dbTool, dbConn, instagram)
+#Setup coreFunc
+print("+ Setting up core functions")
+mainFunc = coreFunc(dbTool, dbConn, instagram)
 
-    #Print meny and innput
-    while True:
-        print("\n- Main menu")
-        for item in MENU_ITEMS:
-            print("[" + str(MENU_ITEMS.index(item)) + "] " + list(item.keys())[0])
-        choice = input(">> ")
-        try:
-            if int(choice) < 0 : raise ValueError
-            list(MENU_ITEMS[int(choice)].values())[0]() # Call the matching function
-        except (ValueError, IndexError):
+#Print meny and innput
+while True:
+    print("\n- Main menu")
+    for item in MENU_ITEMS:
+        print("[" + str(MENU_ITEMS.index(item)) + "] " + list(item.keys())[0])
+    choice = input(">> ")
+
+    if choice.isdigit():
+        newInfo = int(choice)
+        if newInfo <= len(MENU_ITEMS):
+            list(MENU_ITEMS[newInfo].values())[0]()
+        else:
             dispHelp()
+    else:
+        dispHelp()
 
+"""
+try:
 except KeyboardInterrupt:
         print('\n\n- CTRL+C received... shutting down')
+"""
 
 #Clean up
 dbConn.close()
