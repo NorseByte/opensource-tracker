@@ -1,5 +1,5 @@
 # openSource Tracker
-Files used during my study of openSource gathering at Krigsskolen. I created the projected based on [instagram scraper](https://github.com/realsirjoe/instagram-scraper), witch allows you to get data from Instagram without API.
+Files used during my study of openSource gathering. I created the projected based on [instagram scraper](https://github.com/realsirjoe/instagram-scraper), witch allows you to get data from Instagram without API.
 
 ## How to install
 ***Simply run:***
@@ -45,7 +45,10 @@ my_username3, my_password3, my_email3, my_fullname3, instagram
 
 **User list** will update each time you start the program, so new users can be added directly into the .txt document or you can add them manually into the program at start up.
 
-### 3. First time scraping
+### 3. How to use
+When you run the program it will first try to connect to Instagram, if you dont have a user file you will be asked to enter a username and password. After that you will get the option to choose from a menu. Start by running a singel scan of one account. After that you can run more singel scan to grow your node database or use follow by scan options. You also have a help menu that will give you all the information you need.
+
+### 4. First time scraping
 The first time you scrape all the users will be saved as nodes. This will take some time, since we also want to save all the info we can get for each node. During this a lot of request will be send to the target server for the scrape, and as a result some of your user account may be blocked because of to many request in a short time. Laster when you scrape instagram as an example it will check if the node all ready exist in your database, if so it only add the connections it finds and your request to the server fall. Conclusion is that the bigger node base you have the faster you can scrape, and less request will be made.
 
 ## Database Information
@@ -71,7 +74,7 @@ List of all the nodes created. They all have their own ID. It also contain all i
 Tempory table to store information like follow list, last search and so on for the program to use.
 
 ### 5. New_insta
-This table have a list of all instagram accounts that have been found during scraping. The program will used this to see witch account have not yet been fully scraped. When it is finnish are the account set to DONE. If you dont want the account to be scraped set the WAIT value to True. 0 = False, 1 = True. 
+This table have a list of all instagram accounts that have been found during scraping. The program will used this to see witch account have not yet been fully scraped. When it is finnish are the account set to DONE. If you dont want the account to be scraped set the WAIT value to True. 0 = False, 1 = True.
 
 
 ## Todo:
