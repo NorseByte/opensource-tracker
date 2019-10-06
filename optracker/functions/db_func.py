@@ -70,3 +70,21 @@ class dbFunc():
 
         if not os.path.exists(zerodata.DB_DATABASE_EXPORT_FOLDER):
             os.mkdir(zerodata.DB_DATABASE_EXPORT_FOLDER)
+
+    def setDefaultValueOptions(self, conn):
+        #Set max value for scan
+        print("+ Setup of default values")
+        getMaxValueFOLLOW = self.getValueSQL(conn, zerodata.DB_SELECT_OPTIONS, (zerodata.INSTA_MAX_FOLLOW_SCAN_TEXT, ))
+        getMaxValueFOLLOWBY = self.getValueSQL(conn, zerodata.DB_SELECT_OPTIONS, (zerodata.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, ))
+
+        if getMaxValueFOLLOW == 0:
+            print("+ {} are NOT in database".format(zerodata.INSTA_MAX_FOLLOW_SCAN_TEXT))
+            self.inserttoTabel(conn, zerodata.DB_INSERT_OPTIONS_LASTINSTA, (zerodata.INSTA_MAX_FOLLOW_SCAN_VALUE, zerodata.INSTA_MAX_FOLLOW_SCAN_TEXT, ))
+            print("+ {} set to: {}".format(zerodata.INSTA_MAX_FOLLOW_SCAN_TEXT, zerodata.INSTA_MAX_FOLLOW_SCAN_VALUE))
+
+        if getMaxValueFOLLOWBY == 0:
+            print("+ {} are NOT in database".format(zerodata.INSTA_MAX_FOLLOW_BY_SCAN_TEXT))
+            self.inserttoTabel(conn, zerodata.DB_INSERT_OPTIONS_LASTINSTA, (zerodata.INSTA_MAX_FOLLOW_BY_SCAN_VALUE, zerodata.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, ))
+            print("+ {} set to: {}".format(zerodata.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, zerodata.INSTA_MAX_FOLLOW_BY_SCAN_VALUE))
+
+        print("+ Setup of default DONE")

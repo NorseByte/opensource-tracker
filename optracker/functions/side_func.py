@@ -82,6 +82,43 @@ class sideFunc():
                 print("+ User list loaded.")
                 return userList
 
+    def editDefaultValue(self):
+        getMaxValueFOLLOW = self.dbTool.getValueSQL(self.dbConn, zerodata.DB_SELECT_OPTIONS, (zerodata.INSTA_MAX_FOLLOW_SCAN_TEXT, ))[0][1]
+        getMaxValueFOLLOWBY = self.dbTool.getValueSQL(self.dbConn, zerodata.DB_SELECT_OPTIONS, (zerodata.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, ))[0][1]
+
+        print("\n- Loading default values:")
+        print("+ Max allowed follow: {}".format(getMaxValueFOLLOW))
+        print("+ Max allowed follow by: {}".format(getMaxValueFOLLOWBY))
+
+        change = input("+ Change value? (Y/N) ")
+
+        if change.lower().strip() == "y":
+            newMaxFollow = input("+ Max allowed follow: ")
+            newMaxFollowBy = input("+ Max allowed followed by: ")
+
+            if newMaxFollow.isdigit():
+                if int(newMaxFollow) < 1:
+                    print("+ Invalid input Max allowed follows not changed")
+                else:
+                    self.dbTool.inserttoTabel(self.dbConn, zerodata.DB_UPDATE_OPTIONS, (newMaxFollow, zerodata.INSTA_MAX_FOLLOW_SCAN_TEXT))
+                    print("+ Max allowed follow set to: {}".format(newMaxFollow))
+            else:
+                print("+ Invalid input Max allowed follows not changed")
+
+            if newMaxFollowBy.isdigit():
+                if int(newMaxFollowBy) < 1:
+                    print("+ Invalid input Max allowed followed by not changed")
+                else:
+                    self.dbTool.inserttoTabel(self.dbConn, zerodata.DB_UPDATE_OPTIONS, (newMaxFollowBy, zerodata.INSTA_MAX_FOLLOW_BY_SCAN_TEXT))
+                    print("+ Max allowed followed by set to: {}".format(newMaxFollowBy))
+            else:
+                print("+ Invalid input Max allowed followed by not changed")
+
+
+        else:
+            print("+ Nothing changed.")
+
+
     def addLastInsta(self, update):
         lastInsta = input("+ Enter account to scrape: ")
         print("+ Adding {} to DB".format(lastInsta))

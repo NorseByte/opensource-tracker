@@ -69,6 +69,9 @@ class coreFunc():
             currentUser = currentInstaID[1]
             currentID = currentInstaID[0]
 
+            getMaxValueFOLLOW = self.dbTool.getValueSQL(self.dbConn, zerodata.DB_SELECT_OPTIONS, (zerodata.INSTA_MAX_FOLLOW_SCAN_TEXT, ))[0][1]
+            getMaxValueFOLLOWBY = self.dbTool.getValueSQL(self.dbConn, zerodata.DB_SELECT_OPTIONS, (zerodata.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, ))[0][1]
+
             print("+ Current insta id: {} ({})".format(currentID, currentUser))
             print("+ Looking up NODE ID.")
             currentNode = self.dbTool.getValueSQL(self.dbConn, zerodata.DB_SELECT_ID_NODE, (currentID, ))[0][0]
@@ -88,14 +91,41 @@ class coreFunc():
                     print("\n- {} of {} :: {}".format(counter, lenFollowList, i[8])),
                     print("+ Checking search status for: {}".format(i[3]))
                     moveON = self.dbTool.getValueSQL(self.dbConn, zerodata.DB_SELECT_DONE_NEW_INSTA, (i[3],))
-                    print(moveON)
                     if moveON[0][0] == 1:
                         print("+ User SCAN are allready DONE.")
                     else:
                         if moveON[0][1] == 1:
                             print("+ User NOT scanned but set on WAIT")
                         else:
+                            #Search sorting firt step follows_count
                             print("+ User VALID for singel scan.")
+
+                            scan_insta_followed_by = int(i[6])
+                            scan_insta_follow = int(i[5])
+
+                            print("+ User are following: {}\n+ User are followed by: {}".format(scan_insta_follow, scan_insta_followed_by))
+
+                            if scan_insta_follow <= getMaxValueFOLLOW:
+                                if scan_insta_followed_by <= getMaxValueFOLLOWBY:
+                                    #Search critera for allowed OK Start scan.
+                                    self.setCurrentUser(i[8].strip())
+
+                                    #Extract info from following list
+                                    self.loadFollowlist(False)
+                                    self.add_egde_from_list_insta(False)
+
+                                    #Extract followed by
+                                    self.loadFollowlist(True)
+                                    self.add_egde_from_list_insta(True)
+
+                                    #Update new_Insta
+                                    print("\n- Scan complete")
+                                    print("+ Setting {} ({}) to complete.".format(i[8], i[3]))
+                                    self.dbTool.inserttoTabel(self.dbConn, zerodata.DB_UPDATE_NEW_INSTA_DONE_TRUE, (i[3],))
+                                else:
+                                    print("+ User are followed by to many, increese allowed follow to continue")
+                            else:
+                                print("+ User are following to many, increese allowed follow to continue")
 
 
     def loadFollowlist(self, inOut): #False load Follow, True Load followers

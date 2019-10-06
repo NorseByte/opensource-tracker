@@ -74,6 +74,9 @@ def runFollowScan():
     mainFunc.scanFollowToInstaID()
     input("+ Press [Enter] to continue...")
 
+def runEditDefault():
+    sideTool.editDefaultValue()
+
 def dispHelp():
     print(zerodata.HELP_TEXT)
     input("\nPress [Enter] to continue...")
@@ -96,6 +99,7 @@ MENU_ITEMS = [
     { zerodata.RUN_FOLLOW_DISP: runFollowScan },
     { zerodata.RUN_CHANGE_USER: selectUserAndLogin },
     { zerodata.RUN_EXPORT_DATA: dispExport},
+    { zerodata.RUN_EDIT_OPTIONS: runEditDefault},
 	{ zerodata.RUN_EXIT_DISP: exit},
 ]
 
@@ -110,6 +114,7 @@ dbTool.createTabels(dbConn, zerodata.DB_TABLE_NODES)
 dbTool.createTabels(dbConn, zerodata.DB_TABLE_EGDES)
 dbTool.createTabels(dbConn, zerodata.DB_TABLE_NEW_INSTA)
 dbTool.createTabels(dbConn, zerodata.DB_TABLE_LOGIN_INSTA)
+dbTool.setDefaultValueOptions(dbConn)
 print("+ DB setup complete")
 
 #Get usernames

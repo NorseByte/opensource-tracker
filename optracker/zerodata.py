@@ -1,7 +1,7 @@
 #Define username and password
 LOGIN_USERNAME_INSTA = ""
 LOGIN_PASSWORD_INSTA = ""
-PROGRAM_NAME = "openSource Tracker v.0.1"
+PROGRAM_NAME = "openSource Tracker v.1.0.0"
 
 #List log
 USER_FILES = (	["user_insta.txt"],
@@ -13,9 +13,10 @@ USER_FILES = (	["user_insta.txt"],
 #Menu variabels
 HELP_TEXT_DISP = "Display Help"
 RUN_CURRENT_DISP = "Singel Scan"
-RUN_FOLLOW_DISP = "Scan Folow to user"
+RUN_FOLLOW_DISP = "Scan Followed by to user"
 RUN_CHANGE_USER = "Change user Instagram"
 RUN_EXPORT_DATA = "Export nodes and egdes"
+RUN_EDIT_OPTIONS = "Change default values"
 RUN_EXIT_DISP = "Exit"
 
 
@@ -97,6 +98,7 @@ DB_INSERT_LOGIN_INSTA = 'INSERT INTO "main"."accounts" ("username", "password", 
 DB_INSERT_OPTIONS_LASTINSTA = 'INSERT INTO "main"."options" ("value", "what") VALUES (?, ?);'
 
 DB_UPDATE_LAST_INSTA = 'UPDATE "main"."options" SET "value" = (?) WHERE "what" = "last_insta";'
+DB_UPDATE_OPTIONS = 'UPDATE "main"."options" SET "value" = (?) WHERE "what" = ?;'
 DB_UPDATE_NEW_INSTA_DONE_TRUE = 'UPDATE "main"."new_insta" SET "done" = 1 WHERE "insta_id" = ?;'
 DB_UPDATE_NEW_INSTA_DONE_FALSE = 'UPDATE "main"."new_insta" SET "done" = 0 WHERE "insta_id" = ?;'
 DB_UPDATE_ACCOUNT_LAST_USED = 'UPDATE "main"."accounts" SET ("last_used") = ? WHERE username = ?'
@@ -113,6 +115,7 @@ DB_SELECT_ALL_NODE = "SELECT * FROM main.nodes"
 DB_SELECT_ALL_INSTA_EDGES = "SELECT * FROM main.egdes_insta"
 DB_SELECT_COUNT_NODES = "SELECT count(*) FROM main.nodes"
 DB_SELECT_COUNT_EDES_INSTA = "SELECT count(*) FROM main.egdes_insta"
+DB_SELECT_INSTA_FOLLOWER_NODE_ID = 'SELECT insta_follower FROM "main"."nodes" WHERE id = ?'
 
 DB_SELECT_FOLLOW_OF = 'SELECT * FROM "main"."nodes" as Node INNER JOIN "main"."egdes_insta" as Edge ON Node.id = Edge.source WHERE Node.insta_private = 0 AND Edge.target = ?'
 
@@ -125,6 +128,13 @@ DATETIME_MASK = "%Y-%m-%d %H:%M:%S.%f"
 TOTAL_USER_COUNT = 0
 WRITE_ENCODING = "utf-8"
 ON_ERROR_ENCODING = "replace"
+
+INSTA_MAX_FOLLOW_SCAN_TEXT = "INSTA_MAX_FOLLOW_SCAN"
+INSTA_MAX_FOLLOW_SCAN_VALUE = 2000
+
+INSTA_MAX_FOLLOW_BY_SCAN_TEXT = "INSTA_MAX_FOLLOW_BY_SCAN"
+INSTA_MAX_FOLLOW_BY_SCAN_VALUE = 2000
+
 
 
 #Help TEXT

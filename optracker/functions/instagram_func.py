@@ -11,7 +11,6 @@ class InstagramFunc():
             page_size = totalFollow
         return page_size
 
-
     def get_insta_follow_by(self, totalFollow, insta_id):
         followers = []
         followers = self.instagram.get_followers(insta_id, totalFollow, self.page_size_check(totalFollow), delayed=True)
