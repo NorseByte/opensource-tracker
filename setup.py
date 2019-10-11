@@ -3,11 +3,11 @@ from pathlib import Path
 
 setuptools.setup(
     name="optracker",
-    version="1.0.3",
+    version="1.0.13",
     description=('scrapes medias, likes, followers from social media. Organize them in a database for more deeper analyze.'),
     long_description=Path("README.md").read_text(),
     long_description_content_type="text/markdown",
-    packages=setuptools.find_packages(include=['optracker']),
+    packages=setuptools.find_packages(),
     license="MIT",
     maintainer="suxSx",
     author='suxSx',
@@ -15,7 +15,7 @@ setuptools.setup(
     url='https://github.com/suxSx/openSource-tracker',
     entry_points={
         'console_scripts': [
-            'optracker = optracker.optracker:main',
+            'optracker = optracker.optracker:run',
         ],
     },
     install_requires=[

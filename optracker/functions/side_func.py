@@ -1,58 +1,56 @@
 import os
-import zerodata
-from zerodata import *
 from datetime import datetime, timedelta
 
-
 class sideFunc():
-    def __init__(self, dbTool, dbConn):
+    def __init__(self, dbTool, dbConn, Zero):
+        self.zero = Zero
         self.dbTool = dbTool
         self.dbConn = dbConn
 
     def setCurrentUserUpdate(self, user, password):
-        zerodata.LOGIN_PASSWORD_INSTA = password
-        zerodata.LOGIN_USERNAME_INSTA = user
-        print("+ Setting user to: {} and password to: {}".format(zerodata.LOGIN_USERNAME_INSTA, zerodata.LOGIN_PASSWORD_INSTA))
+        self.zero.LOGIN_PASSWORD_INSTA = password
+        self.zero.LOGIN_USERNAME_INSTA = user
+        print("+ Setting user to: {} and password to: {}".format(self.zero.LOGIN_USERNAME_INSTA, self.zero.LOGIN_PASSWORD_INSTA))
 
         #Update time in account
         currentTime = datetime.today()
-        self.dbTool.inserttoTabel(self.dbConn, DB_UPDATE_ACCOUNT_LAST_USED, (currentTime, user,))
+        self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_ACCOUNT_LAST_USED, (currentTime, user,))
         print("+ Updating last time for: {} to: {}".format(user, currentTime))
 
     def autoSelectLogin(self):
         userList = self.runUserCheck()
         print("\n- Auto selecting login user")
+        if userList != True:
+            count = 0
+            currentSelect = 0
+            oldestTime = datetime.strptime(str(datetime.today()), self.zero.DATETIME_MASK) #Setting current time
+            for i in userList:
+                lastTime = i[6]
+                #Print function to list time and date, not needed.
+                #print("+ User: {}, last used: {}".format(i[0], lastTime))
+                datetimelasttime = datetime.strptime(str(datetime.today()), self.zero.DATETIME_MASK)
 
-        count = 0
-        currentSelect = 0
-        oldestTime = datetime.strptime(str(datetime.today()), zerodata.DATETIME_MASK) #Setting current time
-        for i in userList:
-            lastTime = i[6]
-            #Print function to list time and date, not needed.
-            #print("+ User: {}, last used: {}".format(i[0], lastTime))
-            datetimelasttime = datetime.strptime(str(datetime.today()), zerodata.DATETIME_MASK)
+                if not lastTime:
+                    print("+ {} oldest so far.".format(i[0]))
+                    oldestTime = datetimelasttime
+                    currentSelect = count
+                    break
+                else:
+                    datetimelasttime = datetime.strptime(lastTime, self.zero.DATETIME_MASK)
 
-            if not lastTime:
-                print("+ {} oldest so far.".format(i[0]))
-                oldestTime = datetimelasttime
-                currentSelect = count
-                break
-            else:
-                datetimelasttime = datetime.strptime(lastTime, zerodata.DATETIME_MASK)
+                if oldestTime >= datetimelasttime:
+                    #oldestTime er nyere så setter forløpig denne til eldste
+                    print("+ {} oldest so far.".format(i[0]))
+                    oldestTime = datetimelasttime
+                    currentSelect = count
 
-            if oldestTime >= datetimelasttime:
-                #oldestTime er nyere så setter forløpig denne til eldste
-                print("+ {} oldest so far.".format(i[0]))
-                oldestTime = datetimelasttime
-                currentSelect = count
+                count += 1
 
-            count += 1
-
-        self.setCurrentUserUpdate(userList[currentSelect][0].strip(), userList[currentSelect][1].strip())
+            self.setCurrentUserUpdate(userList[currentSelect][0].strip(), userList[currentSelect][1].strip())
 
     def runUserCheck(self):
         print("\n- Loading INSTAGRAM user list from DB")
-        userList = self.dbTool.getValueSQLnoinput(self.dbConn, DB_SELECT_LOGIN_INSTA)
+        userList = self.dbTool.getValueSQLnoinput(self.dbConn, self.zero.DB_SELECT_LOGIN_INSTA)
         if userList == 0:
             print("+ No user for Instagram found, please add one")
             user = input("+ Username: ")
@@ -62,8 +60,8 @@ class sideFunc():
 
             print("+ Adding {} to DB".format(user))
             INSERT_DATA = (user, password, email, fullname, "instagram")
-            self.dbTool.inserttoTabel(self.dbConn, DB_INSERT_LOGIN_INSTA, INSERT_DATA)
-            password = self.dbTool.getValueSQL(self.dbConn, DB_SELECT_LOGIN_PASSWORD_INSTA , (user,))
+            self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_INSERT_LOGIN_INSTA, INSERT_DATA)
+            password = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_LOGIN_PASSWORD_INSTA , (user,))
 
             if password == 0:
                 #Add loop for user
@@ -83,8 +81,8 @@ class sideFunc():
                 return userList
 
     def editDefaultValue(self):
-        getMaxValueFOLLOW = self.dbTool.getValueSQL(self.dbConn, zerodata.DB_SELECT_OPTIONS, (zerodata.INSTA_MAX_FOLLOW_SCAN_TEXT, ))[0][1]
-        getMaxValueFOLLOWBY = self.dbTool.getValueSQL(self.dbConn, zerodata.DB_SELECT_OPTIONS, (zerodata.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, ))[0][1]
+        getMaxValueFOLLOW = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, (self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT, ))[0][1]
+        getMaxValueFOLLOWBY = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, (self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, ))[0][1]
 
         print("\n- Loading default values:")
         print("+ Max allowed follow: {}".format(getMaxValueFOLLOW))
@@ -100,7 +98,7 @@ class sideFunc():
                 if int(newMaxFollow) < 1:
                     print("+ Invalid input Max allowed follows not changed")
                 else:
-                    self.dbTool.inserttoTabel(self.dbConn, zerodata.DB_UPDATE_OPTIONS, (newMaxFollow, zerodata.INSTA_MAX_FOLLOW_SCAN_TEXT))
+                    self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_OPTIONS, (newMaxFollow, self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT))
                     print("+ Max allowed follow set to: {}".format(newMaxFollow))
             else:
                 print("+ Invalid input Max allowed follows not changed")
@@ -109,7 +107,7 @@ class sideFunc():
                 if int(newMaxFollowBy) < 1:
                     print("+ Invalid input Max allowed followed by not changed")
                 else:
-                    self.dbTool.inserttoTabel(self.dbConn, zerodata.DB_UPDATE_OPTIONS, (newMaxFollowBy, zerodata.INSTA_MAX_FOLLOW_BY_SCAN_TEXT))
+                    self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_OPTIONS, (newMaxFollowBy, self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT))
                     print("+ Max allowed followed by set to: {}".format(newMaxFollowBy))
             else:
                 print("+ Invalid input Max allowed followed by not changed")
@@ -123,9 +121,9 @@ class sideFunc():
         lastInsta = input("+ Enter account to scrape: ")
         print("+ Adding {} to DB".format(lastInsta))
         if update == False:
-            self.dbTool.inserttoTabel(self.dbConn, DB_INSERT_OPTIONS_LASTINSTA, ("last_insta", lastInsta))
+            self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_INSERT_OPTIONS_LASTINSTA, ("last_insta", lastInsta))
         else:
-            self.dbTool.inserttoTabel(self.dbConn, DB_UPDATE_LAST_INSTA, (lastInsta,))
+            self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_LAST_INSTA, (lastInsta,))
 
         if lastInsta == 0:
             #Add loop for user
@@ -133,12 +131,12 @@ class sideFunc():
             sys.exit()
 
         else:
-            zerodata.INSTA_USER = lastInsta
-            print("+ Scraper enabled for: {}".format(zerodata.INSTA_USER))
+            self.zero.INSTA_USER = lastInsta
+            print("+ Scraper enabled for: {}".format(self.zero.INSTA_USER))
 
     def lastSearch(self):
         print("\n- Loading last scraper for Instagram from DB")
-        lastInsta = self.dbTool.getValueSQL(self.dbConn, DB_SELECT_OPTIONS, ("last_insta", ))
+        lastInsta = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, ("last_insta", ))
         if lastInsta == 0:
             print("+ No last search for Instagram found")
             self.addLastInsta(False)
@@ -150,7 +148,7 @@ class sideFunc():
             if goon.lower().strip() == "n":
                 self.addLastInsta(True)
             else:
-                zerodata.INSTA_USER = lastInsta[0][1]
+                self.zero.INSTA_USER = lastInsta[0][1]
 
     def setupLogin(self):
         userList = self.runUserCheck()
@@ -174,26 +172,29 @@ class sideFunc():
             self.setCurrentUserUpdate(userList[newNumber][0].strip(), userList[newNumber][1].strip())
 
     def countCurrentUser(self):
-        userList = self.dbTool.getValueSQLnoinput(self.dbConn, DB_SELECT_LOGIN_INSTA)
+        userList = self.dbTool.getValueSQLnoinput(self.dbConn, self.zero.DB_SELECT_LOGIN_INSTA)
         count = 0
-        for i in userList:
-            count =+ 1
 
-        zerodata.TOTAL_USER_COUNT = count
+        if userList != 0:
+            for i in userList:
+                count =+ 1
+
+        self.zero.TOTAL_USER_COUNT = count
 
     def loadLoginText(self):
         print("\n- Loading user and password from file")
-        for file in USER_FILES:
-            if os.path.isfile(file[0]):
-                print("+ Found: {}, extracting data".format(file[0]))
-                with open(file[0]) as fp:
+        for file in self.zero.USER_FILES:
+            fullpath = self.zero.OP_ROOT_FOLDER_PATH_VALUE + file[0]
+            if os.path.isfile(fullpath):
+                print("+ Found: {}, extracting data".format(fullpath))
+                with open(fullpath) as fp:
                     line = fp.readline()
                     while line:
                         newUser = line.strip().split(",")
 
                         if len(newUser[0]) != 0:
                             #Check if exists
-                            password = self.dbTool.getValueSQL(self.dbConn, DB_SELECT_LOGIN_PASSWORD_INSTA , (newUser[0],))
+                            password = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_LOGIN_PASSWORD_INSTA , (newUser[0],))
 
                             if password != 0:
                                 print("+ User allready exist: {}".format(newUser[0]))
@@ -201,8 +202,8 @@ class sideFunc():
                             else:
                                 print("+ User NOT found adding user: {}. ".format(newUser[0]), end = " ")
                                 INSERT_DATA = (newUser[0], newUser[1], newUser[2], newUser[3])
-                                self.dbTool.inserttoTabel(self.dbConn, DB_INSERT_LOGIN_INSTA, INSERT_DATA)
-                                password = self.dbTool.getValueSQL(self.dbConn, DB_SELECT_LOGIN_PASSWORD_INSTA , (newUser[0],))
+                                self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_INSERT_LOGIN_INSTA, INSERT_DATA)
+                                password = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_LOGIN_PASSWORD_INSTA , (newUser[0],))
 
                                 if password == 0:
                                     print("(Not able to add user)")
@@ -211,4 +212,4 @@ class sideFunc():
                                     print("(User add OK)")
                         line = fp.readline()
             else:
-                print("+ File: {} does not exist".format(file[0]))
+                print("+ File: {} does not exist".format(fullpath))

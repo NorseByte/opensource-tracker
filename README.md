@@ -32,7 +32,7 @@ You dont need to have a seperate list for facebook or instagram but some people 
 
 ```
 #Setup for user_list file
-username, password, email, fullname, {ACCOUNT}
+{USERNAME}, {PASSWORD}, {EMAIL}, {FULLNAME}, {ACCOUNT}
 ```
 Account type can be: **facebook** or **instagram**. It is so the program know witch account to use where.
 
@@ -44,6 +44,22 @@ my_username3, my_password3, my_email3, my_fullname3, instagram
 ```
 
 **User list** will update each time you start the program, so new users can be added directly into the .txt document or you can add them manually into the program at start up.
+
+**PLace for userlist** are in the same directory as optracker.py
+```
+optracker/
+  optracker.py
+  zerodata.py
+  userlist.txt
+  functions/
+    core_func.py
+    db_func.py
+    instagram_func.py
+    side_func.py
+  db/
+  export/
+```
+
 
 ### 3. How to use
 When you run the program it will first try to connect to Instagram, if you dont have a user file you will be asked to enter a username and password. After that you will get the option to choose from a menu. Start by running a singel scan of one account. After that you can run more singel scan to grow your node database or use follow by scan options. You also have a help menu that will give you all the information you need.
@@ -76,12 +92,14 @@ Tempory table to store information like follow list, last search and so on for t
 ### 5. New_insta
 This table have a list of all instagram accounts that have been found during scraping. The program will used this to see witch account have not yet been fully scraped. When it is finnish are the account set to DONE. If you dont want the account to be scraped set the WAIT value to True. 0 = False, 1 = True.
 
+### 6. Export
+To export the data you can connect to the DB file under the db/folder. Or you can export it from the program. From main menu choose export. It will the generate two files **nodes.csv** and **egdes.csv**. You can then import this into your favourite graphic displayer.
+
 
 ## Todo:
 ```
 - Add update Node data when you run a check agenst node DB.
 - Add autoupdate for new information in db
-- Check up on finnish status message in DB_TABLE_NEW_INSTA
 - Make the code smaller. Repiting steps can be shorten
 - Make automation on search for new_insta
 - Make a stop function for if profile is private
@@ -90,7 +108,12 @@ This table have a list of all instagram accounts that have been found during scr
   (delete when current user are done, and keypoint for insta user.)
 - Add functions scan keywords.
   (Look for specfic keywords in user profiles (node) and then use a full singel scan)
-- Add max follower critera in search options.
+```
+
+## Updates:
+```
+- 01-10-2019 (U) Check up on finnish status message in DB_TABLE_NEW_INSTA
+- 07-10-2019 (U) Add max follower critera in search options.
 ```
 
 ## Other
