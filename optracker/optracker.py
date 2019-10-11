@@ -6,154 +6,149 @@ Used in bachlor to test theory, and prove possibilitys.
 '''
 
 import os
-import zerodata
+from .data.zerodata import zerodata
+from .functions.db_func import *
+from .functions.side_func import *
+from .functions.core_func import *
 from time import sleep
-from functions.db_func import *
-from functions.core_func import *
-from functions.side_func import *
 from igramscraper.instagram import Instagram
 
-def tryInstagram(method, maxAttempts):
-    for x in range(maxAttempts):
-        try:
-            method()
-            return True
-        except Exception as e:
-            print("\n- ERROR! 002 - Need to change user (GENERAL EXCEPTION)")
-            autoSelectAndLogin()
-        except KeyError as e:
-            print("\n- ERROR! 001 - Need to change user (KEY ERROR)")
-            autoSelectAndLogin()
-        except "KeyError: 'ProfilePage'":
-            print("\n- ERROR! 001 - Need to change user (KEY ERROR)")
-            autoSelectAndLogin()
-        except UnboundLocalError as e:
-            print("\n- ERROR! 003 - Need to change user (UNBOUND ERROR)")
-            autoSelectAndLogin()
-        except JSONDecodeError as e:
-            print("\n- ERROR! 004 - Need to change user (JSON ERROR)")
 
-    return False
+class Optracker():
+    def __init__(self):
+        #Adding Text source
+        self.zero = zerodata()
+        #Setting up OP_ROOT_FOLDER
+        self.createRootfolder()
+        #Iniatlaize DB_DATABASE
+        print("+ Setting up DB")
+        self.dbTool = dbFunc(self.zero.DB_DATABASE, self.zero)
+        self.dbConn =  self.dbTool.create_connection()
+        self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_NODES)
+        self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_EGDES)
+        self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_NEW_INSTA)
+        self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_LOGIN_INSTA)
+        self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_OPTIONS)
+        self.dbTool.setDefaultValueOptions(self.dbConn)
+        print("+ DB setup complete")
 
-#Core Functions to main
-def runSingelScan():
-    #Setup zeroPoint
-    sideTool.lastSearch()
+        #Get usernames
+        self.sideTool = sideFunc(self.dbTool, self.dbConn, self.zero)
+        self.sideTool.loadLoginText()
+        self.sideTool.countCurrentUser()
 
-    #Run Scan from zeroPoint
-    mainFunc.setCurrentUser(zerodata.INSTA_USER)
-    runCurrentScan()
+        #Init INSTAGRAM
+        self.instagram = Instagram()
 
-def selectUserAndLogin():
-    #Setusername
-    sideTool.setupLogin()
-    #Login Instagram
-    loginInstagram(instagram)
+        #User Select and Login
+        #selectUserAndLogin()
+        self.autoSelectAndLogin()
 
-def autoSelectAndLogin():
-    #Find user
-    sideTool.autoSelectLogin()
-    #Login instagram
-    loginInstagram(instagram)
+        #Setup coreFunc
+        print("+ Setting up core functions")
+        self.mainFunc = coreFunc(self.dbTool, self.dbConn, self.instagram, self.zero)
 
-def runCurrentScan():
-    #Extract info from following list
-    mainFunc.loadFollowlist(False)
-    mainFunc.add_egde_from_list_insta(False)
+        self.MENU_ITEMS = [
+            { self.zero.HELP_TEXT_DISP: self.dispHelp },
+            { self.zero.RUN_CURRENT_DISP: self.runSingelScan },
+            { self.zero.RUN_FOLLOW_DISP: self.runFollowScan },
+            { self.zero.RUN_CHANGE_USER: self.selectUserAndLogin },
+            { self.zero.RUN_EXPORT_DATA: self.dispExport},
+            { self.zero.RUN_EDIT_OPTIONS: self.runEditDefault},
+            { self.zero.RUN_EXIT_DISP: exit},
+        ]
 
-    #Extract followed by
-    mainFunc.loadFollowlist(True)
-    mainFunc.add_egde_from_list_insta(True)
+    #Core Functions to main
+    def runSingelScan(self):
+        #Setup zeroPoint
+        self.sideTool.lastSearch()
 
-    #Update new_Insta
-    print("\n- Scan complete")
-    print("+ Setting {} ({}) to complete.".format(zerodata.INSTA_USER, zerodata.INSTA_USER_ID))
-    dbTool.inserttoTabel(dbConn, zerodata.DB_UPDATE_NEW_INSTA_DONE_TRUE, (zerodata.INSTA_USER_ID,))
+        #Run Scan from zeroPoint
+        self.mainFunc.setCurrentUser(self.zero.INSTA_USER)
+        self.runCurrentScan()
 
-def runFollowScan():
-    mainFunc.scanFollowToInstaID()
-    input("+ Press [Enter] to continue...")
+    def selectUserAndLogin(self):
+        #Setusername
+        self.sideTool.setupLogin()
+        #Login Instagram
+        self.loginInstagram(instagram)
 
-def runEditDefault():
-    sideTool.editDefaultValue()
+    def autoSelectAndLogin(self):
+        #Find user
+        self.sideTool.autoSelectLogin()
+        #Login instagram
+        self.loginInstagram(self.instagram)
 
-def dispHelp():
-    print(zerodata.HELP_TEXT)
-    input("\nPress [Enter] to continue...")
+    def runCurrentScan(self):
+        #Extract info from following list
+        self.mainFunc.loadFollowlist(False)
+        self.mainFunc.add_egde_from_list_insta(False)
 
-def dispExport():
-    mainFunc.exportDBData()
-    input("+ Press [Enter] to continue...")
+        #Extract followed by
+        self.mainFunc.loadFollowlist(True)
+        self.mainFunc.add_egde_from_list_insta(True)
 
-def loginInstagram(instagram):
-    #Iniatlaize Instagram login
-    print("\n- Connecting to Instagram")
-    instagram.with_credentials(zerodata.LOGIN_USERNAME_INSTA, zerodata.LOGIN_PASSWORD_INSTA, '/cachepath')
-    instagram.login(force=False,two_step_verificator=True)
-    sleep(2) # Delay to mimic user
-    print("+ Connected to Instagram with user:", zerodata.LOGIN_USERNAME_INSTA)
+        #Update new_Insta
+        print("\n- Scan complete")
+        print("+ Setting {} ({}) to complete.".format(self.zero.INSTA_USER, self.zero.INSTA_USER_ID))
+        dbTool.inserttoTabel(dbConn, self.zero.DB_UPDATE_NEW_INSTA_DONE_TRUE, (self.zero.INSTA_USER_ID,))
 
-MENU_ITEMS = [
-    { zerodata.HELP_TEXT_DISP: dispHelp },
-    { zerodata.RUN_CURRENT_DISP: runSingelScan },
-    { zerodata.RUN_FOLLOW_DISP: runFollowScan },
-    { zerodata.RUN_CHANGE_USER: selectUserAndLogin },
-    { zerodata.RUN_EXPORT_DATA: dispExport},
-    { zerodata.RUN_EDIT_OPTIONS: runEditDefault},
-	{ zerodata.RUN_EXIT_DISP: exit},
-]
+    def runFollowScan(self):
+        self.mainFunc.scanFollowToInstaID()
+        input("+ Press [Enter] to continue...")
 
-#Starting up
-print("- Starting {}".format(zerodata.PROGRAM_NAME))
+    def runEditDefault():
+        self.sideTool.editDefaultValue()
 
-#Iniatlaize DB_DATABASE
-print("+ Setting up DB")
-dbTool = dbFunc(zerodata.DB_DATABASE)
-dbConn =  dbTool.create_connection()
-dbTool.createTabels(dbConn, zerodata.DB_TABLE_NODES)
-dbTool.createTabels(dbConn, zerodata.DB_TABLE_EGDES)
-dbTool.createTabels(dbConn, zerodata.DB_TABLE_NEW_INSTA)
-dbTool.createTabels(dbConn, zerodata.DB_TABLE_LOGIN_INSTA)
-dbTool.setDefaultValueOptions(dbConn)
-print("+ DB setup complete")
+    def dispHelp(self):
+        print(zero.HELP_TEXT)
+        input("\nPress [Enter] to continue...")
 
-#Get usernames
-sideTool = sideFunc(dbTool, dbConn)
-sideTool.loadLoginText()
-sideTool.countCurrentUser()
+    def dispExport(self):
+        self.mainFunc.exportDBData()
+        input("+ Press [Enter] to continue...")
 
-#Init INSTAGRAM
-instagram = Instagram()
+    def loginInstagram(self, instagram):
+        #Iniatlaize Instagram login
+        print("\n- Connecting to Instagram")
+        self.instagram.with_credentials(self.zero.LOGIN_USERNAME_INSTA, self.zero.LOGIN_PASSWORD_INSTA, '/cachepath')
+        self.instagram.login(force=False,two_step_verificator=True)
+        sleep(2) # Delay to mimic user
 
-#User Select and Login
-#selectUserAndLogin()
-autoSelectAndLogin()
+    def root_path(self):
+        return os.path.abspath(os.sep)
 
-#Setup coreFunc
-print("+ Setting up core functions")
-mainFunc = coreFunc(dbTool, dbConn, instagram)
+    def createRootfolder(self):
+        self.zero.OP_ROOT_FOLDER_PATH_VALUE = self.root_path()
+        currentFolder = self.zero.OP_ROOT_FOLDER_PATH_VALUE + self.zero.OP_ROOT_FOLDER_NAME_VALUE
+        self.zero.OP_ROOT_FOLDER_PATH_VALUE = currentFolder
 
-#Print meny and innput
-while True:
-    print("\n- Main menu")
-    for item in MENU_ITEMS:
-        print("[" + str(MENU_ITEMS.index(item)) + "] " + list(item.keys())[0])
-    choice = input(">> ")
+        if not os.path.exists(currentFolder):
+            os.mkdir(currentFolder)
+            print("+ Root folder created at: {}".format(self.zero.OP_ROOT_FOLDER_PATH_VALUE))
 
-    if choice.isdigit():
-        newInfo = int(choice)
-        if newInfo <= len(MENU_ITEMS):
-            list(MENU_ITEMS[newInfo].values())[0]()
         else:
-            dispHelp()
-    else:
-        dispHelp()
+            print("+ Root folder located at: {}".format(self.zero.OP_ROOT_FOLDER_PATH_VALUE))
 
-"""
-try:
-except KeyboardInterrupt:
-        print('\n\n- CTRL+C received... shutting down')
-"""
+        #Setting up full path starting
+        self.zero.DB_DATABASE_FOLDER = self.zero.OP_ROOT_FOLDER_PATH_VALUE + self.zero.DB_DATABASE_FOLDER
+        self.zero.DB_DATABASE_EXPORT_FOLDER = self.zero.OP_ROOT_FOLDER_PATH_VALUE + self.zero.DB_DATABASE_EXPORT_FOLDER
+        print("+ Database folder are loacted {}".format(self.zero.DB_DATABASE_FOLDER))
+        print("+ Export folder are loacted {}".format(self.zero.DB_DATABASE_EXPORT_FOLDER))
 
-#Clean up
-dbConn.close()
+def run():
+    myOptracker = Optracker()
+    while True:
+        print("\n- Main menu")
+        for item in myOptracker.MENU_ITEMS:
+            print("[" + str(myOptracker.MENU_ITEMS.index(item)) + "] " + list(item.keys())[0])
+        choice = input(">> ")
+
+        if choice.isdigit():
+            newInfo = int(choice)
+            if newInfo <= len(myOptracker.MENU_ITEMS):
+                list(myOptracker.MENU_ITEMS[newInfo].values())[0]()
+            else:
+                myOptracker.dispHelp()
+        else:
+            myOptracker.dispHelp()
