@@ -10,6 +10,7 @@ pip install optracker
 ***Or download the project via git clone and run the following:***
 ```
 pip install -r requirements.txt
+python .\run_tracker.py
 ```
 
 ## Getting Started
@@ -45,19 +46,15 @@ my_username3, my_password3, my_email3, my_fullname3, instagram
 
 **User list** will update each time you start the program, so new users can be added directly into the .txt document or you can add them manually into the program at start up.
 
-**PLace for userlist** are in the same directory as optracker.py
+**Place for userlist** are in root directory. Usally is it ***c:\optracker*** or ***\optracker*** for linux
 ```
 optracker/
-  optracker.py
-  zerodata.py
   userlist.txt
-  functions/
-    core_func.py
-    db_func.py
-    instagram_func.py
-    side_func.py
   db/
+    openSource-tracker.db
   export/
+    node.csv
+    egdes.csv
 ```
 
 
@@ -68,7 +65,7 @@ When you run the program it will first try to connect to Instagram, if you dont 
 The first time you scrape all the users will be saved as nodes. This will take some time, since we also want to save all the info we can get for each node. During this a lot of request will be send to the target server for the scrape, and as a result some of your user account may be blocked because of to many request in a short time. Laster when you scrape instagram as an example it will check if the node all ready exist in your database, if so it only add the connections it finds and your request to the server fall. Conclusion is that the bigger node base you have the faster you can scrape, and less request will be made.
 
 ## Database Information
-All the data are stored in **db/**
+All the data are stored in **optracker/db/**
 
 **The database consist of the following tabels:**
 - accounts
@@ -101,7 +98,6 @@ To export the data you can connect to the DB file under the db/folder. Or you ca
 - Add update Node data when you run a check agenst node DB.
 - Add autoupdate for new information in db
 - Make the code smaller. Repiting steps can be shorten
-- Make automation on search for new_insta
 - Make a stop function for if profile is private
 - Add try and catch in get user info. To enable error handeling.
 - Make database for followers, and follower for easy rolback on error
@@ -114,6 +110,42 @@ To export the data you can connect to the DB file under the db/folder. Or you ca
 ```
 - 01-10-2019 (U) Check up on finnish status message in DB_TABLE_NEW_INSTA
 - 07-10-2019 (U) Add max follower critera in search options.
+- 11-10-2019 (U) Root directory, PIP install, class updates.
+
+(U) = UPDATE, (P) = PATCH, (N) = NEW
+```
+
+## Common Error
+
+### 1. F String
+```
+Traceback (most recent call last):
+  File "/usr/local/bin/optracker", line 6, in <module>
+    from optracker.optracker import run
+  File "/usr/local/lib/python3.5/dist-packages/optracker/optracker.py", line 14, in <module>
+    from igramscraper.instagram import Instagram
+  File "/usr/local/lib/python3.5/dist-packages/igramscraper/instagram.py", line 153
+    cookies += f"{key}={session[key]}; "
+                                       ^
+SyntaxError: invalid syntax
+```
+To fix update python to latest, you are using an old version that dosent support **f""**.
+
+### 2. Instagram useragent
+```
+ERROR: {"message": "useragent mismatch", "status": "fail"}
+```
+Igramscraper are using a useragent that are not up to date. You need to update **self.user_agent** in **igramscraper/instagram.py**. Locate this file and look for somethong that looks like this:
+```
+self.user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) ' \
+                          'AppleWebKit/537.36 (KHTML, like Gecko) ' \
+                          'Chrome/66.0.3359.139 Safari/537.36'
+```
+After this change it to a new useragent that are allowed by instagram, this is one example that worked in october 2019.
+```
+self.user_agent =   'Mozilla/5.0 (iPhone; CPU iPhone OS 12_3_1 like Mac OS X)' \
+                            'AppleWebKit/605.1.15 (KHTML, like Gecko)' \
+                            'Mobile/15E148 Instagram 105.0.0.11.118 (iPhone11,8; iOS 12_3_1; en_US; en-US; scale=2.00; 828x1792; 165586599)'
 ```
 
 ## Other
