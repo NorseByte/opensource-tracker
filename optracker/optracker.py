@@ -3,9 +3,8 @@ from .data.zerodata import zerodata
 from .functions.db_func import *
 from .functions.side_func import *
 from .functions.core_func import *
+from .igramscraper.instagram import Instagram
 from time import sleep
-from igramscraper.instagram import Instagram
-
 
 class Optracker():
     def __init__(self):

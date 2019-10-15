@@ -3,7 +3,7 @@ from pathlib import Path
 
 setuptools.setup(
     name="optracker",
-    version="1.0.14",
+    version="1.0.15",
     description=('scrapes medias, likes, followers from social media. Organize them in a database for more deeper analyze.'),
     long_description=Path("README.md").read_text(),
     long_description_content_type="text/markdown",
@@ -19,7 +19,8 @@ setuptools.setup(
         ],
     },
     install_requires=[
-        'igramscraper==0.3.2',
+        'requests==2.21.0',
+        'python-slugify==3.0.2',
         'unicodecsv==0.14.1'
     ],
     classifiers=[
