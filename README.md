@@ -1,5 +1,9 @@
-# openSource Tracker
-Files used during my study of openSource gathering. I created the projected based on [instagram scraper](https://github.com/realsirjoe/instagram-scraper), witch allows you to get data from Instagram without API.
+<p align="center">
+<img src="https://i.imgur.com/jHHevZ2.png">
+<h1 align="center">openSource Tracker</h1>
+  <p align="center">Project used during my study of openSource gathering. I created the projected based on <a href="https://github.com/realsirjoe/instagram-scraper">instagram scraper</a>, witch allows you to get data from Instagram without API.
+  </p>
+</p>
 
 ## How to install
 ***Simply run:***
@@ -152,4 +156,5 @@ self.user_agent =   'Mozilla/5.0 (iPhone; CPU iPhone OS 12_3_1 like Mac OS X)' \
 
 ## Other
 instagram-php-scraper [here](https://github.com/postaddictme/instagram-php-scraper/)<br />
-instagram-scraper [here](https://github.com/realsirjoe/instagram-scraper)
+instagram-scraper [here](https://github.com/realsirjoe/instagram-scraper)<br />
+logo-design-ide [here] (http://www.freepik.com)

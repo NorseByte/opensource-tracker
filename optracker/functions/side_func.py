@@ -201,13 +201,12 @@ class sideFunc():
 
                             else:
                                 print("+ User NOT found adding user: {}. ".format(newUser[0]), end = " ")
-                                INSERT_DATA = (newUser[0], newUser[1], newUser[2], newUser[3])
+                                INSERT_DATA = (newUser[0].strip(), newUser[1].strip(), newUser[2].strip(), newUser[3].strip(), newUser[4].strip())
                                 self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_INSERT_LOGIN_INSTA, INSERT_DATA)
-                                password = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_LOGIN_PASSWORD_INSTA , (newUser[0],))
+                                password = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_LOGIN_PASSWORD_INSTA , (newUser[0].strip(),))
 
                                 if password == 0:
                                     print("(Not able to add user)")
-                                    sys.exit()
                                 else:
                                     print("(User add OK)")
                         line = fp.readline()
