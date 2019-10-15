@@ -20,7 +20,7 @@ class coreFunc():
         totalNodes = self.dbTool.getValueSQLnoinput(self.dbConn, self.zero.DB_SELECT_COUNT_NODES)[0][0]
         totalEdgesInsta = self.dbTool.getValueSQLnoinput(self.dbConn, self.zero.DB_SELECT_COUNT_EDES_INSTA)[0][0]
         print("+ Total nodes: {}\n+ Total egdes from instagram:{}".format(totalNodes, totalEdgesInsta))
-        exportyes = input("+ Do you want to export? (D:Y Y/N) ")
+        exportyes = input("+ Do you want to export? [Y/n] ")
 
         if exportyes.lower().strip() != "n":
             print("+ Exporting NODES")
@@ -156,12 +156,33 @@ class coreFunc():
         self.currentUser = self.instaTool.get_insta_account_info(user)
         self.check_user_db_node(self.currentUser, False)
 
+        #Check if in new_Insta
+        self.check_new_insta(self.currentUser.identifier)
+
         #Getting current NODE ID for source
         self.sourceID = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_ID_NODE, (self.currentUser.identifier, ))[0][0]
         print("+ Recived node ID:", self.sourceID, "for zeroPoint:", self.currentUser.username)
 
         #Setting global INSTA # IDEA
         self.zero.INSTA_USER_ID = self.currentUser.identifier
+
+    def check_new_insta(self, instaID):
+        print("+ Checking new_insta DB for: {}".format(instaID))
+        getNewinsta = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_DONE_NEW_INSTA, (instaID, ))
+        if getNewinsta == 0:
+            insert_username = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_USERNAME_NODE, (instaID, ))[0][0]
+            print("+ NOT found in new_insta adding user_id: {} ({})".format(instaID, insert_username))
+            self.zero.INSERT_DATA = (instaID, insert_username)
+            self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_INSERT_NEW_INSTA, self.zero.INSERT_DATA)
+        else:
+            print("+ FOUND in new_insta STATUS = ", end = " ")
+            if getNewinsta[0][0] == 1:
+                print("FINNISH")
+            else:
+                if getNewinsta[0][1] == 1:
+                    print("WAIT")
+                else:
+                    print("IN LINE")
 
     def check_user_db_node(self, user, getInfo):
         print("+ Checking NODE DB for id: {} ({})".format(user.identifier, user.username,))
@@ -198,22 +219,7 @@ class coreFunc():
             self.check_user_db_node(following, True)
 
             #Check if this is a new node that havent been search
-            print("+ Checking new_insta DB for: {}".format(following.identifier))
-            getNewinsta = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_DONE_NEW_INSTA, (following.identifier, ))
-            if getNewinsta == 0:
-                insert_username = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_USERNAME_NODE, (following.identifier, ))[0][0]
-                print("+ NOT found in new_insta adding user_id: {} ({})".format(following.identifier, insert_username))
-                self.zero.INSERT_DATA = (following.identifier, insert_username)
-                self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_INSERT_NEW_INSTA, self.zero.INSERT_DATA)
-            else:
-                print("+ FOUND in new_insta STATUS = ", end = " ")
-                if getNewinsta[0][0] == 1:
-                    print("FINNISH")
-                else:
-                    if getNewinsta[0][1] == 1:
-                        print("WAIT")
-                    else:
-                        print("IN LINE")
+            self.check_new_insta(following.identifier)
 
             #Get node ID
             tempID = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_ID_NODE, (following.identifier, ))[0][0]

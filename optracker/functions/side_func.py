@@ -88,7 +88,7 @@ class sideFunc():
         print("+ Max allowed follow: {}".format(getMaxValueFOLLOW))
         print("+ Max allowed follow by: {}".format(getMaxValueFOLLOWBY))
 
-        change = input("+ Change value? (Y/N) ")
+        change = input("+ Change value? [Y/n] ")
 
         if change.lower().strip() == "y":
             newMaxFollow = input("+ Max allowed follow: ")
@@ -143,7 +143,7 @@ class sideFunc():
 
         else:
             print("+ Last user scraped: {}".format(lastInsta[0][1]))
-            goon = input("+ Continue with user? (D:Y, Y/N) ")
+            goon = input("+ Continue with user? [Y/n] ")
 
             if goon.lower().strip() == "n":
                 self.addLastInsta(True)

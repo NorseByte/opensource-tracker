@@ -17,7 +17,7 @@ python .\run_tracker.py
 The projects found here are for my own study for confirming and testing out theorys according to social nettwork analysing. They can be used and altered as you see fit. To use it you need to install some requiered libray for python see install.
 
 ### 1. Running the program
-To run simply type: **python .\optracker.py** from the optracker directory.<br />
+To run simply type: **optracker** in console if you installed it from PIP. If you downloaded it from github: **python .\run_tracker.py** from the optracker directory.<br />
 <br />
 ***NB! You will need to run the script as administrator if you are using windows***
 
@@ -59,13 +59,15 @@ optracker/
 
 
 ### 3. How to use
-When you run the program it will first try to connect to Instagram, if you dont have a user file you will be asked to enter a username and password. After that you will get the option to choose from a menu. Start by running a singel scan of one account. After that you can run more singel scan to grow your node database or use follow by scan options. You also have a help menu that will give you all the information you need.
+When you run the program it will first try to connect to Instagram, if you dont have a user file you will be asked to enter a username and password. After that you will get the option to choose from a menu. Start by running a singel scan of one account. After that you can run more singel scan to grow your node database or use follow by scan options. You also have a help menu that will give you all the information you need.<br />
+<br />
+Root folder for the program are the lowest dir. Usally is it ***c:\optracker*** or ***\optracker*** for linux
 
 ### 4. First time scraping
 The first time you scrape all the users will be saved as nodes. This will take some time, since we also want to save all the info we can get for each node. During this a lot of request will be send to the target server for the scrape, and as a result some of your user account may be blocked because of to many request in a short time. Laster when you scrape instagram as an example it will check if the node all ready exist in your database, if so it only add the connections it finds and your request to the server fall. Conclusion is that the bigger node base you have the faster you can scrape, and less request will be made.
 
 ## Database Information
-All the data are stored in **optracker/db/**
+All the data are stored in **optracker/db/openSource-tracker.db**
 
 **The database consist of the following tabels:**
 - accounts

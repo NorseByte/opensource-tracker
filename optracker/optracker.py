@@ -1,10 +1,3 @@
-'''
-openSource tracker v.0.1
-by Marcus Knoph
-
-Used in bachlor to test theory, and prove possibilitys.
-'''
-
 import os
 from .data.zerodata import zerodata
 from .functions.db_func import *
@@ -91,7 +84,7 @@ class Optracker():
         #Update new_Insta
         print("\n- Scan complete")
         print("+ Setting {} ({}) to complete.".format(self.zero.INSTA_USER, self.zero.INSTA_USER_ID))
-        dbTool.inserttoTabel(dbConn, self.zero.DB_UPDATE_NEW_INSTA_DONE_TRUE, (self.zero.INSTA_USER_ID,))
+        self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_NEW_INSTA_DONE_TRUE, (self.zero.INSTA_USER_ID,))
 
     def runFollowScan(self):
         self.mainFunc.scanFollowToInstaID()
@@ -101,7 +94,7 @@ class Optracker():
         self.sideTool.editDefaultValue()
 
     def dispHelp(self):
-        print(zero.HELP_TEXT)
+        print(self.zero.HELP_TEXT)
         input("\nPress [Enter] to continue...")
 
     def dispExport(self):
