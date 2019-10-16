@@ -1,25 +1,30 @@
 <!-- PROJECT LOGO -->
-![optracker](https://i.imgur.com/jHHevZ2.png)
+![Imgur](https://i.imgur.com/YpzZFfg.png)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/optracker)
+![PyPI](https://img.shields.io/pypi/v/optracker)
+![PyPI - Status](https://img.shields.io/pypi/status/optracker)
+![PyPI - License](https://img.shields.io/pypi/l/optracker)
+![Discord](https://img.shields.io/discord/633751704868749322)
 
 # openSource Tracker
-Easy to use program for scraping openSources, saves data and enable you to analyze it in your favorite graphic displayer. I created the projected based on <a href="https://github.com/realsirjoe/instagram-scraper">instagram scraper</a>, witch allows you to get data from Instagram without API. The goal of this project is to make it easy for everyone to gather openSource content and analyze it.
+Easy to use program for scraping openSources, saves data and enable you to analyze it in your favorite graphic display. I created the projected based on <a href="https://github.com/realsirjoe/instagram-scraper">instagram scraper</a>, witch allows you to get data from Instagram without API. The goal of this project is to make it easy for everyone to gather openSource content and analyze it.
 
 
 <!-- CONTENT -->
 ## How to install
 ***Simply run:***
-```
+```cmd
 pip install optracker
 ```
 
 ***Or download the project via git clone and run the following:***
-```
+```cmd
 pip install -r requirements.txt
 python .\run_tracker.py
 ```
 
 ## Getting Started
-The projects found here are for my own study for confirming and testing out theorys according to social nettwork analysing. They can be used and altered as you see fit. To use it you need to install some requiered libray for python see install.
+The projects found here are for my own study for confirming and testing out theory according to social network analyzing. They can be used and altered as you see fit. To use it you need to install some required library for python see install.
 
 ### 1. Running the program
 To run simply type: **optracker** in console if you installed it from PIP. If you downloaded it from github: **python .\run_tracker.py** from the optracker directory.<br />
@@ -27,14 +32,14 @@ To run simply type: **optracker** in console if you installed it from PIP. If yo
 ***NB! You will need to run the script as administrator if you are using windows***
 
 ### 2. Userlist
-The program need functional accounts to work. They can either be added manually when you run it for the first time. Or create a local file with usernames and password. They will then be added to the database automatical on startup. In experience you need more then one user account to scan large list of users so your user dont get blocked becouse of to many requests.
+The program need functional accounts to work. They can either be added manually when you run it for the first time. Or create a local file with usernames and password. They will then be added to the database automatically on startup. In experience you need more then one user account to scan large list of users so your user don't get blocked because of to many requests.
 
 >**The following user list can be created:**
 >- inst_user.txt
 >- face_user.txt
 >- user_list.txt
 
-You dont need to have a seperate list for facebook or instagram but some people prefere it. You can add all the userdata in the same file by using user_list.txt. They all need to be setup the excate same way anyway.
+You don't need to have a separate list for facebook or instagram but some people prefer it. You can add all the userdata in the same file by using user_list.txt. They all need to be setup the same way anyway.
 
 ```python
 #Setup for user_list file
@@ -51,7 +56,7 @@ my_username3, my_password3, my_email3, my_fullname3, instagram
 
 **User list** will update each time you start the program, so new users can be added directly into the .txt document or you can add them manually into the program at start up.
 
-**Place for userlist** are in root directory. Usally is it ***c:\optracker*** or ***\optracker*** for linux
+**Place for userlist** are in root directory. Usually is it ***c:\optracker*** or ***\optracker*** for Linux
 ```
 optracker/
   userlist.txt
@@ -64,9 +69,9 @@ optracker/
 
 
 ### 3. How to use
-When you run the program it will first try to connect to Instagram, if you dont have a user file you will be asked to enter a username and password. After that you will get the option to choose from a menu. Start by running a singel scan of one account. After that you can run more singel scan to grow your node database or use follow by scan options. You also have a help menu that will give you all the information you need.<br />
+When you run the program it will first try to connect to Instagram, if youdon'tt have a user file you will be asked to enter a username and password. After that you will get the option to choose from a menu. Start by running a single scan of one account. After that you can run more single scan to grow your node database or use follow by scan options. You also have a help menu that will give you all the information you need.<br />
 
-> ### @icon-info-circle Root Folder
+> ### Root Folder
 > Root folder for the program are the lowest dir. Usally is it ***c:\optracker*** or ***\optracker*** for linux
 
 ### 4. First time scraping
@@ -86,19 +91,19 @@ All the data are stored in **optracker/db/openSource-tracker.db**
 Stores all your usernames and password for the different openSource sites.
 
 ### 2. Edges_insta
-Have list of all the connections. Rows are target, source, weight and type. This is all made to be used with gephi for visualising the data in graph form. The numbers are connected to ID in nodes. Show how is following or connected to who.
+Have list of all the connections. Rows are target, source, weight and type. This is all made to be used with gephi for visualizing the data in graph form. The numbers are connected to ID in nodes. Show how is following or connected to who.
 
 ### 3. nodes
-List of all the nodes created. They all have their own ID. It also contain all information scraped on a single user like username, email, bio and so on found in the dirrent scraping sites.
+List of all the nodes created. They all have their own ID. It also contain all information scraped on a single user like username, email, bio and so on found in the different scraping sites.
 
 ### 4. Options
-Tempory table to store information like follow list, last search and so on for the program to use.
+Temporary table to store information like follow list, last search and so on for the program to use.
 
 ### 5. New_insta
 This table have a list of all instagram accounts that have been found during scraping. The program will used this to see witch account have not yet been fully scraped. When it is finnish are the account set to DONE. If you dont want the account to be scraped set the WAIT value to True. 0 = False, 1 = True.
 
 ### 6. Export
-To export the data you can connect to the DB file under the db/folder. Or you can export it from the program. From main menu choose export. It will the generate two files **nodes.csv** and **egdes.csv**. You can then import this into your favourite graphic displayer.
+To export the data you can connect to the DB file under the db/folder. Or you can export it from the program. From main menu choose export. It will the generate two files **nodes.csv** and **egdes.csv**. You can then import this into your favorite graphic display.
 
 
 ## Common Error
@@ -136,17 +141,18 @@ self.user_agent =   'Mozilla/5.0 (iPhone; CPU iPhone OS 12_3_1 like Mac OS X)' \
 ## Last words
 
 >### Todo:
->- Add update Node data when you run a check agenst node DB.
->- Add autoupdate for new information in db
->- Make the code smaller. Repiting steps can be shorten
+>- Add update Node data when you run a check of node DB.
+>- Add auto update for new information in db
+>- Make the code smaller. Repeating steps can be shorten
 >- Make a stop function for if profile is private
->- Add try and catch in get user info. To enable error handeling.
->- Make database for followers, and follower for easy rolback on error (delete when current user are done, and keypoint for insta user.)
->- Add functions scan keywords. (Look for specfic keywords in user profiles (node) and then use a full singel scan)
+>- Add try and catch in get user info. To enable error handling.
+>- Make database for followers, and follower for easy rollback on error (delete when current user are done, and keypoint for insta user.)
+>- Add functions scan keywords. (Look for specific keywords in user profiles (node) and then use a full single scan)
+>- Add other platforms for data gathering
 
 >### Updates:
->- 01-10-2019 (U) Check up on finnish status message in >DB_TABLE_NEW_INSTA
->- 07-10-2019 (U) Add max follower critera in search options.
+>- 01-10-2019 (U) Check up on Finnish status message in >DB_TABLE_NEW_INSTA
+>- 07-10-2019 (U) Add max follower criteria in search options.
 >- 11-10-2019 (U) Root directory, PIP install, class updates.
 >
 >(U) = UPDATE, (P) = PATCH, (N) = NEW
