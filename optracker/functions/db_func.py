@@ -76,6 +76,7 @@ class dbFunc():
         print("+ Setup of default values")
         getMaxValueFOLLOW = self.getValueSQL(conn, self.zero.DB_SELECT_OPTIONS, (self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT, ))
         getMaxValueFOLLOWBY = self.getValueSQL(conn, self.zero.DB_SELECT_OPTIONS, (self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, ))
+        getSurfaceScan = self.getValueSQL(conn, self.zero.DB_SELECT_OPTIONS, (self.zero.SURFACE_SCAN_TEXT, ))
 
         if getMaxValueFOLLOW == 0:
             print("+ {} are NOT in database".format(self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT))
@@ -86,5 +87,10 @@ class dbFunc():
             print("+ {} are NOT in database".format(self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT))
             self.inserttoTabel(conn, self.zero.DB_INSERT_OPTIONS_LASTINSTA, (self.zero.INSTA_MAX_FOLLOW_BY_SCAN_VALUE, self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, ))
             print("+ {} set to: {}".format(self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, self.zero.INSTA_MAX_FOLLOW_BY_SCAN_VALUE))
+
+        if getSurfaceScan == 0:
+            print("+ {} are NOT in database".format(self.zero.SURFACE_SCAN_TEXT))
+            self.inserttoTabel(conn, self.zero.DB_INSERT_OPTIONS_LASTINSTA, (self.zero.SURFACE_SCAN_VALUE, self.zero.SURFACE_SCAN_TEXT, ))
+            print("+ {} set to: {}".format(self.zero.SURFACE_SCAN_TEXT, self.zero.SURFACE_SCAN_VALUE))
 
         print("+ Setup of default DONE")

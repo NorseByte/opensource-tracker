@@ -4,6 +4,7 @@
 ![PyPI](https://img.shields.io/pypi/v/optracker)
 ![PyPI - Status](https://img.shields.io/pypi/status/optracker)
 ![PyPI - License](https://img.shields.io/pypi/l/optracker)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/optracker)
 ![Discord](https://img.shields.io/discord/633751704868749322)
 
 # openSource Tracker
@@ -119,7 +120,7 @@ Traceback (most recent call last):
                                        ^
 SyntaxError: invalid syntax
 ```
-To fix update python to latest, you are using an old version that dosent support **f""**.
+To fix update python to latest, you are using an old version that dosent support **f""** you need to use **python3.6**
 
 ### 2. Instagram useragent
 ```
@@ -138,24 +139,11 @@ self.user_agent =   'Mozilla/5.0 (iPhone; CPU iPhone OS 12_3_1 like Mac OS X)' \
                             'Mobile/15E148 Instagram 105.0.0.11.118 (iPhone11,8; iOS 12_3_1; en_US; en-US; scale=2.00; 828x1792; 165586599)'
 ```
 
-## Last words
+## Common Information
 
->### Todo:
->- Add update Node data when you run a check of node DB.
->- Add auto update for new information in db
->- Make the code smaller. Repeating steps can be shorten
->- Make a stop function for if profile is private
->- Add try and catch in get user info. To enable error handling.
->- Make database for followers, and follower for easy rollback on error (delete when current user are done, and keypoint for insta user.)
->- Add functions scan keywords. (Look for specific keywords in user profiles (node) and then use a full single scan)
->- Add other platforms for data gathering
-
->### Updates:
->- 01-10-2019 (U) Check up on Finnish status message in >DB_TABLE_NEW_INSTA
->- 07-10-2019 (U) Add max follower criteria in search options.
->- 11-10-2019 (U) Root directory, PIP install, class updates.
->
->(U) = UPDATE, (P) = PATCH, (N) = NEW
+Look at TODO if you want to help: [TODO](https://github.com/suxSx/opensource-tracker/blob/master/TODO.md) <br />
+Read the CODE of Conduct before you edit: [Code of Conduct](https://github.com/suxSx/opensource-tracker/blob/master/CODE_OF_CONDUCT.md)<br />
+We use MIT License: [MIT](https://github.com/suxSx/opensource-tracker/blob/master/LICENSE.md)
 
 ### Worth mentioning
 instagram-php-scraper [here](https://github.com/postaddictme/instagram-php-scraper/)<br />

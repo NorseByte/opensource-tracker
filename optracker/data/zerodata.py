@@ -53,8 +53,9 @@ class zerodata():
 		"insta_private"	INTEGER,
 		"insta_verifyed"	INTEGER,
 		"insta_post"	INTEGER,
-		"insta_exturl"	TEXT
-	);"""
+		"insta_exturl"	TEXT,
+		"insta_deepscan"	INTEGER DEFAULT 0
+);"""
 
 	DB_TABLE_EGDES = """
 	CREATE TABLE IF NOT EXISTS "egdes_insta" (
@@ -96,8 +97,8 @@ class zerodata():
 
 	DB_INSERT_NODE = """
 	INSERT INTO "main"."nodes"
-	("name", "label", "insta_id", "insta_img", "insta_follow", "insta_follower", "insta_bio", "insta_username", "insta_private", "insta_verifyed", "insta_post", "insta_exturl")
-	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+	("name", "label", "insta_id", "insta_img", "insta_follow", "insta_follower", "insta_bio", "insta_username", "insta_private", "insta_verifyed", "insta_post", "insta_exturl", "insta_deepscan")
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 	"""
 
 	DB_INSERT_INSTA_EGDE = 'INSERT INTO "main"."egdes_insta" ("source", "target") VALUES (?, ?);'
@@ -142,6 +143,9 @@ class zerodata():
 
 	INSTA_MAX_FOLLOW_BY_SCAN_TEXT = "INSTA_MAX_FOLLOW_BY_SCAN"
 	INSTA_MAX_FOLLOW_BY_SCAN_VALUE = 2000
+
+	SURFACE_SCAN_TEXT = "SURFACE_SCAN"
+	SURFACE_SCAN_VALUE = "0"
 
 
 	#Help TEXT

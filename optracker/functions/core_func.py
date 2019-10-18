@@ -185,24 +185,35 @@ class coreFunc():
                     print("IN LINE")
 
     def check_user_db_node(self, user, getInfo):
+        #Check if we do a full scan
+        getSurfaceScan = self.getValueSQL(conn, self.zero.DB_SELECT_OPTIONS, (self.zero.SURFACE_SCAN_TEXT, ))[0][1]
+
         print("+ Checking NODE DB for id: {} ({})".format(user.identifier, user.username,))
         if self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_ID_NODE, (user.identifier, )) == 0:
             print("+ NOT found in node")
             tempID = user.identifier;
 
-            if getInfo == True:
-                print("+ Getting user data for: {}".format(user.username))
-                user = self.instaTool.get_insta_account_info_id(tempID)
+            if getSurfaceScan == 0:
+                if getInfo == True:
+                    print("+ Getting user data for: {}".format(user.username))
+                    user = self.instaTool.get_insta_account_info_id(tempID)
 
-            print("+ Are full_name empty?", end = " ")
-            if user.full_name:
-                print("NO")
-                print("+ Using: {} for label.".format(user.full_name))
-                self.zero.INSERT_DATA = (user.full_name, user.full_name, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url)
+                print("+ Are full_name empty?", end = " ")
+                if user.full_name:
+                    print("NO")
+                    print("+ Using: {} for label.".format(user.full_name))
+                    self.zero.INSERT_DATA = (user.full_name, user.full_name, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 1)
+                else:
+                    print("YES")
+                    print("+ Using: {} for label.".format(user.username))
+                    self.zero.INSERT_DATA = (user.full_name, user.username, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 1)
             else:
-                print("YES")
+                print("+ Surfacescan are ON")
+                print("+ Username: {}".format(user.username))
+                print("+ Insta ID: {}".format(user.identifier))
                 print("+ Using: {} for label.".format(user.username))
-                self.zero.INSERT_DATA = (user.full_name, user.username, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url)
+                self.zero.INSERT_DATA = (user.full_name, user.username, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 0)
+
 
             print("+ ADDING to NODE db")
             self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_INSERT_NODE, self.zero.INSERT_DATA)
