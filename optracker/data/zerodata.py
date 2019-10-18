@@ -111,6 +111,7 @@ class zerodata():
 	DB_UPDATE_NEW_INSTA_DONE_TRUE = 'UPDATE "main"."new_insta" SET "done" = 1 WHERE "insta_id" = ?;'
 	DB_UPDATE_NEW_INSTA_DONE_FALSE = 'UPDATE "main"."new_insta" SET "done" = 0 WHERE "insta_id" = ?;'
 	DB_UPDATE_ACCOUNT_LAST_USED = 'UPDATE "main"."accounts" SET ("last_used") = ? WHERE username = ?'
+	DB_UPDATE_NODES = 'UPDATE "main"."nodes" SET "name" = ?, "label" = ?, "insta_img" = ?, "insta_follow" = ?, "insta_follower" = ?, "insta_bio" = ?, "insta_username" = ?, "insta_private" = ?, "insta_verifyed" = ?, "insta_post" = ?, "insta_exturl" = ?, "insta_deepscan" = ? WHERE "insta_id" = ?'
 
 	DB_SELECT_ID_NODE = 'SELECT id FROM "main"."nodes" WHERE ("insta_id") = ?'
 	DB_SELECT_USERNAME_NODE = 'SELECT insta_username FROM "main"."nodes" WHERE insta_id = ?'
@@ -172,6 +173,12 @@ class zerodata():
 
 	{} - RUN_EXPORT_DATA
 		Gives you an overveiew of data collected so far, and exports it to folder {}.
+
+	Max Follows and Max Followed by
+		During search of follows by, where you scan the profile for one user that have completet the singel search you can set a limit to how many followers a user can have or how many it are following. This is to prevent to scan uninterested profils like public organizations and so on as they can have up to 10K. Default is 2000 and is considerated a normal amount of followes/followed by.
+
+	Deepscan and Surfacescan
+		By turning on surfacescan you only extract username and instagram id when scraping. This is to save you for request to the server so you can use one user for a longer periode of time, and make the scan go quicker if you are scraping a big nettwork. You can later add specific users found in the graphic to a text file and scan only the ones that are interesting and get all the data.
 
 	ERROR CODES - List of ERROR codes
 		001 - INSTAGRAM USER BLOCKED

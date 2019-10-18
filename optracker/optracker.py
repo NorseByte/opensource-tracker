@@ -89,7 +89,7 @@ class Optracker():
         self.mainFunc.scanFollowToInstaID()
         input("+ Press [Enter] to continue...")
 
-    def runEditDefault():
+    def runEditDefault(self):
         self.sideTool.editDefaultValue()
 
     def dispHelp(self):

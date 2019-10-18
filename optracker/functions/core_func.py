@@ -58,12 +58,30 @@ class coreFunc():
             newNumber = int(selectUser) - 1
             return userList[newNumber]
 
+    def updateNodesUser(self, instaID):
+        print("+ Updating user data for: {}".format(instaID))
+        newDataUser = self.instaTool.get_insta_account_info_id(instaID)
+        print("+ User data loaded.")
+        label = self.getLabelforUser(newDataUser)
+
+        UPDATE_DATA = (newDataUser.full_name, label, newDataUser.get_profile_picture_url(), newDataUser.follows_count, newDataUser.followed_by_count, newDataUser.biography, newDataUser.username, newDataUser.is_private, newDataUser.is_verified, newDataUser.media_count, newDataUser.external_url, 1,  newDataUser.identifier)
+        self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_NODES, UPDATE_DATA)
+        print("+ Update of DB NODE complete.")
+        return newDataUser
+
+    def updateNodesUserLoaded(self, newDataUser):
+        print("Updating user data for: {} ({})".format(newDataUser.username, newDataUser.identifier))
+        label = self.getLabelforUser(newDataUser)
+        UPDATE_DATA = (newDataUser.full_name, label, newDataUser.get_profile_picture_url(), newDataUser.follows_count, newDataUser.followed_by_count, newDataUser.biography, newDataUser.username, newDataUser.is_private, newDataUser.is_verified, newDataUser.media_count, newDataUser.external_url, 1,  newDataUser.identifier)
+        self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_NODES, UPDATE_DATA)
+        print("+ Update of DB NODE complete.")
+
     def scanFollowToInstaID(self):
         currentInstaID = self.getDoneUserIDFromInsta()
 
         print("\n- Starting scan by follow")
         if currentInstaID == 0:
-            print("+ No users could be selected.\n+ Run a full scan of a user to continue.")
+            print("+ No users could be selected.\n+ Run a full single scan of a user to continue.")
 
         else:
             currentUser = currentInstaID[1]
@@ -97,14 +115,24 @@ class coreFunc():
                         if moveON[0][1] == 1:
                             print("+ User NOT scanned but set on WAIT")
                         else:
-                            #Search sorting firt step follows_count
                             print("+ User VALID for singel scan.")
 
                             scan_insta_followed_by = int(i[6])
                             scan_insta_follow = int(i[5])
 
+                            #TODO: ADD USER UPDATE IF DEEPSCAN = 0
+                            deepScan = int(i[13])
+                            if deepScan == 0:
+                                #User have not been deepscanned scan and update
+                                print("+ User missing deepScan, getting info.")
+                                newDataUser = updateNodesUser(i[3])
+                                scan_insta_followed_by = int(newDataUser.followed_by_count)
+                                scan_insta_follow = int(newDataUser.follows_count)
+
+
                             print("+ User are following: {}\n+ User are followed by: {}".format(scan_insta_follow, scan_insta_followed_by))
 
+                            #Search sorting firt step follows_count
                             if scan_insta_follow <= getMaxValueFOLLOW:
                                 if scan_insta_followed_by <= getMaxValueFOLLOWBY:
                                     #Search critera for allowed OK Start scan.
@@ -156,6 +184,9 @@ class coreFunc():
         self.currentUser = self.instaTool.get_insta_account_info(user)
         self.check_user_db_node(self.currentUser, False)
 
+        #Update User information
+        self.updateNodesUserLoaded(self.currentUser)
+
         #Check if in new_Insta
         self.check_new_insta(self.currentUser.identifier)
 
@@ -184,8 +215,20 @@ class coreFunc():
                 else:
                     print("IN LINE")
 
+    def getLabelforUser(self, user):
+        print("+ Are full_name empty?", end = " ")
+        if user.full_name:
+            print("NO")
+            print("+ Using: {} for label.".format(user.full_name))
+            return user.full_name
+
+        else:
+            print("YES")
+            print("+ Using: {} for label.".format(user.username))
+            return user.username
+
     def check_user_db_node(self, user, getInfo):
-        #Check if we do a full scan - Change insta finnish
+        #Check if we do a full scan
         getSurfaceScan = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, (self.zero.SURFACE_SCAN_TEXT, ))[0][1]
 
         print("+ Checking NODE DB for id: {} ({})".format(user.identifier, user.username,))
@@ -198,22 +241,13 @@ class coreFunc():
                     print("+ Getting user data for: {}".format(user.username))
                     user = self.instaTool.get_insta_account_info_id(tempID)
 
-                print("+ Are full_name empty?", end = " ")
-                if user.full_name:
-                    print("NO")
-                    print("+ Using: {} for label.".format(user.full_name))
-                    self.zero.INSERT_DATA = (user.full_name, user.full_name, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 1)
-                else:
-                    print("YES")
-                    print("+ Using: {} for label.".format(user.username))
-                    self.zero.INSERT_DATA = (user.full_name, user.username, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 1)
+                label = self.getLabelforUser(user)
+                self.zero.INSERT_DATA = (user.full_name, label, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 1)
+
             else:
                 print("+ Surfacescan are ON")
-                print("+ Username: {}".format(user.username))
-                print("+ Insta ID: {}".format(user.identifier))
-                print("+ Using: {} for label.".format(user.username))
-                self.zero.INSERT_DATA = (user.full_name, user.username, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 0)
-
+                label = self.getLabelforUser(user)
+                self.zero.INSERT_DATA = (user.full_name, label, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 0)
 
             print("+ ADDING to NODE db")
             self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_INSERT_NODE, self.zero.INSERT_DATA)

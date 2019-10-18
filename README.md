@@ -78,6 +78,16 @@ When you run the program it will first try to connect to Instagram, if youdon'tt
 ### 4. First time scraping
 The first time you scrape all the users will be saved as nodes. This will take some time, since we also want to save all the info we can get for each node. During this a lot of request will be send to the target server for the scrape, and as a result some of your user account may be blocked because of to many request in a short time. Laster when you scrape instagram as an example it will check if the node all ready exist in your database, if so it only add the connections it finds and your request to the server fall. Conclusion is that the bigger node base you have the faster you can scrape, and less request will be made.
 
+###	5. Scan all follower
+You will be presented with a list of users that you have finnished adding to your database. The program will then scan all the connections it has that are not private, add the nodes to DB and connections in edges. 
+
+### 6. Max Follows and Max Followed by
+During **Scan all follower**, where you scan the profile for one user that have completet the singel search you can set a limit to how many followers a user can have or how many it are following. This is to prevent to scan uninterested profils like public organizations and so on as they can have up to 10K. Default is 2000 and is considerated a normal amount of followes/followed by.
+
+### 7. Deepscan and Surfacescan
+By turning on surfacescan you only extract username and instagram id when scraping. This is to save you for request to the server so you can use one user for a longer periode of time, and make the scan go quicker if you are scraping a big nettwork. You can later add specific users found in the graphic to a text file and scan only the ones that are interesting and get all the data.
+
+
 ## Database Information
 All the data are stored in **optracker/db/openSource-tracker.db**
 
@@ -104,8 +114,7 @@ Temporary table to store information like follow list, last search and so on for
 This table have a list of all instagram accounts that have been found during scraping. The program will used this to see witch account have not yet been fully scraped. When it is finnish are the account set to DONE. If you dont want the account to be scraped set the WAIT value to True. 0 = False, 1 = True.
 
 ### 6. Export
-To export the data you can connect to the DB file under the db/folder. Or you can export it from the program. From main menu choose export. It will the generate two files **nodes.csv** and **egdes.csv**. You can then import this into your favorite graphic display.
-
+To export the data you can connect to the DB file under the db/folder. Or you can export it from the program. From main menu choose export. It will the generate two files **nodes.csv** and **egdes.csv**. You can then import this into your favorite graphic display
 
 ## Common Error
 ### 1. F String

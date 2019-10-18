@@ -83,14 +83,14 @@ class sideFunc():
     def editDefaultValue(self):
         getMaxValueFOLLOW = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, (self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT, ))[0][1]
         getMaxValueFOLLOWBY = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, (self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, ))[0][1]
-        getSurfaceScan = self.getValueSQL(conn, self.zero.DB_SELECT_OPTIONS, (self.zero.SURFACE_SCAN_TEXT, ))[0][1]
+        getSurfaceScan = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, (self.zero.SURFACE_SCAN_TEXT, ))[0][1]
 
         print("\n- Loading default values:")
         print("+ Max allowed follow: {}".format(getMaxValueFOLLOW))
         print("+ Max allowed follow by: {}".format(getMaxValueFOLLOWBY))
-        print("+ Surface scan set to: {} (0 = OFF, 1 = ON)".format(getMaxValueFOLLOWBY))
+        print("+ Surface scan set to: {} (0 = OFF, 1 = ON)".format(getSurfaceScan))
 
-        change = input("+ Change value? [Y/n] ")
+        change = input("+ Change value? [y/N] ")
 
         if change.lower().strip() == "y":
             newMaxFollow = input("+ Max allowed follow: ")
@@ -116,14 +116,14 @@ class sideFunc():
                 print("+ Invalid input Max allowed followed by not changed")
 
             if newSurfaceScan.isdigit():
-                if int(newMaxFollowBy) > 1:
+                if int(newSurfaceScan) > 1:
                     print("+ Invalid input: Surface scan not changed")
                 else:
-                    if int(newMaxFollowBy) < 0:
+                    if int(newSurfaceScan) < 0:
                         print("+ Invalid input: Surface scan not changed")
                     else:
-                        self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_OPTIONS, (newSurfaceScan, self.zero.zero.SURFACE_SCAN_TEXT))
-                        print("+ Surface scan set to: {}".format(newMaxFollowBy))
+                        self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_OPTIONS, (newSurfaceScan, self.zero.SURFACE_SCAN_TEXT))
+                        print("+ Surface scan set to: {}".format(newSurfaceScan))
             else:
                 print("+ Invalid input: Surface scan not changed")
 
