@@ -4,13 +4,15 @@ class zerodata():
 	#Define username and password
 	LOGIN_USERNAME_INSTA = ""
 	LOGIN_PASSWORD_INSTA = ""
-	PROGRAM_NAME = "openSource Tracker v.1.0.0"
+	PROGRAM_NAME = "openSource Tracker v.1.1.0"
 
 	#List log
 	USER_FILES = (	["user_insta.txt"],
 					["user_face.txt"],
 					["user_list.txt"]
 	)
+
+	USER_FILE_SCAN_NODE_INSTA = "user_scan_insta.txt"
 
 	#Menu variabels
 	HELP_TEXT_DISP = "Display Help"
@@ -19,6 +21,7 @@ class zerodata():
 	RUN_CHANGE_USER = "Change user Instagram"
 	RUN_EXPORT_DATA = "Export nodes and egdes"
 	RUN_EDIT_OPTIONS = "Change default values"
+	RUN_LOAD_SCAN = "Deepscan from list"
 	RUN_EXIT_DISP = "Exit"
 
 
@@ -174,6 +177,9 @@ class zerodata():
 	{} - RUN_EXPORT_DATA
 		Gives you an overveiew of data collected so far, and exports it to folder {}.
 
+	{}
+		Loads a list of users from root folder, scraps all info from instagram and updates node DB.
+
 	Max Follows and Max Followed by
 		During search of follows by, where you scan the profile for one user that have completet the singel search you can set a limit to how many followers a user can have or how many it are following. This is to prevent to scan uninterested profils like public organizations and so on as they can have up to 10K. Default is 2000 and is considerated a normal amount of followes/followed by.
 
@@ -185,7 +191,7 @@ class zerodata():
 		002 - TO MANY REQUEST FROM CURRENT USER
 		003 - ERROR LOGIN
 		004 - USER DONT HAVE ACCESS TO DATA, RETURNING JSON ERROR
-		""".format(PROGRAM_NAME, RUN_CURRENT_DISP, RUN_FOLLOW_DISP, RUN_CHANGE_USER, RUN_EXPORT_DATA, DB_DATABASE_EXPORT_FOLDER)
+		""".format(PROGRAM_NAME, RUN_CURRENT_DISP, RUN_FOLLOW_DISP, RUN_CHANGE_USER, RUN_EXPORT_DATA, DB_DATABASE_EXPORT_FOLDER, RUN_LOAD_SCAN)
 
 	def __init__(self):
 		#Starting up

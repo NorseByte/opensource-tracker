@@ -45,6 +45,7 @@ class Optracker():
             { self.zero.RUN_CURRENT_DISP: self.runSingelScan },
             { self.zero.RUN_FOLLOW_DISP: self.runFollowScan },
             { self.zero.RUN_CHANGE_USER: self.selectUserAndLogin },
+            { self.zero.RUN_LOAD_SCAN: self.runLoadUserNodeScan },
             { self.zero.RUN_EXPORT_DATA: self.dispExport},
             { self.zero.RUN_EDIT_OPTIONS: self.runEditDefault},
             { self.zero.RUN_EXIT_DISP: exit},
@@ -88,6 +89,9 @@ class Optracker():
     def runFollowScan(self):
         self.mainFunc.scanFollowToInstaID()
         input("+ Press [Enter] to continue...")
+
+    def runLoadUserNodeScan(self):
+        self.mainFunc.updateNodeFromList()
 
     def runEditDefault(self):
         self.sideTool.editDefaultValue()

@@ -1,3 +1,4 @@
+import os
 from ..functions.instagram_func import *
 
 class coreFunc():
@@ -70,11 +71,27 @@ class coreFunc():
         return newDataUser
 
     def updateNodesUserLoaded(self, newDataUser):
-        print("Updating user data for: {} ({})".format(newDataUser.username, newDataUser.identifier))
+        print("+ Updating user data for: {} ({})".format(newDataUser.username, newDataUser.identifier))
         label = self.getLabelforUser(newDataUser)
         UPDATE_DATA = (newDataUser.full_name, label, newDataUser.get_profile_picture_url(), newDataUser.follows_count, newDataUser.followed_by_count, newDataUser.biography, newDataUser.username, newDataUser.is_private, newDataUser.is_verified, newDataUser.media_count, newDataUser.external_url, 1,  newDataUser.identifier)
         self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_NODES, UPDATE_DATA)
         print("+ Update of DB NODE complete.")
+
+    def updateNodeFromList(self):
+        print("\n- Updating users from list")
+        fullpath = self.zero.OP_ROOT_FOLDER_PATH_VALUE + self.zero.USER_FILE_SCAN_NODE_INSTA
+        if os.path.isfile(fullpath):
+            print("+ Found: {}, extracting data".format(fullpath))
+            with open(fullpath) as fp:
+                line = fp.readline()
+                while line:
+                    if line != 0:
+                        user = line.strip()
+                        self.setCurrentUser(user)
+                    line = fp.readline()
+        else:
+            print("+ File not found.")
+            print("+ Create {} to continue.".format(fullpath))
 
     def scanFollowToInstaID(self):
         currentInstaID = self.getDoneUserIDFromInsta()

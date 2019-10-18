@@ -1,4 +1,4 @@
-<!-- PROJECT LOGO -->
+<!-- PROJECT LOGO -->¨
 ![Imgur](https://i.imgur.com/YpzZFfg.png)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/optracker)
 ![PyPI](https://img.shields.io/pypi/v/optracker)
@@ -6,6 +6,7 @@
 ![PyPI - License](https://img.shields.io/pypi/l/optracker)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/optracker)
 ![Discord](https://img.shields.io/discord/633751704868749322)
+
 
 # openSource Tracker
 Easy to use program for scraping openSources, saves data and enable you to analyze it in your favorite graphic display. I created the projected based on <a href="https://github.com/realsirjoe/instagram-scraper">instagram scraper</a>, witch allows you to get data from Instagram without API. The goal of this project is to make it easy for everyone to gather openSource content and analyze it.
@@ -86,6 +87,26 @@ During **Scan all follower**, where you scan the profile for one user that have 
 
 ### 7. Deepscan and Surfacescan
 By turning on surfacescan you only extract username and instagram id when scraping. This is to save you for request to the server so you can use one user for a longer periode of time, and make the scan go quicker if you are scraping a big nettwork. You can later add specific users found in the graphic to a text file and scan only the ones that are interesting and get all the data.
+
+### 8. Deepscan from list
+Gives you the possibility to run a deep scan on a selected list of users. It will scrape all the data from instagram for the selected ones, and update DB Node. You need to create a file in **ROOT FOLDER** called **user_scan_insta.txt**
+```
+optracker/
+  userlist.txt
+  user_scan_insta.txt
+  db/
+    openSource-tracker.db
+  export/
+    node.csv
+    egdes.csv
+```
+Content of the list need to be one username per line:
+```python
+{USER 1}
+{USER 2}
+{USER 3}
+{USER 4}
+```
 
 
 ## Database Information

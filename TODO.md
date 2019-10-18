@@ -1,4 +1,4 @@
-<img src="https://i.imgur.com/i1FMPUZ.png" alt="drawing" width="300" align="middle"/>
+<p align="center"><img src="https://i.imgur.com/i1FMPUZ.png" alt="drawing" width="300" /></p>
 
 # Todo:
 - [ ] Add update Node data when you run a check of node DB.
@@ -16,7 +16,7 @@
 - [ ] Add get info for user after surface scan
 - [x] 18-10-2019 (U) User DB NODE are updated in setCurrentUser(). And in userselect when scanFollowBy().
 - [ ] Add scan options for users with only surface scan
-- [ ] Add scan options for users in txt document.
+- [x] 18-10-2019 (U) Added scan options for users in txt document.
 
 ## Rules 
 When something are done, mark it as finnish and add date of completions and what kind of edit was made.
