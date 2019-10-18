@@ -121,7 +121,7 @@ class sideFunc():
                 else:
                     if int(newMaxFollowBy) < 0:
                         print("+ Invalid input: Surface scan not changed")
-                    else
+                    else:
                         self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_OPTIONS, (newSurfaceScan, self.zero.zero.SURFACE_SCAN_TEXT))
                         print("+ Surface scan set to: {}".format(newMaxFollowBy))
             else:

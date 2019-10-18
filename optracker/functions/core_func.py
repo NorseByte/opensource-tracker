@@ -185,8 +185,8 @@ class coreFunc():
                     print("IN LINE")
 
     def check_user_db_node(self, user, getInfo):
-        #Check if we do a full scan
-        getSurfaceScan = self.getValueSQL(conn, self.zero.DB_SELECT_OPTIONS, (self.zero.SURFACE_SCAN_TEXT, ))[0][1]
+        #Check if we do a full scan - Change insta finnish
+        getSurfaceScan = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, (self.zero.SURFACE_SCAN_TEXT, ))[0][1]
 
         print("+ Checking NODE DB for id: {} ({})".format(user.identifier, user.username,))
         if self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_ID_NODE, (user.identifier, )) == 0:
