@@ -3,7 +3,7 @@ from pathlib import Path
 
 setuptools.setup(
     name="optracker",
-    version="1.0.0",
+    version="1.1.0",
     description=('Scrapes medias, likes, followers from social media. Organize them in a database for more deeper analyze.'),
     long_description=Path("README.md").read_text(),
     long_description_content_type="text/markdown",
@@ -12,6 +12,7 @@ setuptools.setup(
     maintainer="suxSx",
     author='suxSx',
     author_email='marcuscrazy@gmail.com',
+    keywords='scraper media social network mapper tracker instagram scrape like follow analyze',
     url='https://github.com/suxSx/openSource-tracker',
     entry_points={
         'console_scripts': [

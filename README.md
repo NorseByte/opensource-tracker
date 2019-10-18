@@ -4,7 +4,9 @@
 ![PyPI](https://img.shields.io/pypi/v/optracker)
 ![PyPI - Status](https://img.shields.io/pypi/status/optracker)
 ![PyPI - License](https://img.shields.io/pypi/l/optracker)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/optracker)
 ![Discord](https://img.shields.io/discord/633751704868749322)
+
 
 # openSource Tracker
 Easy to use program for scraping openSources, saves data and enable you to analyze it in your favorite graphic display. I created the projected based on <a href="https://github.com/realsirjoe/instagram-scraper">instagram scraper</a>, witch allows you to get data from Instagram without API. The goal of this project is to make it easy for everyone to gather openSource content and analyze it.
@@ -77,6 +79,36 @@ When you run the program it will first try to connect to Instagram, if youdon'tt
 ### 4. First time scraping
 The first time you scrape all the users will be saved as nodes. This will take some time, since we also want to save all the info we can get for each node. During this a lot of request will be send to the target server for the scrape, and as a result some of your user account may be blocked because of to many request in a short time. Laster when you scrape instagram as an example it will check if the node all ready exist in your database, if so it only add the connections it finds and your request to the server fall. Conclusion is that the bigger node base you have the faster you can scrape, and less request will be made.
 
+###	5. Scan all follower
+You will be presented with a list of users that you have finnished adding to your database. The program will then scan all the connections it has that are not private, add the nodes to DB and connections in edges. 
+
+### 6. Max Follows and Max Followed by
+During **Scan all follower**, where you scan the profile for one user that have completet the singel search you can set a limit to how many followers a user can have or how many it are following. This is to prevent to scan uninterested profils like public organizations and so on as they can have up to 10K. Default is 2000 and is considerated a normal amount of followes/followed by.
+
+### 7. Deepscan and Surfacescan
+By turning on surfacescan you only extract username and instagram id when scraping. This is to save you for request to the server so you can use one user for a longer periode of time, and make the scan go quicker if you are scraping a big nettwork. You can later add specific users found in the graphic to a text file and scan only the ones that are interesting and get all the data.
+
+### 8. Deepscan from list
+Gives you the possibility to run a deep scan on a selected list of users. It will scrape all the data from instagram for the selected ones, and update DB Node. You need to create a file in **ROOT FOLDER** called **user_scan_insta.txt**
+```
+optracker/
+  userlist.txt
+  user_scan_insta.txt
+  db/
+    openSource-tracker.db
+  export/
+    node.csv
+    egdes.csv
+```
+Content of the list need to be one username per line:
+```python
+{USER 1}
+{USER 2}
+{USER 3}
+{USER 4}
+```
+
+
 ## Database Information
 All the data are stored in **optracker/db/openSource-tracker.db**
 
@@ -103,8 +135,7 @@ Temporary table to store information like follow list, last search and so on for
 This table have a list of all instagram accounts that have been found during scraping. The program will used this to see witch account have not yet been fully scraped. When it is finnish are the account set to DONE. If you dont want the account to be scraped set the WAIT value to True. 0 = False, 1 = True.
 
 ### 6. Export
-To export the data you can connect to the DB file under the db/folder. Or you can export it from the program. From main menu choose export. It will the generate two files **nodes.csv** and **egdes.csv**. You can then import this into your favorite graphic display.
-
+To export the data you can connect to the DB file under the db/folder. Or you can export it from the program. From main menu choose export. It will the generate two files **nodes.csv** and **egdes.csv**. You can then import this into your favorite graphic display
 
 ## Common Error
 ### 1. F String
@@ -119,7 +150,7 @@ Traceback (most recent call last):
                                        ^
 SyntaxError: invalid syntax
 ```
-To fix update python to latest, you are using an old version that dosent support **f""**.
+To fix update python to latest, you are using an old version that dosent support **f""** you need to use **python3.6**
 
 ### 2. Instagram useragent
 ```
@@ -138,24 +169,11 @@ self.user_agent =   'Mozilla/5.0 (iPhone; CPU iPhone OS 12_3_1 like Mac OS X)' \
                             'Mobile/15E148 Instagram 105.0.0.11.118 (iPhone11,8; iOS 12_3_1; en_US; en-US; scale=2.00; 828x1792; 165586599)'
 ```
 
-## Last words
+## Common Information
 
->### Todo:
->- Add update Node data when you run a check of node DB.
->- Add auto update for new information in db
->- Make the code smaller. Repeating steps can be shorten
->- Make a stop function for if profile is private
->- Add try and catch in get user info. To enable error handling.
->- Make database for followers, and follower for easy rollback on error (delete when current user are done, and keypoint for insta user.)
->- Add functions scan keywords. (Look for specific keywords in user profiles (node) and then use a full single scan)
->- Add other platforms for data gathering
-
->### Updates:
->- 01-10-2019 (U) Check up on Finnish status message in >DB_TABLE_NEW_INSTA
->- 07-10-2019 (U) Add max follower criteria in search options.
->- 11-10-2019 (U) Root directory, PIP install, class updates.
->
->(U) = UPDATE, (P) = PATCH, (N) = NEW
+Look at TODO if you want to help: [TODO](https://github.com/suxSx/opensource-tracker/blob/master/TODO.md) <br />
+Read the CODE of Conduct before you edit: [Code of Conduct](https://github.com/suxSx/opensource-tracker/blob/master/CODE_OF_CONDUCT.md)<br />
+We use MIT License: [MIT](https://github.com/suxSx/opensource-tracker/blob/master/LICENSE.md)
 
 ### Worth mentioning
 instagram-php-scraper [here](https://github.com/postaddictme/instagram-php-scraper/)<br />

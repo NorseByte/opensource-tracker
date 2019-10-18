@@ -4,13 +4,15 @@ class zerodata():
 	#Define username and password
 	LOGIN_USERNAME_INSTA = ""
 	LOGIN_PASSWORD_INSTA = ""
-	PROGRAM_NAME = "openSource Tracker v.1.0.0"
+	PROGRAM_NAME = "openSource Tracker v.1.1.0"
 
 	#List log
 	USER_FILES = (	["user_insta.txt"],
 					["user_face.txt"],
 					["user_list.txt"]
 	)
+
+	USER_FILE_SCAN_NODE_INSTA = "user_scan_insta.txt"
 
 	#Menu variabels
 	HELP_TEXT_DISP = "Display Help"
@@ -19,6 +21,7 @@ class zerodata():
 	RUN_CHANGE_USER = "Change user Instagram"
 	RUN_EXPORT_DATA = "Export nodes and egdes"
 	RUN_EDIT_OPTIONS = "Change default values"
+	RUN_LOAD_SCAN = "Deepscan from list"
 	RUN_EXIT_DISP = "Exit"
 
 
@@ -53,8 +56,9 @@ class zerodata():
 		"insta_private"	INTEGER,
 		"insta_verifyed"	INTEGER,
 		"insta_post"	INTEGER,
-		"insta_exturl"	TEXT
-	);"""
+		"insta_exturl"	TEXT,
+		"insta_deepscan"	INTEGER DEFAULT 0
+);"""
 
 	DB_TABLE_EGDES = """
 	CREATE TABLE IF NOT EXISTS "egdes_insta" (
@@ -96,8 +100,8 @@ class zerodata():
 
 	DB_INSERT_NODE = """
 	INSERT INTO "main"."nodes"
-	("name", "label", "insta_id", "insta_img", "insta_follow", "insta_follower", "insta_bio", "insta_username", "insta_private", "insta_verifyed", "insta_post", "insta_exturl")
-	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+	("name", "label", "insta_id", "insta_img", "insta_follow", "insta_follower", "insta_bio", "insta_username", "insta_private", "insta_verifyed", "insta_post", "insta_exturl", "insta_deepscan")
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 	"""
 
 	DB_INSERT_INSTA_EGDE = 'INSERT INTO "main"."egdes_insta" ("source", "target") VALUES (?, ?);'
@@ -110,6 +114,7 @@ class zerodata():
 	DB_UPDATE_NEW_INSTA_DONE_TRUE = 'UPDATE "main"."new_insta" SET "done" = 1 WHERE "insta_id" = ?;'
 	DB_UPDATE_NEW_INSTA_DONE_FALSE = 'UPDATE "main"."new_insta" SET "done" = 0 WHERE "insta_id" = ?;'
 	DB_UPDATE_ACCOUNT_LAST_USED = 'UPDATE "main"."accounts" SET ("last_used") = ? WHERE username = ?'
+	DB_UPDATE_NODES = 'UPDATE "main"."nodes" SET "name" = ?, "label" = ?, "insta_img" = ?, "insta_follow" = ?, "insta_follower" = ?, "insta_bio" = ?, "insta_username" = ?, "insta_private" = ?, "insta_verifyed" = ?, "insta_post" = ?, "insta_exturl" = ?, "insta_deepscan" = ? WHERE "insta_id" = ?'
 
 	DB_SELECT_ID_NODE = 'SELECT id FROM "main"."nodes" WHERE ("insta_id") = ?'
 	DB_SELECT_USERNAME_NODE = 'SELECT insta_username FROM "main"."nodes" WHERE insta_id = ?'
@@ -143,6 +148,9 @@ class zerodata():
 	INSTA_MAX_FOLLOW_BY_SCAN_TEXT = "INSTA_MAX_FOLLOW_BY_SCAN"
 	INSTA_MAX_FOLLOW_BY_SCAN_VALUE = 2000
 
+	SURFACE_SCAN_TEXT = "SURFACE_SCAN"
+	SURFACE_SCAN_VALUE = "0"
+
 
 	#Help TEXT
 	HELP_TEXT = """
@@ -169,12 +177,21 @@ class zerodata():
 	{} - RUN_EXPORT_DATA
 		Gives you an overveiew of data collected so far, and exports it to folder {}.
 
+	{}
+		Loads a list of users from root folder, scraps all info from instagram and updates node DB.
+
+	Max Follows and Max Followed by
+		During search of follows by, where you scan the profile for one user that have completet the singel search you can set a limit to how many followers a user can have or how many it are following. This is to prevent to scan uninterested profils like public organizations and so on as they can have up to 10K. Default is 2000 and is considerated a normal amount of followes/followed by.
+
+	Deepscan and Surfacescan
+		By turning on surfacescan you only extract username and instagram id when scraping. This is to save you for request to the server so you can use one user for a longer periode of time, and make the scan go quicker if you are scraping a big nettwork. You can later add specific users found in the graphic to a text file and scan only the ones that are interesting and get all the data.
+
 	ERROR CODES - List of ERROR codes
 		001 - INSTAGRAM USER BLOCKED
 		002 - TO MANY REQUEST FROM CURRENT USER
 		003 - ERROR LOGIN
 		004 - USER DONT HAVE ACCESS TO DATA, RETURNING JSON ERROR
-		""".format(PROGRAM_NAME, RUN_CURRENT_DISP, RUN_FOLLOW_DISP, RUN_CHANGE_USER, RUN_EXPORT_DATA, DB_DATABASE_EXPORT_FOLDER)
+		""".format(PROGRAM_NAME, RUN_CURRENT_DISP, RUN_FOLLOW_DISP, RUN_CHANGE_USER, RUN_EXPORT_DATA, DB_DATABASE_EXPORT_FOLDER, RUN_LOAD_SCAN)
 
 	def __init__(self):
 		#Starting up

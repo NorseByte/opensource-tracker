@@ -1,2 +1,2 @@
-igramscraper==0.3.2
+python-slugify==3.0.2
 unicodecsv==0.14.1
