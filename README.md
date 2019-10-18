@@ -1,4 +1,4 @@
-<!-- PROJECT LOGO -->¨
+<!-- PROJECT LOGO -->
 ![Imgur](https://i.imgur.com/YpzZFfg.png)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/optracker)
 ![PyPI](https://img.shields.io/pypi/v/optracker)
