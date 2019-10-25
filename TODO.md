@@ -17,14 +17,16 @@
 - [x] 18-10-2019 (U) User DB NODE are updated in setCurrentUser(). And in userselect when scanFollowBy().
 - [ ] Add scan options for users with only surface scan
 - [x] 18-10-2019 (U) Added scan options for users in txt document.
+- [x] 19-10-2019 (P) updateNodesUser() ERROR fix.
+- [ ] Create options for full text output or minimal for faster scan.
 
-## Rules 
+## Rules
 When something are done, mark it as finnish and add date of completions and what kind of edit was made.
-- (U) = UPDATE 
+- (U) = UPDATE
 - (P) = PATCH
 - (N) = NEW
 
-Exampel: 
+Exampel:
 - `07-10-2019 (P) Fix bug on line 127 in core.py`
 - `07-10-2019 (U) Added better search options`
 - `07-10-2019 (N) New functions added able to export into xml`

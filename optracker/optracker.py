@@ -10,19 +10,34 @@ class Optracker():
     def __init__(self):
         #Adding Text source
         self.zero = zerodata()
+
         #Setting up OP_ROOT_FOLDER
         self.createRootfolder()
+
+        #Load Config
+        self.zero.setupJSON(False)
+
         #Iniatlaize DB_DATABASE
         print("+ Setting up DB")
         self.dbTool = dbFunc(self.zero.DB_DATABASE, self.zero)
         self.dbConn =  self.dbTool.create_connection()
-        self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_NODES)
-        self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_EGDES)
-        self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_NEW_INSTA)
-        self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_LOGIN_INSTA)
-        self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_OPTIONS)
+
+        #Create Tabels
+        if self.zero.DB_MYSQL_ON == 0:
+            self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_NODES)
+            self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_EGDES)
+            self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_NEW_INSTA)
+            self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_LOGIN_INSTA)
+            self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_OPTIONS)
+        else:
+            self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_MYSQL_NODES)
+            self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_MYSQL_EGDES)
+            self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_MYSQL_NEW_INSTA)
+            self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_MYSQL_LOGIN_INSTA)
+            self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_MYSQL_OPTIONS)
+
         self.dbTool.setDefaultValueOptions(self.dbConn)
-        print("+ DB setup complete")
+        self.zero.printText("+ DB setup complete", False)
 
         #Get usernames
         self.sideTool = sideFunc(self.dbTool, self.dbConn, self.zero)
@@ -59,6 +74,9 @@ class Optracker():
         #Run Scan from zeroPoint
         self.mainFunc.setCurrentUser(self.zero.INSTA_USER)
         self.runCurrentScan()
+
+    def dbSelect(self):
+        print("+ Selecting DB")
 
     def selectUserAndLogin(self):
         #Setusername
@@ -121,16 +139,18 @@ class Optracker():
 
         if not os.path.exists(currentFolder):
             os.mkdir(currentFolder)
-            print("+ Root folder created at: {}".format(self.zero.OP_ROOT_FOLDER_PATH_VALUE))
+            self.zero.printText("+ Root folder created at: {}".format(self.zero.OP_ROOT_FOLDER_PATH_VALUE), True)
 
         else:
-            print("+ Root folder located at: {}".format(self.zero.OP_ROOT_FOLDER_PATH_VALUE))
+            self.zero.printText("+ Root folder located at: {}".format(self.zero.OP_ROOT_FOLDER_PATH_VALUE), True)
 
         #Setting up full path starting
         self.zero.DB_DATABASE_FOLDER = self.zero.OP_ROOT_FOLDER_PATH_VALUE + self.zero.DB_DATABASE_FOLDER
         self.zero.DB_DATABASE_EXPORT_FOLDER = self.zero.OP_ROOT_FOLDER_PATH_VALUE + self.zero.DB_DATABASE_EXPORT_FOLDER
-        print("+ Database folder are loacted {}".format(self.zero.DB_DATABASE_FOLDER))
-        print("+ Export folder are loacted {}".format(self.zero.DB_DATABASE_EXPORT_FOLDER))
+        self.zero.OP_ROOT_CONFIG = self.zero.OP_ROOT_FOLDER_PATH_VALUE + self.zero.OP_ROOT_CONFIG
+        self.zero.printText("+ Database folder are loacted {}".format(self.zero.DB_DATABASE_FOLDER), False)
+        self.zero.printText("+ Export folder are loacted {}".format(self.zero.DB_DATABASE_EXPORT_FOLDER), False)
+        self.zero.printText("+ Config file are loacted {}".format(self.zero.OP_ROOT_CONFIG), False)
 
 def run():
     myOptracker = Optracker()

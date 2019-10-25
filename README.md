@@ -80,7 +80,7 @@ When you run the program it will first try to connect to Instagram, if youdon'tt
 The first time you scrape all the users will be saved as nodes. This will take some time, since we also want to save all the info we can get for each node. During this a lot of request will be send to the target server for the scrape, and as a result some of your user account may be blocked because of to many request in a short time. Laster when you scrape instagram as an example it will check if the node all ready exist in your database, if so it only add the connections it finds and your request to the server fall. Conclusion is that the bigger node base you have the faster you can scrape, and less request will be made.
 
 ###	5. Scan all follower
-You will be presented with a list of users that you have finnished adding to your database. The program will then scan all the connections it has that are not private, add the nodes to DB and connections in edges. 
+You will be presented with a list of users that you have finnished adding to your database. The program will then scan all the connections it has that are not private, add the nodes to DB and connections in edges.
 
 ### 6. Max Follows and Max Followed by
 During **Scan all follower**, where you scan the profile for one user that have completet the singel search you can set a limit to how many followers a user can have or how many it are following. This is to prevent to scan uninterested profils like public organizations and so on as they can have up to 10K. Default is 2000 and is considerated a normal amount of followes/followed by.
@@ -107,10 +107,27 @@ Content of the list need to be one username per line:
 {USER 3}
 {USER 4}
 ```
+### 9. Detail Print
+On Default is it turned **OFF** you will only get the minimum of info to see if it is working properly. If you turn it **ON** will you be presented with all the output the scraper have. 
+
+### 10. Change default value
+From the menu can you change default values like surfacescan, max follow and mysql or sqlite with more. To change select yes, fill in new value, if you dont want to change one value leave it blank.
 
 
 ## Database Information
-All the data are stored in **optracker/db/openSource-tracker.db**
+By default the scraper use **SQLite**, all the data are stored in **optracker/db/openSource-tracker.db**. 
+
+> **MySQL** are also available to use. Current version tested and found OK is **MySQL 8.0.18**. You can change the database settings in the menu. But you need to download and install the latest version of Mysql and create a database called **openSource-tracker**, if you dont have an online version you want to use instead of local. Also remember to use **utf8mb4**. The following are default:
+> * DB_MYSQL = "localhost"
+> * DB_MYSQL_USER = "optracker"
+> * DB_MYSQL_PASSWORD = "localpassword"
+> * DB_MYSQL_DATABASE = "openSource_tracker"
+> * DB_MYSQL_PORT = "3306"
+> * DB_MYSQL_ON = 0
+> * DB_MYSQL_COLLATION = "utf8mb4_general_ci"
+> * DB_MYSQL_CHARSET = "utf8mb4"  
+>   
+>***Scraping big amount of data can be really slow if you use SQLite, therefore are MySQL an option if you plan on collectingg huge amounts.*** 
 
 **The database consist of the following tabels:**
 - accounts
@@ -118,6 +135,9 @@ All the data are stored in **optracker/db/openSource-tracker.db**
 - nodes
 - options
 - new_insta
+
+> **Note!** All SQL data are saved in **optracker.config** located in root folder. The format are in JSON and you can change it as you would like to match your current DB. But I recomend to keep the standar settings. 
+
 
 ### 1. Accounts
 Stores all your usernames and password for the different openSource sites.
@@ -132,7 +152,7 @@ List of all the nodes created. They all have their own ID. It also contain all i
 Temporary table to store information like follow list, last search and so on for the program to use.
 
 ### 5. New_insta
-This table have a list of all instagram accounts that have been found during scraping. The program will used this to see witch account have not yet been fully scraped. When it is finnish are the account set to DONE. If you dont want the account to be scraped set the WAIT value to True. 0 = False, 1 = True.
+This table have a list of all instagram accounts that have been found during scraping. The program will used this to see witch account have not yet been fully scraped. When it is finnish are the account set to DONE. If you dont want the account to be scraped set the WAIT value to True. 0 = False, 1 = True. ***This can also be used in the case of a user have to many follower, or non at all so you dont want to scan it. When the user pop up, the scanner jumps over it.***
 
 ### 6. Export
 To export the data you can connect to the DB file under the db/folder. Or you can export it from the program. From main menu choose export. It will the generate two files **nodes.csv** and **egdes.csv**. You can then import this into your favorite graphic display
@@ -169,13 +189,23 @@ self.user_agent =   'Mozilla/5.0 (iPhone; CPU iPhone OS 12_3_1 like Mac OS X)' \
                             'Mobile/15E148 Instagram 105.0.0.11.118 (iPhone11,8; iOS 12_3_1; en_US; en-US; scale=2.00; 828x1792; 165586599)'
 ```
 
+### 3. Private Instagram
+```python
+  File "\optracker\functions\instagram_func.py", line 20, in get_insta_following
+    following = self.instagram.get_following(insta_id, totalFollow, self.page_size_check(totalFollow), delayed=True)
+  File "\optracker\igramscraper\instagram.py", line 963, in get_following
+    Instagram.HTTP_FORBIDDEN)
+optracker.igramscraper.exception.instagram_exception.InstagramException: Failed to get follows of account id ******. The account is private., Code:403
+```
+When searhing profiles sometimes the user have set it to private after first scraping. When extracting data after this the program will stop and give an error that the profile is private. Just run it once more, the program have updated the profile automatic to private so it wont happen on the next scan. 
+
 ## Common Information
 
-Look at TODO if you want to help: [TODO](https://github.com/suxSx/opensource-tracker/blob/master/TODO.md) <br />
-Read the CODE of Conduct before you edit: [Code of Conduct](https://github.com/suxSx/opensource-tracker/blob/master/CODE_OF_CONDUCT.md)<br />
-We use MIT License: [MIT](https://github.com/suxSx/opensource-tracker/blob/master/LICENSE.md)
+- Look at TODO if you want to help: [TODO](https://github.com/suxSx/opensource-tracker/blob/master/TODO.md) <br />
+- Read the CODE of Conduct before you edit: [Code of Conduct](https://github.com/suxSx/opensource-tracker/blob/master/CODE_OF_CONDUCT.md)<br />
+- We use MIT License: [MIT](https://github.com/suxSx/opensource-tracker/blob/master/LICENSE.md)
 
 ### Worth mentioning
-instagram-php-scraper [here](https://github.com/postaddictme/instagram-php-scraper/)<br />
-instagram-scraper [here](https://github.com/realsirjoe/instagram-scraper)<br />
-logo-design [here](http://freepik.com)  
+- instagram-php-scraper [here](https://github.com/postaddictme/instagram-php-scraper/)<br />
+- instagram-scraper [here](https://github.com/realsirjoe/instagram-scraper)<br />
+- logo-design [here](http://freepik.com)  

@@ -7,6 +7,7 @@ class coreFunc():
         self.dbConn = dbConn
         self.instagram = instagram
         self.zero = Zero
+        self.instaTool = InstagramFunc(self.instagram)
 
     def find_between_r(s, first, last,):
         try:
@@ -17,71 +18,71 @@ class coreFunc():
             return ""
 
     def exportDBData(self):
-        print("\n- Loading current data from DB")
+        self.zero.printText("\n- Loading current data from DB", True)
         totalNodes = self.dbTool.getValueSQLnoinput(self.dbConn, self.zero.DB_SELECT_COUNT_NODES)[0][0]
         totalEdgesInsta = self.dbTool.getValueSQLnoinput(self.dbConn, self.zero.DB_SELECT_COUNT_EDES_INSTA)[0][0]
-        print("+ Total nodes: {}\n+ Total egdes from instagram:{}".format(totalNodes, totalEdgesInsta))
+        self.zero.printText("+ Total nodes: {}\n+ Total egdes from instagram:{}".format(totalNodes, totalEdgesInsta), True)
         exportyes = input("+ Do you want to export? [Y/n] ")
 
         if exportyes.lower().strip() != "n":
-            print("+ Exporting NODES")
-            self.dbTool.exportNode(self.dbConn, self.zero.DB_SELECT_ALL_NODE, self.zero.DB_DATABASE_EXPORT_NODES)
-            print("+ NODES exported to: {}".format(self.zero.DB_DATABASE_EXPORT_NODES))
+            self.zero.printText("+ Exporting NODES", True)
+            self.dbTool.exportNode(self.dbConn, self.zero.DB_SELECT_ALL_NODE, self.zero.DB_DATABASE_EXPORT_FOLDER + self.zero.DB_DATABASE_EXPORT_NODES)
+            self.zero.printText("+ NODES exported to: {}".format(self.zero.DB_DATABASE_EXPORT_NODES), True)
 
-            print("+ Exporting EDGES")
-            self.dbTool.exportNode(self.dbConn, self.zero.DB_SELECT_ALL_INSTA_EDGES, self.zero.DB_DATABASE_EXPORT_INSTA_EGDE)
-            print("+ EDGES exported to: {}".format(self.zero.DB_DATABASE_EXPORT_INSTA_EGDE))
+            self.zero.printText("+ Exporting EDGES", True)
+            self.dbTool.exportNode(self.dbConn, self.zero.DB_SELECT_ALL_INSTA_EDGES, self.zero.DB_DATABASE_EXPORT_FOLDER + self.zero.DB_DATABASE_EXPORT_INSTA_EGDE)
+            self.zero.printText("+ EDGES exported to: {}".format(self.zero.DB_DATABASE_EXPORT_INSTA_EGDE), True)
 
     def getDoneUserIDFromInsta(self):
-        print("\n- Loading done user from instagram")
+        self.zero.printText("\n- Loading done user from instagram", True)
         userList = self.dbTool.getValueSQLnoinput(self.dbConn, self.zero.DB_SELECT_ALL_DONE_NEW_INSTA)
 
         if userList == 0:
-            print("+ No users in database that have been scannet 100%")
+            self.zero.printText("+ No users in database that have been scannet 100%", True)
             return 0
 
         else:
-            print("+ User list imported")
+            self.zero.printText("+ User list imported", True)
             count = 0
             for i in userList:
                 count += 1
-                print("[{}] {} ({})".format(count, i[0], i[1].strip()))
+                self.zero.printText("[{}] {} ({})".format(count, i[0], i[1].strip()), True)
             selectUser = input("+ Select user (1-{}): ".format(count))
 
             if not selectUser.isnumeric():
-                print("+ Invalid input, #1 selected")
+                printText("+ Invalid input, #1 selected", True)
                 selectUser = 1
 
             if int(selectUser) > count:
-                print("+ Invalid input, #1 selected")
+                self.zero.printText("+ Invalid input, #1 selected", True)
                 selectUser = 1
 
             newNumber = int(selectUser) - 1
             return userList[newNumber]
 
     def updateNodesUser(self, instaID):
-        print("+ Updating user data for: {}".format(instaID))
+        self.zero.printText("+ Updating user data for: {}".format(instaID), False)
         newDataUser = self.instaTool.get_insta_account_info_id(instaID)
-        print("+ User data loaded.")
+        self.zero.printText("+ User data loaded.", False)
         label = self.getLabelforUser(newDataUser)
 
         UPDATE_DATA = (newDataUser.full_name, label, newDataUser.get_profile_picture_url(), newDataUser.follows_count, newDataUser.followed_by_count, newDataUser.biography, newDataUser.username, newDataUser.is_private, newDataUser.is_verified, newDataUser.media_count, newDataUser.external_url, 1,  newDataUser.identifier)
         self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_NODES, UPDATE_DATA)
-        print("+ Update of DB NODE complete.")
+        self.zero.printText("+ Update of DB NODE complete.", False)
         return newDataUser
 
     def updateNodesUserLoaded(self, newDataUser):
-        print("+ Updating user data for: {} ({})".format(newDataUser.username, newDataUser.identifier))
+        self.zero.printText("+ Updating user data for: {} ({})".format(newDataUser.username, newDataUser.identifier), False)
         label = self.getLabelforUser(newDataUser)
         UPDATE_DATA = (newDataUser.full_name, label, newDataUser.get_profile_picture_url(), newDataUser.follows_count, newDataUser.followed_by_count, newDataUser.biography, newDataUser.username, newDataUser.is_private, newDataUser.is_verified, newDataUser.media_count, newDataUser.external_url, 1,  newDataUser.identifier)
         self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_NODES, UPDATE_DATA)
-        print("+ Update of DB NODE complete.")
+        self.zero.printText("+ Update of DB NODE complete.", False)
 
     def updateNodeFromList(self):
-        print("\n- Updating users from list")
+        self.zero.printText("\n- Updating users from list", True)
         fullpath = self.zero.OP_ROOT_FOLDER_PATH_VALUE + self.zero.USER_FILE_SCAN_NODE_INSTA
         if os.path.isfile(fullpath):
-            print("+ Found: {}, extracting data".format(fullpath))
+            self.zero.printText("+ Found: {}, extracting data".format(fullpath), True)
             with open(fullpath) as fp:
                 line = fp.readline()
                 while line:
@@ -90,64 +91,64 @@ class coreFunc():
                         self.setCurrentUser(user)
                     line = fp.readline()
         else:
-            print("+ File not found.")
-            print("+ Create {} to continue.".format(fullpath))
+            self.zero.printText("+ File not found.", True)
+            self.zero.printText("+ Create {} to continue.".format(fullpath), True)
 
     def scanFollowToInstaID(self):
         currentInstaID = self.getDoneUserIDFromInsta()
 
-        print("\n- Starting scan by follow")
+        self.zero.printText("\n- Starting scan by follow", True)
         if currentInstaID == 0:
-            print("+ No users could be selected.\n+ Run a full single scan of a user to continue.")
+            self.zero.printText("+ No users could be selected.\n+ Run a full single scan of a user to continue.", True)
 
         else:
             currentUser = currentInstaID[1]
             currentID = currentInstaID[0]
 
-            getMaxValueFOLLOW = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, (self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT, ))[0][1]
-            getMaxValueFOLLOWBY = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, (self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, ))[0][1]
+            getMaxValueFOLLOW = int(self.zero.INSTA_MAX_FOLLOW_SCAN_VALUE)
+            getMaxValueFOLLOWBY = int(self.zero.INSTA_MAX_FOLLOW_BY_SCAN_VALUE)
 
-            print("+ Current insta id: {} ({})".format(currentID, currentUser))
-            print("+ Looking up NODE ID.")
+            self.zero.printText("+ Current insta id: {} ({})".format(currentID, currentUser), True)
+            self.zero.printText("+ Looking up NODE ID.", True)
             currentNode = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_ID_NODE, (currentID, ))[0][0]
-            print("+ Node ID found: {}".format(currentNode))
-            print("+ Loading followed by list where PRIVATE = 0")
+            self.zero.printText("+ Node ID found: {}".format(currentNode), True)
+            self.zero.printText("+ Loading followed by list where PRIVATE = 0", True)
             followList = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_FOLLOW_OF, (currentNode, ))
             if followList == 0:
-                print("+ Are followed nobody that have PUBLIC profile.")
+                self.zero.printText("+ Are followed nobody that have PUBLIC profile.", True)
             else:
                 lenFollowList = len(followList)
                 counter = 0
-                print("+ Loaded {} users from: {} where private = 0".format(lenFollowList, currentUser))
+                self.zero.printText("+ Loaded {} users from: {} where private = 0".format(lenFollowList, currentUser), True)
 
                 #TODO: ADD SORTING OF USER BASED ON KEY WORD FROM BIO
                 for i in followList:
                     counter += 1
-                    print("\n- {} of {} :: {}".format(counter, lenFollowList, i[8])),
-                    print("+ Checking search status for: {}".format(i[3]))
+                    self.zero.printText("\n- {} of {} :: {}".format(counter, lenFollowList, i[8]), True),
+                    self.zero.printText("+ Checking search status for: {}".format(i[3]), False)
                     moveON = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_DONE_NEW_INSTA, (i[3],))
                     if moveON[0][0] == 1:
-                        print("+ User SCAN are allready DONE.")
+                        self.zero.printText("+ User SCAN are allready DONE.", True)
                     else:
                         if moveON[0][1] == 1:
-                            print("+ User NOT scanned but set on WAIT")
+                            self.zero.printText("+ User NOT scanned but set on WAIT", True)
                         else:
-                            print("+ User VALID for singel scan.")
+                            self.zero.printText("+ User VALID for singel scan.", True)
 
                             scan_insta_followed_by = int(i[6])
                             scan_insta_follow = int(i[5])
 
-                            #TODO: ADD USER UPDATE IF DEEPSCAN = 0
+                            #TODO: SPEEDUP SCAN - LESS SQL REQUEST
                             deepScan = int(i[13])
                             if deepScan == 0:
                                 #User have not been deepscanned scan and update
-                                print("+ User missing deepScan, getting info.")
-                                newDataUser = updateNodesUser(i[3])
+                                self.zero.printText("+ User missing deepScan, getting info.", False)
+                                newDataUser = self.updateNodesUser(i[3])
                                 scan_insta_followed_by = int(newDataUser.followed_by_count)
                                 scan_insta_follow = int(newDataUser.follows_count)
 
 
-                            print("+ User are following: {}\n+ User are followed by: {}".format(scan_insta_follow, scan_insta_followed_by))
+                            self.zero.printText("+ User are following: {}\n+ User are followed by: {}".format(scan_insta_follow, scan_insta_followed_by), False)
 
                             #Search sorting firt step follows_count
                             if scan_insta_follow <= getMaxValueFOLLOW:
@@ -156,48 +157,53 @@ class coreFunc():
                                     self.setCurrentUser(i[8].strip())
 
                                     #Extract info from following list
-                                    self.loadFollowlist(False)
-                                    self.add_egde_from_list_insta(False)
+                                    if scan_insta_follow != 0:
+                                        self.loadFollowlist(False)
+                                        self.add_egde_from_list_insta(False)
+                                    else:
+                                        self.zero.printText("+ Follow list is empty", False)
 
                                     #Extract followed by
-                                    self.loadFollowlist(True)
-                                    self.add_egde_from_list_insta(True)
+                                    if scan_insta_followed_by != 0:
+                                        self.loadFollowlist(True)
+                                        self.add_egde_from_list_insta(True)
+                                    else:
+                                        self.zero.printText("+ Follow by list is empty", False)
 
                                     #Update new_Insta
-                                    print("\n- Scan complete")
-                                    print("+ Setting {} ({}) to complete.".format(i[8], i[3]))
+                                    self.zero.printText("\n- Scan complete", False)
+                                    self.zero.printText("+ Setting {} ({}) to complete.".format(i[8], i[3]), True)
                                     self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_NEW_INSTA_DONE_TRUE, (i[3],))
                                 else:
-                                    print("+ User are followed by to many, increese allowed follow to continue")
+                                    self.zero.printText("+ User are followed by to many, increese allowed follow to continue", True)
                             else:
-                                print("+ User are following to many, increese allowed follow to continue")
+                                self.zero.printText("+ User are following to many, increese allowed follow to continue", True)
 
 
     def loadFollowlist(self, inOut): #False load Follow, True Load followers
         if inOut == False:
             #Getting following
-            print("\n- Loading follows list for:", self.currentUser.username)
+            self.zero.printText("\n- Loading follows list for: {}".format(self.currentUser.username), True)
             self.followNumber = self.currentUser.follows_count;
-            print("+", self.currentUser.full_name, "are following", self.followNumber, "starting info extract")
+            self.zero.printText("+ {} are following {} starting info extract.".format(self.currentUser.full_name, self.followNumber), False)
             self.imported_follow = self.instaTool.get_insta_following(self.followNumber, self.currentUser.identifier)
             self.lenImpF = len(self.imported_follow['accounts'])
-            print("+ Total loaded:", self.lenImpF)
+            self.zero.printText("+ Total loaded: {}".format(self.lenImpF), False)
         else:
             #Getting following
-            print("\n- Loading followed by list for:", self.currentUser.username)
+            self.zero.printText("\n- Loading followed by list for: {}".format(self.currentUser.username), True)
             self.followNumber = self.currentUser.followed_by_count;
-            print("+", self.currentUser.full_name, "are followed by", self.followNumber, "starting info extract")
+            self.zero.printText("+ {} are followed by {} starting info extract".format(self.currentUser.full_name, self.followNumber), False)
             self.imported_follow = self.instaTool.get_insta_follow_by(self.followNumber, self.currentUser.identifier)
             self.lenImpF = len(self.imported_follow['accounts'])
-            print("+ Total loaded:", self.lenImpF)
+            self.zero.printText("+ Total loaded: {}".format(self.lenImpF), False)
 
     def setCurrentUser(self, user):
         #Get information
-        print("\n- Setting current user to:", user)
-        self.instaTool = InstagramFunc(self.instagram, user)
+        self.zero.printText("\n- Setting current user to: {}".format(user), True)
 
         #Check if zeroPoint is in DB if not add.
-        print("+ Getting user information from Instagram")
+        self.zero.printText("+ Getting user information from Instagram", True)
         self.currentUser = self.instaTool.get_insta_account_info(user)
         self.check_user_db_node(self.currentUser, False)
 
@@ -205,102 +211,111 @@ class coreFunc():
         self.updateNodesUserLoaded(self.currentUser)
 
         #Check if in new_Insta
-        self.check_new_insta(self.currentUser.identifier)
+        self.check_new_insta(self.currentUser.identifier, self.currentUser.username)
 
         #Getting current NODE ID for source
         self.sourceID = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_ID_NODE, (self.currentUser.identifier, ))[0][0]
-        print("+ Recived node ID:", self.sourceID, "for zeroPoint:", self.currentUser.username)
+        self.zero.printText("+ Recived node ID: {} for zeroPoint: {}".format(self.sourceID, self.currentUser.username), True)
 
         #Setting global INSTA # IDEA
+        self.zero.printText("+ Global insta ID set to {}".format(self.currentUser.identifier), True)
         self.zero.INSTA_USER_ID = self.currentUser.identifier
 
-    def check_new_insta(self, instaID):
-        print("+ Checking new_insta DB for: {}".format(instaID))
+    def check_new_insta(self, instaID, insert_username):
+        self.zero.printText("+ Checking new_insta DB for: {}".format(instaID), False)
         getNewinsta = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_DONE_NEW_INSTA, (instaID, ))
         if getNewinsta == 0:
-            insert_username = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_USERNAME_NODE, (instaID, ))[0][0]
-            print("+ NOT found in new_insta adding user_id: {} ({})".format(instaID, insert_username))
+            self.zero.printText("+ NOT found in new_insta adding user_id: {} ({})".format(instaID, insert_username), False)
             self.zero.INSERT_DATA = (instaID, insert_username)
             self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_INSERT_NEW_INSTA, self.zero.INSERT_DATA)
         else:
-            print("+ FOUND in new_insta STATUS = ", end = " ")
+            self.zero.printText("+ FOUND in new_insta", False)
             if getNewinsta[0][0] == 1:
-                print("FINNISH")
+                self.zero.printText("+ STATUS = FINNISH", False)
             else:
                 if getNewinsta[0][1] == 1:
-                    print("WAIT")
+                    self.zero.printText("+ STATUS = WAIT", False)
                 else:
-                    print("IN LINE")
+                    self.zero.printText("+ STATUS = IN LINE", False)
 
     def getLabelforUser(self, user):
-        print("+ Are full_name empty?", end = " ")
+        self.zero.printText("+ Are full_name empty?", False)
         if user.full_name:
-            print("NO")
-            print("+ Using: {} for label.".format(user.full_name))
+            self.zero.printText("+ NO", False)
+            self.zero.printText("+ Using: {} for label.".format(user.full_name), False)
             return user.full_name
 
         else:
-            print("YES")
-            print("+ Using: {} for label.".format(user.username))
+            self.zero.printText("+ YES", False)
+            self.zero.printText("+ Using: {} for label.".format(user.username), False)
             return user.username
 
     def check_user_db_node(self, user, getInfo):
         #Check if we do a full scan
-        getSurfaceScan = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, (self.zero.SURFACE_SCAN_TEXT, ))[0][1]
+        getSurfaceScan = int(self.zero.SURFACE_SCAN_VALUE)
 
-        print("+ Checking NODE DB for id: {} ({})".format(user.identifier, user.username,))
-        if self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_ID_NODE, (user.identifier, )) == 0:
-            print("+ NOT found in node")
+        #Get node id
+        userNodeID = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_ID_NODE, (user.identifier, ))
+
+        self.zero.printText("+ Checking NODE DB for id: {} ({})".format(user.identifier, user.username), False)
+        if userNodeID == 0:
+            self.zero.printText("+ NOT found in node", False)
             tempID = user.identifier;
 
             if getSurfaceScan == 0:
                 if getInfo == True:
-                    print("+ Getting user data for: {}".format(user.username))
+                    self.zero.printText("+ Getting user data for: {}".format(user.username), False)
                     user = self.instaTool.get_insta_account_info_id(tempID)
 
                 label = self.getLabelforUser(user)
-                self.zero.INSERT_DATA = (user.full_name, label, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 1)
+                self.zero.INSERT_DATA = (user.full_name, label, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 1, user.identifier)
 
             else:
-                print("+ Surfacescan are ON")
+                self.zero.printText("+ Surfacescan are ON", False)
                 label = self.getLabelforUser(user)
-                self.zero.INSERT_DATA = (user.full_name, label, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 0)
+                self.zero.INSERT_DATA = (user.full_name, label, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 0, user.identifier)
 
-            print("+ ADDING to NODE db")
-            self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_INSERT_NODE, self.zero.INSERT_DATA)
+            self.zero.printText("+ ADDING to NODE db", False)
+            userNodeID = self.dbTool.inserttoTabelMulti(self.dbConn, self.zero.DB_INSERT_NODE, self.zero.INSERT_DATA)[0][0]
         else:
-            print("+ FOUND in NODE list moving on")
+            userNodeID = userNodeID[0][0]
+            self.zero.printText("+ FOUND in NODE list ({}) moving on".format(userNodeID), False)
+            
+        return userNodeID
 
     def add_egde_from_list_insta(self, inOut):
         counterF = 0
         for following in self.imported_follow['accounts']:
             counterF += 1
-            print("\n- {} of {} :: Username: {} - ID: {}".format(counterF, self.lenImpF, following.username, following.identifier))
+            self.zero.printText("\n", False)
+            self.zero.printText("- {} of {} :: Username: {} - ID: {}".format(counterF, self.lenImpF, following.username, following.identifier), True)
+
+
+            #TODO: merge nide user db and new insta and add edge in one query.
 
             #Add in Node DB
-            self.check_user_db_node(following, True)
+            tempID = self.check_user_db_node(following, True)
 
             #Check if this is a new node that havent been search
-            self.check_new_insta(following.identifier)
+            self.check_new_insta(following.identifier, following.username)
 
             #Get node ID
-            tempID = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_ID_NODE, (following.identifier, ))[0][0]
-            print("+ Recived node ID: {} ({})".format(tempID, following.username))
+            self.zero.printText("+ Recived node ID: {} ({})".format(tempID, following.username), False)
 
             #Add in egdes_insta
             if inOut == True:
-                print("+ Checking insta_edges DB. Source: {} ({}), Target: {} ({})".format(tempID, following.username, self.sourceID, self.currentUser.username))
+                self.zero.printText("+ Checking insta_edges DB. Source: {} ({}), Target: {} ({})".format(tempID, following.username, self.sourceID, self.currentUser.username), False)
                 if self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_TARGET_EDGE, (tempID, self.sourceID, )) == 0:
-                    print("+ NOT found in insta_edges adding data.")
+                    self.zero.printText("+ NOT found in insta_edges adding data", False)
                     self.zero.INSERT_DATA = (tempID, self.sourceID)
                     self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_INSERT_INSTA_EGDE, self.zero.INSERT_DATA)
                 else:
-                    print("+ FOUND in insta_edges list moving on")
+                    self.zero.printText("+ FOUND in insta_edges list moving on", False)
             else:
-                print("+ Checking insta_edges DB. Source: {} ({}), Target: {} ({})".format(self.sourceID, self.currentUser.full_name, tempID, following.username))
+                self.zero.printText("+ Checking insta_edges DB. Source: {} ({}), Target: {} ({})".format(self.sourceID, self.currentUser.full_name, tempID, following.username), False)
                 if self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_TARGET_EDGE, (self.sourceID, tempID, )) == 0:
-                    print("+ NOT found in insta_edges adding data.")
+                    self.zero.printText("+ NOT found in insta_edges adding data.", False)
                     self.zero.INSERT_DATA = (self.sourceID, tempID)
                     self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_INSERT_INSTA_EGDE, self.zero.INSERT_DATA)
                 else:
-                    print("+ FOUND in insta_edges list moving on")
+                    self.zero.printText("+ FOUND in insta_edges list moving on", False)

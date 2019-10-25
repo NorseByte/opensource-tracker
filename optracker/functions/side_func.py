@@ -10,16 +10,16 @@ class sideFunc():
     def setCurrentUserUpdate(self, user, password):
         self.zero.LOGIN_PASSWORD_INSTA = password
         self.zero.LOGIN_USERNAME_INSTA = user
-        print("+ Setting user to: {} and password to: {}".format(self.zero.LOGIN_USERNAME_INSTA, self.zero.LOGIN_PASSWORD_INSTA))
+        self.zero.printText("+ Setting user to: {} and password to: {}".format(self.zero.LOGIN_USERNAME_INSTA, self.zero.LOGIN_PASSWORD_INSTA), True)
 
         #Update time in account
         currentTime = datetime.today()
         self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_ACCOUNT_LAST_USED, (currentTime, user,))
-        print("+ Updating last time for: {} to: {}".format(user, currentTime))
+        self.zero.printText("+ Updating last time for: {} to: {}".format(user, currentTime), False)
 
     def autoSelectLogin(self):
         userList = self.runUserCheck()
-        print("\n- Auto selecting login user")
+        self.zero.printText("\n- Auto selecting login user", True)
         if userList != True:
             count = 0
             currentSelect = 0
@@ -27,11 +27,11 @@ class sideFunc():
             for i in userList:
                 lastTime = i[6]
                 #Print function to list time and date, not needed.
-                #print("+ User: {}, last used: {}".format(i[0], lastTime))
+                #self.zero.printText("+ User: {}, last used: {}".format(i[0], lastTime))
                 datetimelasttime = datetime.strptime(str(datetime.today()), self.zero.DATETIME_MASK)
 
                 if not lastTime:
-                    print("+ {} oldest so far.".format(i[0]))
+                    self.zero.printText("+ {} oldest so far.".format(i[0]), False)
                     oldestTime = datetimelasttime
                     currentSelect = count
                     break
@@ -40,7 +40,7 @@ class sideFunc():
 
                 if oldestTime >= datetimelasttime:
                     #oldestTime er nyere så setter forløpig denne til eldste
-                    print("+ {} oldest so far.".format(i[0]))
+                    self.zero.printText("+ {} oldest so far.".format(i[0]), False)
                     oldestTime = datetimelasttime
                     currentSelect = count
 
@@ -49,35 +49,36 @@ class sideFunc():
             self.setCurrentUserUpdate(userList[currentSelect][0].strip(), userList[currentSelect][1].strip())
 
     def runUserCheck(self):
-        print("\n- Loading INSTAGRAM user list from DB")
+        currentTime = datetime.today()
+        self.zero.printText("\n- Loading INSTAGRAM user list from DB", True)
         userList = self.dbTool.getValueSQLnoinput(self.dbConn, self.zero.DB_SELECT_LOGIN_INSTA)
         if userList == 0:
-            print("+ No user for Instagram found, please add one")
+            self.zero.printText("+ No user for Instagram found, please add one", True)
             user = input("+ Username: ")
             password = input("+ Password: ")
             email = input("+ Email: ")
             fullname = input("+ Fullname: ")
 
-            print("+ Adding {} to DB".format(user))
-            INSERT_DATA = (user, password, email, fullname, "instagram")
+            self.zero.printText("+ Adding {} to DB".format(user), True)
+            INSERT_DATA = (user, password, email, fullname, "instagram", currentTime)
             self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_INSERT_LOGIN_INSTA, INSERT_DATA)
             password = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_LOGIN_PASSWORD_INSTA , (user,))
 
             if password == 0:
                 #Add loop for user
-                print("+ Not able to add user")
+                self.zero.printText("+ Not able to add user", True)
 
             else:
-                print("+ User add OK")
+                self.zero.printText("+ User add OK", True)
                 self.setCurrentUserUpdate(user, password[0][0])
             return True
         else:
             if len(userList) == 1:
-                print("+ One user found using: {}".format(userList[0][0]))
+                self.zero.printText("+ One user found using: {}".format(userList[0][0]), True)
                 self.setCurrentUserUpdate(userList[0][0].strip(), userList[0][1].strip())
                 return True
             else:
-                print("+ User list loaded.")
+                self.zero.printText("+ User list loaded.", True)
                 return userList
 
     def editDefaultValue(self):
@@ -85,10 +86,12 @@ class sideFunc():
         getMaxValueFOLLOWBY = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, (self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, ))[0][1]
         getSurfaceScan = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, (self.zero.SURFACE_SCAN_TEXT, ))[0][1]
 
-        print("\n- Loading default values:")
-        print("+ Max allowed follow: {}".format(getMaxValueFOLLOW))
-        print("+ Max allowed follow by: {}".format(getMaxValueFOLLOWBY))
-        print("+ Surface scan set to: {} (0 = OFF, 1 = ON)".format(getSurfaceScan))
+        self.zero.printText("\n- Loading default values:", True)
+        self.zero.printText("+ Max allowed follow: {}".format(getMaxValueFOLLOW), True)
+        self.zero.printText("+ Max allowed follow by: {}".format(getMaxValueFOLLOWBY), True)
+        self.zero.printText("+ Surface scan set to: {} (0 = OFF, 1 = ON)".format(getSurfaceScan), True)
+        self.zero.printText("+ Detail print set to: {} (0 = OFF, 1 = ON)".format(self.zero.DETAIL_PRINT_VALUE), True)
+        self.zero.printText("+ Mysql(1) - Sqlite(0): {}".format(self.zero.DB_MYSQL_ON), True)
 
         change = input("+ Change value? [y/N] ")
 
@@ -96,68 +99,98 @@ class sideFunc():
             newMaxFollow = input("+ Max allowed follow: ")
             newMaxFollowBy = input("+ Max allowed followed by: ")
             newSurfaceScan = input("+ Surface scan on[1]/off[0]: ")
+            newDetailPrint = input("+ Detail print on[1]/off[0]: ")
+            newMysql = input("+ Mysql[1] - Sqlite[0]: ")
 
             if newMaxFollow.isdigit():
                 if int(newMaxFollow) < 1:
-                    print("+ Invalid input Max allowed follows not changed")
+                    self.zero.printText("+ Invalid input Max allowed follows not changed", False)
                 else:
                     self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_OPTIONS, (newMaxFollow, self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT))
-                    print("+ Max allowed follow set to: {}".format(newMaxFollow))
+                    self.zero.INSTA_MAX_FOLLOW_SCAN_VALUE = newMaxFollow
+                    self.zero.printText("+ Max allowed follow set to: {}".format(newMaxFollow), True)
             else:
-                print("+ Invalid input Max allowed follows not changed")
+                self.zero.printText("+ Invalid input Max allowed follows not changed", False)
 
             if newMaxFollowBy.isdigit():
                 if int(newMaxFollowBy) < 1:
-                    print("+ Invalid input Max allowed followed by not changed")
+                    self.zero.printText("+ Invalid input Max allowed followed by not changed", False)
                 else:
                     self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_OPTIONS, (newMaxFollowBy, self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT))
-                    print("+ Max allowed followed by set to: {}".format(newMaxFollowBy))
+                    self.zero.INSTA_MAX_FOLLOW_BY_SCAN_VALUE = newMaxFollowBy
+                    self.zero.printText("+ Max allowed followed by set to: {}".format(newMaxFollowBy), True)
             else:
-                print("+ Invalid input Max allowed followed by not changed")
+                self.zero.printText("+ Invalid input Max allowed followed by not changed", False)
 
             if newSurfaceScan.isdigit():
                 if int(newSurfaceScan) > 1:
-                    print("+ Invalid input: Surface scan not changed")
+                    self.zero.printText("+ Invalid input: Surface scan not changed", False)
                 else:
                     if int(newSurfaceScan) < 0:
-                        print("+ Invalid input: Surface scan not changed")
+                        self.zero.printText("+ Invalid input: Surface scan not changed", False)
                     else:
                         self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_OPTIONS, (newSurfaceScan, self.zero.SURFACE_SCAN_TEXT))
-                        print("+ Surface scan set to: {}".format(newSurfaceScan))
+                        self.zero.SURFACE_SCAN_VALUE = newSurfaceScan
+                        self.zero.printText("+ Surface scan set to: {}".format(newSurfaceScan), True)
             else:
-                print("+ Invalid input: Surface scan not changed")
+                self.zero.printText("+ Invalid input: Surface scan not changed", False)
 
+            if newDetailPrint.isdigit():
+                if int(newDetailPrint) > 1:
+                    self.zero.printText("+ Invalid input: Detail print not changed", False)
+                else:
+                    if int(newDetailPrint) < 0:
+                        self.zero.printText("+ Invalid input: Detail print not changed", False)
+                    else:
+                        self.zero.DETAIL_PRINT_VALUE = newDetailPrint
+                        self.zero.setupJSON(True)
+                        self.zero.printText("+ Detail print set to: {}".format(newDetailPrint), True)
+            else:
+                self.zero.printText("+ Invalid input: Detail print not changed", True)
+
+            if newMysql.isdigit():
+                if int(newMysql) > 1:
+                    self.zero.printText("+ Invalid input: SQL DB not changed", False)
+                else:
+                    if int(newMysql) < 0:
+                        self.zero.printText("+ Invalid input: SQL DB not changed", False)
+                    else:
+                        self.zero.DB_MYSQL_ON = newMysql
+                        self.zero.printText("+ SQL DB set to: {}".format(self.zero.DB_MYSQL_ON), True)
+                        self.zero.setupJSON(True)
+                        self.zero.printText("+ SQL DB changed please RESTART optracker.", True)
+            else:
+                self.zero.printText("+ Invalid input: SQL DB not changed", False)
 
         else:
-            print("+ Nothing changed.")
-
+            self.zero.printText("+ Nothing changed.", True)
 
     def addLastInsta(self, update):
         lastInsta = input("+ Enter account to scrape: ")
-        print("+ Adding {} to DB".format(lastInsta))
+        self.zero.printText("+ Adding {} to DB".format(lastInsta), True)
         if update == False:
-            self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_INSERT_OPTIONS_LASTINSTA, ("last_insta", lastInsta))
+            self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_INSERT_OPTIONS_LASTINSTA, (lastInsta, self.zero.LAST_INSTA_TEXT))
         else:
             self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_LAST_INSTA, (lastInsta,))
 
         if lastInsta == 0:
             #Add loop for user
-            print("+ Not able to add to scraper")
+            self.zero.printText("+ Not able to add to scraper", True)
             sys.exit()
 
         else:
             self.zero.INSTA_USER = lastInsta
-            print("+ Scraper enabled for: {}".format(self.zero.INSTA_USER))
+            self.zero.printText("+ Scraper enabled for: {}".format(self.zero.INSTA_USER), True)
 
     def lastSearch(self):
-        print("\n- Loading last scraper for Instagram from DB")
-        lastInsta = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, ("last_insta", ))
+        self.zero.printText("\n- Loading last scraper for Instagram from DB", True)
+        lastInsta = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, (self.zero.LAST_INSTA_TEXT, ))
         if lastInsta == 0:
-            print("+ No last search for Instagram found")
+            self.zero.printText("+ No last search for Instagram found", True)
             self.addLastInsta(False)
 
         else:
-            print("+ Last user scraped: {}".format(lastInsta[0][1]))
+            self.zero.printText("+ Last user scraped: {}".format(lastInsta[0][1]), True)
             goon = input("+ Continue with user? [Y/n] ")
 
             if goon.lower().strip() == "n":
@@ -168,19 +201,19 @@ class sideFunc():
     def setupLogin(self):
         userList = self.runUserCheck()
         if userList != True:
-            print("+ User list imported")
+            self.zero.printText("+ User list imported", True)
             count = 0
             for i in userList:
                 count += 1
-                print("[{}] {} ({}) (Last used: {})".format(count, i[0], i[3].strip(), i[6]))
+                self.zero.printText("[{}] {} ({}) (Last used: {})".format(count, i[0], i[3].strip(), i[6]), True)
             selectUser = input("+ Select user (1-{}): ".format(count))
 
             if not selectUser.isnumeric():
-                print("+ Invalid input, #1 selected")
+                self.zero.printText("+ Invalid input, #1 selected", True)
                 selectUser = 1
 
             if int(selectUser) > count:
-                print("+ Invalid input, #1 selected")
+                self.zero.printText("+ Invalid input, #1 selected", True)
                 selectUser = 1
 
             newNumber = int(selectUser) - 1
@@ -197,11 +230,12 @@ class sideFunc():
         self.zero.TOTAL_USER_COUNT = count
 
     def loadLoginText(self):
-        print("\n- Loading user and password from file")
+        currentTime = datetime.today()
+        self.zero.printText("\n- Loading user and password from file", True)
         for file in self.zero.USER_FILES:
             fullpath = self.zero.OP_ROOT_FOLDER_PATH_VALUE + file[0]
             if os.path.isfile(fullpath):
-                print("+ Found: {}, extracting data".format(fullpath))
+                self.zero.printText("+ Found: {}, extracting data".format(fullpath), True)
                 with open(fullpath) as fp:
                     line = fp.readline()
                     while line:
@@ -212,18 +246,18 @@ class sideFunc():
                             password = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_LOGIN_PASSWORD_INSTA , (newUser[0],))
 
                             if password != 0:
-                                print("+ User allready exist: {}".format(newUser[0]))
+                                self.zero.printText("+ User allready exist: {}".format(newUser[0]), False)
 
                             else:
-                                print("+ User NOT found adding user: {}. ".format(newUser[0]), end = " ")
-                                INSERT_DATA = (newUser[0].strip(), newUser[1].strip(), newUser[2].strip(), newUser[3].strip(), newUser[4].strip())
+                                self.zero.printText("+ User NOT found adding user: {}. ".format(newUser[0]), False)
+                                INSERT_DATA = (newUser[0].strip(), newUser[1].strip(), newUser[2].strip(), newUser[3].strip(), newUser[4].strip(), currentTime)
                                 self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_INSERT_LOGIN_INSTA, INSERT_DATA)
                                 password = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_LOGIN_PASSWORD_INSTA , (newUser[0].strip(),))
 
                                 if password == 0:
-                                    print("(Not able to add user)")
+                                    self.zero.printText("+ Not able to add user", False)
                                 else:
-                                    print("(User add OK)")
+                                    self.zero.printText("+ User add OK", False)
                         line = fp.readline()
             else:
-                print("+ File: {} does not exist".format(fullpath))
+                self.zero.printText("+ File: {} does not exist".format(fullpath), False)
