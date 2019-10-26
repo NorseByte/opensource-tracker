@@ -60,7 +60,6 @@ class dbFunc():
             exeSQL = (newSQL % task)
             multi = exeSQL.split(";")
             lenM = len(multi)
-            print(lenM)
             counter = 0
 
             cur = conn.cursor()

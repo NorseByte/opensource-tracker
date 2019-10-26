@@ -201,7 +201,7 @@ class zerodata():
 	DB_SELECT_MYSQL_OPTIONS = 'SELECT * FROM options WHERE what = %s'
 	DB_SELECT_MYSQL_ALL_DONE_NEW_INSTA = 'SELECT * FROM new_insta WHERE done = 1'
 	DB_SELECT_MYSQL_ALL_NODE = "SELECT * FROM nodes"
-	DB_SELECT_MYSQL_ALL_INSTA_EDGES = "SELECT * FROM egdes_insta"
+	DB_SELECT_MYSQL_ALL_INSTA_EDGES = "SELECT source, target, type, weight FROM egdes_insta"
 	DB_SELECT_MYSQL_COUNT_NODES = "SELECT count(*) FROM nodes"
 	DB_SELECT_MYSQL_COUNT_EDES_INSTA = "SELECT count(*) FROM egdes_insta"
 	DB_SELECT_MYSQL_INSTA_FOLLOWER_NODE_ID = 'SELECT insta_follower FROM nodes WHERE id = %s'
@@ -231,7 +231,7 @@ class zerodata():
 	DB_SELECT_OPTIONS = 'SELECT * FROM options WHERE what = ?'
 	DB_SELECT_ALL_DONE_NEW_INSTA = 'SELECT * FROM "main"."new_insta" WHERE done = 1'
 	DB_SELECT_ALL_NODE = "SELECT * FROM main.nodes"
-	DB_SELECT_ALL_INSTA_EDGES = "SELECT * FROM main.egdes_insta"
+	DB_SELECT_ALL_INSTA_EDGES = "SELECT source, target, type, weight FROM main.egdes_insta"
 	DB_SELECT_COUNT_NODES = "SELECT count(*) FROM main.nodes"
 	DB_SELECT_COUNT_EDES_INSTA = "SELECT count(*) FROM main.egdes_insta"
 	DB_SELECT_INSTA_FOLLOWER_NODE_ID = 'SELECT insta_follower FROM "main"."nodes" WHERE id = ?'
@@ -254,10 +254,10 @@ class zerodata():
 	INSTA_MAX_FOLLOW_BY_SCAN_VALUE = 2000
 
 	SURFACE_SCAN_TEXT = "SURFACE_SCAN"
-	SURFACE_SCAN_VALUE = "0"
+	SURFACE_SCAN_VALUE = "1"
 
 	DETAIL_PRINT_TEXT = "DETAIL_PRINT"
-	DETAIL_PRINT_VALUE = "0"
+	DETAIL_PRINT_VALUE = "1"
 
 	LAST_INSTA_TEXT = "LAST_INSTA"
 	LAST_INSTA_VALUE = ""
