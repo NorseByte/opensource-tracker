@@ -5,7 +5,7 @@ class zerodata():
 	#Define username and password
 	LOGIN_USERNAME_INSTA = ""
 	LOGIN_PASSWORD_INSTA = ""
-	PROGRAM_NAME = "openSource Tracker v.1.2.1"
+	PROGRAM_NAME = "openSource Tracker v.1.2.2"
 
 	#List log
 	USER_FILES = (	["user_insta.txt"],
