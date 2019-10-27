@@ -66,7 +66,7 @@ class coreFunc():
         self.zero.printText("+ User data loaded.", False)
         label = self.getLabelforUser(newDataUser)
 
-        UPDATE_DATA = (newDataUser.full_name, label, newDataUser.get_profile_picture_url(), newDataUser.follows_count, newDataUser.followed_by_count, newDataUser.biography, newDataUser.username, newDataUser.is_private, newDataUser.is_verified, newDataUser.media_count, newDataUser.external_url, 1,  newDataUser.identifier)
+        UPDATE_DATA = (self.zero.sanTuple(newDataUser.full_name), self.zero.sanTuple(label), newDataUser.get_profile_picture_url(), newDataUser.follows_count, newDataUser.followed_by_count, self.zero.sanTuple(newDataUser.biography), newDataUser.username, newDataUser.is_private, newDataUser.is_verified, newDataUser.media_count, newDataUser.external_url, 1,  newDataUser.identifier)
         self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_NODES, UPDATE_DATA)
         self.zero.printText("+ Update of DB NODE complete.", False)
         return newDataUser
@@ -74,7 +74,7 @@ class coreFunc():
     def updateNodesUserLoaded(self, newDataUser):
         self.zero.printText("+ Updating user data for: {} ({})".format(newDataUser.username, newDataUser.identifier), False)
         label = self.getLabelforUser(newDataUser)
-        UPDATE_DATA = (newDataUser.full_name, label, newDataUser.get_profile_picture_url(), newDataUser.follows_count, newDataUser.followed_by_count, newDataUser.biography, newDataUser.username, newDataUser.is_private, newDataUser.is_verified, newDataUser.media_count, newDataUser.external_url, 1,  newDataUser.identifier)
+        UPDATE_DATA = (self.zero.sanTuple(newDataUser.full_name), self.zero.sanTuple(label), newDataUser.get_profile_picture_url(), newDataUser.follows_count, newDataUser.followed_by_count, self.zero.sanTuple(newDataUser.biography), newDataUser.username, newDataUser.is_private, newDataUser.is_verified, newDataUser.media_count, newDataUser.external_url, 1,  newDataUser.identifier)
         self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_NODES, UPDATE_DATA)
         self.zero.printText("+ Update of DB NODE complete.", False)
 
@@ -88,11 +88,25 @@ class coreFunc():
                 while line:
                     if line != 0:
                         user = line.strip()
-                        self.setCurrentUser(user)
+                        zero.printText("+ Getting user info for {}:".format(user), True)
+                        updatenode = self.instaTool.get_insta_account_info(user)
+                        self.updateNodesUserLoaded(updatenode)
                     line = fp.readline()
         else:
             self.zero.printText("+ File not found.", True)
             self.zero.printText("+ Create {} to continue.".format(fullpath), True)
+
+    def deepScanAll(self):
+        self.zero.printText("\n-Geting users from DB", True)
+        allDeep = self.dbTool.getValueSQLnoinput(self.dbConn, self.zero.DB_SELECT_DEEPSCAN_NEED)
+        lengDeep = len(allDeep)
+        counter = 1
+        for u in allDeep:
+            user = u[0]
+            self.zero.printText("+ {} of {} - Getting user info for {}:".format(counter, lengDeep, user), True)
+            updatenode = self.instaTool.get_insta_account_info(user)
+            self.updateNodesUserLoaded(updatenode)
+            counter += 1
 
     def scanFollowToInstaID(self):
         currentInstaID = self.getDoneUserIDFromInsta()
@@ -182,7 +196,7 @@ class coreFunc():
 
     def loadFollowlist(self, inOut): #False load Follow, True Load followers
         continueScan = True
-        
+
         if inOut == False:
             #Getting following
             self.zero.printText("\n- Loading follows list for: {}".format(self.currentUser.username), True)
@@ -282,12 +296,12 @@ class coreFunc():
                     user = self.instaTool.get_insta_account_info_id(tempID)
 
                 label = self.getLabelforUser(user)
-                self.zero.INSERT_DATA = (user.full_name, label, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 1, user.identifier)
+                self.zero.INSERT_DATA = (self.zero.sanTuple(user.full_name), self.zero.sanTuple(label), user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, self.zero.sanTuple(user.biography), user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 1, user.identifier)
 
             else:
                 self.zero.printText("+ Surfacescan are ON", False)
                 label = self.getLabelforUser(user)
-                self.zero.INSERT_DATA = (user.full_name, label, user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, user.biography, user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 0, user.identifier)
+                self.zero.INSERT_DATA = (self.zero.sanTuple(user.full_name), self.zero.sanTuple(label), user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, self.zero.sanTuple(user.biography), user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 0, user.identifier)
 
             self.zero.printText("+ ADDING to NODE db", False)
             userNodeID = self.dbTool.inserttoTabelMulti(self.dbConn, self.zero.DB_INSERT_NODE, self.zero.INSERT_DATA)[0][0]

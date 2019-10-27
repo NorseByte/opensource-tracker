@@ -63,6 +63,7 @@ class Optracker():
             { self.zero.RUN_LOAD_SCAN: self.runLoadUserNodeScan },
             { self.zero.RUN_EXPORT_DATA: self.dispExport},
             { self.zero.RUN_EDIT_OPTIONS: self.runEditDefault},
+            { self.zero.RUN_GET_DEEP: self.runDeepfromDB},
             { self.zero.RUN_EXIT_DISP: exit},
         ]
 
@@ -113,6 +114,9 @@ class Optracker():
 
     def runEditDefault(self):
         self.sideTool.editDefaultValue()
+
+    def runDeepfromDB(self):
+        self.mainFunc.deepScanAll()
 
     def dispHelp(self):
         print(self.zero.HELP_TEXT)

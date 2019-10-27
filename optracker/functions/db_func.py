@@ -39,16 +39,12 @@ class dbFunc():
             print(e)
 
     def inserttoTabel(self, conn, sql, task):
-        task = self.zero.sanTuple(task)
         cur = conn.cursor()
         cur.execute(sql, task)
         conn.commit()
         return cur.lastrowid
 
     def inserttoTabelMulti(self, conn, sql, task):
-        data = 0
-        task = self.zero.sanTuple(task)
-
         if self.zero.DB_MYSQL_ON == 1:
             c = conn.cursor(buffered=True)
             results = c.execute(sql, task, multi=True)

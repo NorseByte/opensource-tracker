@@ -23,6 +23,7 @@ class zerodata():
 	RUN_EXPORT_DATA = "Export nodes and egdes"
 	RUN_EDIT_OPTIONS = "Change default values"
 	RUN_LOAD_SCAN = "Deepscan from list"
+	RUN_GET_DEEP = "Deepscan from database"
 	RUN_EXIT_DISP = "Exit"
 
 	#ERROR codes
@@ -184,6 +185,7 @@ class zerodata():
 	DB_INSERT_MYSQL_NEW_INSTA = 'INSERT INTO new_insta (insta_id, insta_user) VALUES (%s, %s);'
 	DB_INSERT_MYSQL_LOGIN_INSTA = 'INSERT INTO accounts (username, password, email, fullname, account_type, last_used) VALUES (%s, %s, %s, %s, %s, %s);'
 	DB_INSERT_MYSQL_OPTIONS_LASTINSTA = 'INSERT INTO options (value, what) VALUES (%s, %s);'
+	DB_SELECT_MYSQL_DEEPSCAN_NEED = 'SELECT insta_username FROM nodes WHERE insta_deepscan = 0'
 
 	DB_UPDATE_MYSQL_LAST_INSTA = 'UPDATE options SET value = (%s) WHERE what = "LAST_INSTA";'
 	DB_UPDATE_MYSQL_OPTIONS = 'UPDATE options SET value = (%s) WHERE what = %s;'
@@ -222,6 +224,7 @@ class zerodata():
 	DB_UPDATE_ACCOUNT_LAST_USED = 'UPDATE "main"."accounts" SET ("last_used") = ? WHERE username = ?'
 	DB_UPDATE_NODES = 'UPDATE "main"."nodes" SET "name" = ?, "label" = ?, "insta_img" = ?, "insta_follow" = ?, "insta_follower" = ?, "insta_bio" = ?, "insta_username" = ?, "insta_private" = ?, "insta_verifyed" = ?, "insta_post" = ?, "insta_exturl" = ?, "insta_deepscan" = ? WHERE "insta_id" = ?'
 
+	DB_SELECT_DEEPSCAN_NEED = 'SELECT insta_username FROM nodes WHERE insta_deepscan = 0'
 	DB_SELECT_ID_NODE = 'SELECT id FROM "main"."nodes" WHERE ("insta_id") = ?'
 	DB_SELECT_USERNAME_NODE = 'SELECT insta_username FROM "main"."nodes" WHERE insta_id = ?'
 	DB_SELECT_DONE_NEW_INSTA = 'SELECT done, wait FROM "main"."new_insta" WHERE ("insta_id") = ?'
@@ -317,18 +320,11 @@ class zerodata():
 
 	#Removes unwanted symbols in string
 	def sanTuple(self, text):
-		counter = 0
-		y = list(text)
+		text = str(text)
+		text = text.replace("'", "")
+		text = text.replace('"', "")
+		text = text.replace(";", "")
 
-		for i in y:
-			if i is str:
-				i = i.replace("'", "")
-				i = i.replace('"', "")
-				i = i.replace(";", "")
-			y[counter] = i
-			counter += 1
-
-		text = tuple(y)
 		return text
 
 	def setupJSON(self, export):
@@ -416,6 +412,7 @@ class zerodata():
 			self.DB_SELECT_COUNT_EDES_INSTA = self.DB_SELECT_MYSQL_COUNT_EDES_INSTA
 			self.DB_SELECT_INSTA_FOLLOWER_NODE_ID = self.DB_SELECT_MYSQL_INSTA_FOLLOWER_NODE_ID
 			self.DB_SELECT_FOLLOW_OF = self.DB_SELECT_MYSQL_FOLLOW_OF
+			self.DB_SELECT_DEEPSCAN_NEED = self.DB_SELECT_MYSQL_DEEPSCAN_NEED
 
 	def __init__(self):
 		#Starting up
