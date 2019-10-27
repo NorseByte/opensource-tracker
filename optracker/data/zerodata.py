@@ -5,7 +5,7 @@ class zerodata():
 	#Define username and password
 	LOGIN_USERNAME_INSTA = ""
 	LOGIN_PASSWORD_INSTA = ""
-	PROGRAM_NAME = "openSource Tracker v.1.2.2"
+	PROGRAM_NAME = "openSource Tracker v.1.2.4"
 
 	#List log
 	USER_FILES = (	["user_insta.txt"],
@@ -314,6 +314,22 @@ class zerodata():
 		else:
 			if override == True:
 				print(text)
+
+	#Removes unwanted symbols in string
+	def sanTuple(self, text):
+		counter = 0
+		y = list(text)
+
+		for i in y:
+			if i is str:
+				i = i.replace("'", "")
+				i = i.replace('"', "")
+				i = i.replace(";", "")
+			y[counter] = i
+			counter += 1
+
+		text = tuple(y)
+		return text
 
 	def setupJSON(self, export):
 		if export == True:

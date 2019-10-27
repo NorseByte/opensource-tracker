@@ -92,12 +92,12 @@ class Optracker():
 
     def runCurrentScan(self):
         #Extract info from following list
-        self.mainFunc.loadFollowlist(False)
-        self.mainFunc.add_egde_from_list_insta(False)
+        if self.mainFunc.loadFollowlist(False) == True:
+            self.mainFunc.add_egde_from_list_insta(False)
 
         #Extract followed by
-        self.mainFunc.loadFollowlist(True)
-        self.mainFunc.add_egde_from_list_insta(True)
+        if self.mainFunc.loadFollowlist(True) == True:
+            self.mainFunc.add_egde_from_list_insta(True)
 
         #Update new_Insta
         print("\n- Scan complete")

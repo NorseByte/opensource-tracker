@@ -158,15 +158,15 @@ class coreFunc():
 
                                     #Extract info from following list
                                     if scan_insta_follow != 0:
-                                        self.loadFollowlist(False)
-                                        self.add_egde_from_list_insta(False)
+                                        if self.loadFollowlist(False) == True:
+                                            self.add_egde_from_list_insta(False)
                                     else:
                                         self.zero.printText("+ Follow list is empty", False)
 
                                     #Extract followed by
                                     if scan_insta_followed_by != 0:
-                                        self.loadFollowlist(True)
-                                        self.add_egde_from_list_insta(True)
+                                        if self.loadFollowlist(True) == True:
+                                            self.add_egde_from_list_insta(True)
                                     else:
                                         self.zero.printText("+ Follow by list is empty", False)
 
@@ -181,22 +181,36 @@ class coreFunc():
 
 
     def loadFollowlist(self, inOut): #False load Follow, True Load followers
+        continueScan = True
+        
         if inOut == False:
             #Getting following
             self.zero.printText("\n- Loading follows list for: {}".format(self.currentUser.username), True)
             self.followNumber = self.currentUser.follows_count;
-            self.zero.printText("+ {} are following {} starting info extract.".format(self.currentUser.full_name, self.followNumber), False)
-            self.imported_follow = self.instaTool.get_insta_following(self.followNumber, self.currentUser.identifier)
-            self.lenImpF = len(self.imported_follow['accounts'])
-            self.zero.printText("+ Total loaded: {}".format(self.lenImpF), False)
+            if self.followNumber != 0:
+                self.zero.printText("+ {} are following {} starting info extract.".format(self.currentUser.full_name, self.followNumber), False)
+                self.imported_follow = self.instaTool.get_insta_following(self.followNumber, self.currentUser.identifier)
+                self.lenImpF = len(self.imported_follow['accounts'])
+                self.zero.printText("+ Total loaded: {}".format(self.lenImpF), False)
+                continueScan = True
+            else:
+                print("+ {} are following NOBODY, skipping this stage".format(self.currentUser.username))
+                continueScan = False
         else:
             #Getting following
             self.zero.printText("\n- Loading followed by list for: {}".format(self.currentUser.username), True)
             self.followNumber = self.currentUser.followed_by_count;
-            self.zero.printText("+ {} are followed by {} starting info extract".format(self.currentUser.full_name, self.followNumber), False)
-            self.imported_follow = self.instaTool.get_insta_follow_by(self.followNumber, self.currentUser.identifier)
-            self.lenImpF = len(self.imported_follow['accounts'])
-            self.zero.printText("+ Total loaded: {}".format(self.lenImpF), False)
+            if self.followNumber != 0:
+                self.zero.printText("+ {} are followed by {} starting info extract".format(self.currentUser.full_name, self.followNumber), False)
+                self.imported_follow = self.instaTool.get_insta_follow_by(self.followNumber, self.currentUser.identifier)
+                self.lenImpF = len(self.imported_follow['accounts'])
+                self.zero.printText("+ Total loaded: {}".format(self.lenImpF), False)
+                continueScan = True
+            else:
+                print("+ {} are following NOBODY, skipping this stage".format(self.currentUser.username))
+                continueScan = False
+
+        return continueScan
 
     def setCurrentUser(self, user):
         #Get information
@@ -280,7 +294,7 @@ class coreFunc():
         else:
             userNodeID = userNodeID[0][0]
             self.zero.printText("+ FOUND in NODE list ({}) moving on".format(userNodeID), False)
-            
+
         return userNodeID
 
     def add_egde_from_list_insta(self, inOut):
