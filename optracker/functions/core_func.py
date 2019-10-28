@@ -8,6 +8,7 @@ class coreFunc():
         self.instagram = instagram
         self.zero = Zero
         self.instaTool = InstagramFunc(self.instagram)
+        self.curPrivate = 0
 
     def find_between_r(s, first, last,):
         try:
@@ -26,7 +27,7 @@ class coreFunc():
 
         if exportyes.lower().strip() != "n":
             self.zero.printText("+ Exporting NODES", True)
-            self.dbTool.exportNode(self.dbConn, self.zero.DB_SELECT_ALL_NODE, self.zero.DB_DATABASE_EXPORT_FOLDER + self.zero.DB_DATABASE_EXPORT_NODES)
+            self.dbTool.exportNode(self.dbConn, self.zero.DB_SELECT_EXPORT_ID_USER, self.zero.DB_DATABASE_EXPORT_FOLDER + self.zero.DB_DATABASE_EXPORT_NODES)
             self.zero.printText("+ NODES exported to: {}".format(self.zero.DB_DATABASE_EXPORT_NODES), True)
 
             self.zero.printText("+ Exporting EDGES", True)
@@ -170,24 +171,30 @@ class coreFunc():
                                     #Search critera for allowed OK Start scan.
                                     self.setCurrentUser(i[8].strip())
 
-                                    #Extract info from following list
-                                    if scan_insta_follow != 0:
-                                        if self.loadFollowlist(False) == True:
-                                            self.add_egde_from_list_insta(False)
-                                    else:
-                                        self.zero.printText("+ Follow list is empty", False)
+                                    #Check if private
+                                    if self.curPrivate == 0:
+                                        #Extract info from following list
+                                        if scan_insta_follow != 0:
+                                            if self.loadFollowlist(False) == True:
+                                                self.add_egde_from_list_insta(False)
+                                        else:
+                                            self.zero.printText("+ Follow list is empty", False)
 
-                                    #Extract followed by
-                                    if scan_insta_followed_by != 0:
-                                        if self.loadFollowlist(True) == True:
-                                            self.add_egde_from_list_insta(True)
-                                    else:
-                                        self.zero.printText("+ Follow by list is empty", False)
+                                        #Extract followed by
+                                        if scan_insta_followed_by != 0:
+                                            if self.loadFollowlist(True) == True:
+                                                self.add_egde_from_list_insta(True)
+                                        else:
+                                            self.zero.printText("+ Follow by list is empty", False)
 
-                                    #Update new_Insta
-                                    self.zero.printText("\n- Scan complete", False)
-                                    self.zero.printText("+ Setting {} ({}) to complete.".format(i[8], i[3]), True)
-                                    self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_NEW_INSTA_DONE_TRUE, (i[3],))
+                                        #Update new_Insta
+                                        self.zero.printText("\n- Scan complete", False)
+                                        self.zero.printText("+ Setting {} ({}) to complete.".format(i[8], i[3]), True)
+                                        self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_NEW_INSTA_DONE_TRUE, (i[3],))
+                                    else:
+                                        self.zero.printText("+ User profile are private after update.", True)
+                                        self.zero.printText("+ Setting {} ({}) to complete.".format(i[8], i[3]), True)
+                                        self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_NEW_INSTA_DONE_TRUE, (i[3],))
                                 else:
                                     self.zero.printText("+ User are followed by to many, increese allowed follow to continue", True)
                             else:
@@ -233,6 +240,7 @@ class coreFunc():
         #Check if zeroPoint is in DB if not add.
         self.zero.printText("+ Getting user information from Instagram", True)
         self.currentUser = self.instaTool.get_insta_account_info(user)
+        self.curPrivate = self.currentUser.is_private
         self.check_user_db_node(self.currentUser, False)
 
         #Update User information

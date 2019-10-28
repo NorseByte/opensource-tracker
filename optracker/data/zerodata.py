@@ -5,7 +5,7 @@ class zerodata():
 	#Define username and password
 	LOGIN_USERNAME_INSTA = ""
 	LOGIN_PASSWORD_INSTA = ""
-	PROGRAM_NAME = "openSource Tracker v.1.2.4"
+	PROGRAM_NAME = "openSource Tracker v.1.2.7"
 
 	#List log
 	USER_FILES = (	["user_insta.txt"],
@@ -194,6 +194,7 @@ class zerodata():
 	DB_UPDATE_MYSQL_ACCOUNT_LAST_USED = 'UPDATE accounts SET last_used = %s WHERE username = %s'
 	DB_UPDATE_MYSQL_NODES = 'UPDATE nodes SET name = %s, label = %s, insta_img = %s, insta_follow = %s, insta_follower = %s, insta_bio = %s, insta_username = %s, insta_private = %s, insta_verifyed = %s, insta_post = %s, insta_exturl = %s, insta_deepscan = %s WHERE insta_id = %s'
 
+	DB_SELECT_MYSQL_EXPORT_ID_USER = 'SELECT id, insta_username FROM nodes'
 	DB_SELECT_MYSQL_ID_NODE = 'SELECT id FROM nodes WHERE insta_id = %s'
 	DB_SELECT_MYSQL_USERNAME_NODE = 'SELECT insta_username FROM nodes WHERE insta_id = %s'
 	DB_SELECT_MYSQL_DONE_NEW_INSTA = 'SELECT done, wait FROM new_insta WHERE insta_id = %s'
@@ -211,6 +212,7 @@ class zerodata():
 
 
 	#SQLite
+	DB_SELECT_EXPORT_ID_USER = 'SELECT id, insta_username FROM nodes'
 	DB_INSERT_NODE = """INSERT INTO "main"."nodes" ("name", "label", "insta_id", "insta_img", "insta_follow", "insta_follower", "insta_bio", "insta_username", "insta_private", "insta_verifyed", "insta_post", "insta_exturl", "insta_deepscan") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); SELECT id FROM nodes where insta_id = ?;"""
 	DB_INSERT_INSTA_EGDE = 'INSERT INTO "main"."egdes_insta" ("source", "target") VALUES (?, ?);'
 	DB_INSERT_NEW_INSTA = 'INSERT INTO "main"."new_insta" ("insta_id", "insta_user") VALUES (?, ?);'
@@ -413,6 +415,7 @@ class zerodata():
 			self.DB_SELECT_INSTA_FOLLOWER_NODE_ID = self.DB_SELECT_MYSQL_INSTA_FOLLOWER_NODE_ID
 			self.DB_SELECT_FOLLOW_OF = self.DB_SELECT_MYSQL_FOLLOW_OF
 			self.DB_SELECT_DEEPSCAN_NEED = self.DB_SELECT_MYSQL_DEEPSCAN_NEED
+			self.DB_SELECT_EXPORT_ID_USER = self.DB_SELECT_MYSQL_EXPORT_ID_USER
 
 	def __init__(self):
 		#Starting up
