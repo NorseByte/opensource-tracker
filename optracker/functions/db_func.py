@@ -114,35 +114,20 @@ class dbFunc():
         if not os.path.exists(self.zero.DB_DATABASE_EXPORT_FOLDER):
             os.mkdir(self.zero.DB_DATABASE_EXPORT_FOLDER)
 
+    def setDefaultValue(self, conn, text, value):
+        getValue = self.getValueSQL(conn, self.zero.DB_SELECT_OPTIONS, (text, ))
+        if getValue == 0:
+            self.zero.printText("+ {} are NOT in database".format(text), True)
+            self.inserttoTabel(conn, self.zero.DB_INSERT_OPTIONS_LASTINSTA, (value, text, ))
+            self.zero.printText("+ {} set to: {}".format(text, value), True)
+        else:
+            self.zero.printText("+ {} in database, value set to: {}".format(text, getValue[0][1]), False)
+
     def setDefaultValueOptions(self, conn):
         #Set max value for scan
         print("+ Setup of default values")
-        getMaxValueFOLLOW = self.getValueSQL(conn, self.zero.DB_SELECT_OPTIONS, (self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT, ))
-        getMaxValueFOLLOWBY = self.getValueSQL(conn, self.zero.DB_SELECT_OPTIONS, (self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, ))
-        getSurfaceScan = self.getValueSQL(conn, self.zero.DB_SELECT_OPTIONS, (self.zero.SURFACE_SCAN_TEXT, ))
-
-        if getMaxValueFOLLOW == 0:
-            self.zero.printText("+ {} are NOT in database".format(self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT), True)
-            self.inserttoTabel(conn, self.zero.DB_INSERT_OPTIONS_LASTINSTA, (self.zero.INSTA_MAX_FOLLOW_SCAN_VALUE, self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT, ))
-            self.zero.printText("+ {} set to: {}".format(self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT, self.zero.INSTA_MAX_FOLLOW_SCAN_VALUE), True)
-        else:
-            self.zero.INSTA_MAX_FOLLOW_SCAN_VALUE = getMaxValueFOLLOW[0][1]
-            self.zero.printText("+ {} in database, value set to: {}".format(self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT, self.zero.INSTA_MAX_FOLLOW_SCAN_VALUE), False)
-
-        if getMaxValueFOLLOWBY == 0:
-            self.zero.printText("+ {} are NOT in database".format(self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT), True)
-            self.inserttoTabel(conn, self.zero.DB_INSERT_OPTIONS_LASTINSTA, (self.zero.INSTA_MAX_FOLLOW_BY_SCAN_VALUE, self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, ))
-            self.zero.printText("+ {} set to: {}".format(self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, self.zero.INSTA_MAX_FOLLOW_BY_SCAN_VALUE), True)
-        else:
-            self.zero.INSTA_MAX_FOLLOW_BY_SCAN_VALUE = getMaxValueFOLLOWBY[0][1]
-            self.zero.printText("+ {} in database, value set to: {}".format(self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, self.zero.INSTA_MAX_FOLLOW_BY_SCAN_VALUE), False)
-
-        if getSurfaceScan == 0:
-            self.zero.printText("+ {} are NOT in database".format(self.zero.SURFACE_SCAN_TEXT), True)
-            self.inserttoTabel(conn, self.zero.DB_INSERT_OPTIONS_LASTINSTA, (self.zero.SURFACE_SCAN_VALUE, self.zero.SURFACE_SCAN_TEXT, ))
-            self.zero.printText("+ {} set to: {}".format(self.zero.SURFACE_SCAN_TEXT, self.zero.SURFACE_SCAN_VALUE), True)
-        else:
-            self.zero.SURFACE_SCAN_VALUE = getSurfaceScan[0][1]
-            self.zero.printText("+ {} in database, value set to: {}".format(self.zero.SURFACE_SCAN_TEXT, self.zero.SURFACE_SCAN_VALUE), False)
-
+        self.setDefaultValue(conn, self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT, self.zero.INSTA_MAX_FOLLOW_SCAN_VALUE)
+        self.setDefaultValue(conn, self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, self.zero.INSTA_MAX_FOLLOW_BY_SCAN_VALUE)
+        self.setDefaultValue(conn, self.zero.SURFACE_SCAN_TEXT, self.zero.SURFACE_SCAN_VALUE)
+        self.setDefaultValue(conn, self.zero.DOWNLOAD_PROFILE_INSTA_TEXT, self.zero.DOWNLOAD_PROFILE_INSTA_VALUE)
         self.zero.printText("+ Setup of default DONE", False)

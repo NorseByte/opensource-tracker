@@ -59,14 +59,14 @@ my_username3, my_password3, my_email3, my_fullname3, instagram
 **User list** will update each time you start the program, so new users can be added directly into the .txt document or you can add them manually into the program at start up.
 
 **Place for userlist** are in root directory. Usually is it ***c:\optracker*** or ***\optracker*** for Linux
-```
+```cmd
 optracker/
-  userlist.txt
-  db/
-    openSource-tracker.db
-  export/
-    node.csv
-    egdes.csv
+    userlist.txt
+    db/
+        openSource-tracker.db
+    export/
+        node.csv
+        egdes.csv
 ```
 
 
@@ -90,15 +90,15 @@ By turning on surfacescan you only extract username and instagram id when scrapi
 
 ### 8. Deepscan from list
 Gives you the possibility to run a deep scan on a selected list of users. It will scrape all the data from instagram for the selected ones, and update DB Node. You need to create a file in **ROOT FOLDER** called **user_scan_insta.txt**
-```
+```cmd
 optracker/
-  userlist.txt
-  user_scan_insta.txt
-  db/
-    openSource-tracker.db
-  export/
-    node.csv
-    egdes.csv
+    userlist.txt
+    user_scan_insta.txt
+    db/
+        openSource-tracker.db
+    export/
+        node.csv
+        egdes.csv
 ```
 Content of the list need to be one username per line:
 ```python
@@ -108,9 +108,30 @@ Content of the list need to be one username per line:
 {USER 4}
 ```
 ### 9. Detail Print
-On Default is it turned **OFF** you will only get the minimum of info to see if it is working properly. If you turn it **ON** will you be presented with all the output the scraper have. 
+On Default is it turned **OFF** you will only get the minimum of info to see if it is working properly. If you turn it **ON** will you be presented with all the output the scraper have.
 
-### 10. Change default value
+### 10. Download Profile Image
+The program will download every Instagram profile image it scans for face recognition. It saves it to **profile_pic**. You can turn it of from default value menu.
+
+```cmd
+optracker/
+    userlist.txt
+    user_scan_insta.txt
+    db/
+        openSource-tracker.db
+    export/
+        node.csv
+        egdes.csv
+    instadata/
+        profilepic/
+            **INSTA ID**.jpg
+        post/
+```
+
+### 11. Update Profile Image
+Running this will check the DB agenst profile image folder, and download all the images that are missing. 
+
+### 12. Change default value
 From the menu can you change default values like surfacescan, max follow and mysql or sqlite with more. To change select yes, fill in new value, if you dont want to change one value leave it blank.
 
 
@@ -209,3 +230,6 @@ When searhing profiles sometimes the user have set it to private after first scr
 - instagram-php-scraper [here](https://github.com/postaddictme/instagram-php-scraper/)<br />
 - instagram-scraper [here](https://github.com/realsirjoe/instagram-scraper)<br />
 - logo-design [here](http://freepik.com)  
+
+
+<br /><a href="https://www.buymeacoffee.com/knoph" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-black.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;" ></a>

@@ -81,15 +81,45 @@ class sideFunc():
                 self.zero.printText("+ User list loaded.", True)
                 return userList
 
+    def setDefValue(self, newValue, text, value_text, oneup, json):
+        if newValue.isdigit():
+            if oneup == False:
+                if int(newValue) < 1:
+                    self.zero.printText("+ Invalid input {} not changed".format(text), False)
+                else:
+                    self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_OPTIONS, (newValue, text))
+                    value_text = newMaxFollow
+                    self.zero.printText("+ {} set to: {}".format(text, value_text), True)
+            if oneup == True:
+                if int(newValue) > 1:
+                    self.zero.printText("+ Invalid input {} not changed".format(text), False)
+                else:
+                    if int(newValue) < 0:
+                        self.zero.printText("+ Invalid input {} not changed".format(text), False)
+                    else:
+                        if json == False:
+                            self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_OPTIONS, (newValue, text))
+                            value_text = newValue
+                            self.zero.printText("+ {} set to: {}".format(text, value_text), True)
+                        else:
+                            value_text = newValue
+                            self.zero.setupJSON(True)
+                            self.zero.printText("+ {} set to: {}".format(text, value_text), True)
+                            self.zero.printText("+ IF SQL CHANGE RESTART PROGRAM", True)
+        else:
+            self.zero.printText("+ Invalid input {} not changed".format(text), False)
+
     def editDefaultValue(self):
         getMaxValueFOLLOW = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, (self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT, ))[0][1]
         getMaxValueFOLLOWBY = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, (self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, ))[0][1]
         getSurfaceScan = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, (self.zero.SURFACE_SCAN_TEXT, ))[0][1]
+        getDownload = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, (self.zero.DOWNLOAD_PROFILE_INSTA_TEXT, ))[0][1]
 
         self.zero.printText("\n- Loading default values:", True)
         self.zero.printText("+ Max allowed follow: {}".format(getMaxValueFOLLOW), True)
         self.zero.printText("+ Max allowed follow by: {}".format(getMaxValueFOLLOWBY), True)
         self.zero.printText("+ Surface scan set to: {} (0 = OFF, 1 = ON)".format(getSurfaceScan), True)
+        self.zero.printText("+ Download profile set to: {} (0 = OFF, 1 = ON)".format(getDownload), True)
         self.zero.printText("+ Detail print set to: {} (0 = OFF, 1 = ON)".format(self.zero.DETAIL_PRINT_VALUE), True)
         self.zero.printText("+ Mysql(1) - Sqlite(0): {}".format(self.zero.DB_MYSQL_ON), True)
 
@@ -100,68 +130,14 @@ class sideFunc():
             newMaxFollowBy = input("+ Max allowed followed by: ")
             newSurfaceScan = input("+ Surface scan on[1]/off[0]: ")
             newDetailPrint = input("+ Detail print on[1]/off[0]: ")
+            newSavePhoto = input("+ Download profile on[1]/off[0]: ")
             newMysql = input("+ Mysql[1] - Sqlite[0]: ")
 
-            if newMaxFollow.isdigit():
-                if int(newMaxFollow) < 1:
-                    self.zero.printText("+ Invalid input Max allowed follows not changed", False)
-                else:
-                    self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_OPTIONS, (newMaxFollow, self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT))
-                    self.zero.INSTA_MAX_FOLLOW_SCAN_VALUE = newMaxFollow
-                    self.zero.printText("+ Max allowed follow set to: {}".format(newMaxFollow), True)
-            else:
-                self.zero.printText("+ Invalid input Max allowed follows not changed", False)
-
-            if newMaxFollowBy.isdigit():
-                if int(newMaxFollowBy) < 1:
-                    self.zero.printText("+ Invalid input Max allowed followed by not changed", False)
-                else:
-                    self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_OPTIONS, (newMaxFollowBy, self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT))
-                    self.zero.INSTA_MAX_FOLLOW_BY_SCAN_VALUE = newMaxFollowBy
-                    self.zero.printText("+ Max allowed followed by set to: {}".format(newMaxFollowBy), True)
-            else:
-                self.zero.printText("+ Invalid input Max allowed followed by not changed", False)
-
-            if newSurfaceScan.isdigit():
-                if int(newSurfaceScan) > 1:
-                    self.zero.printText("+ Invalid input: Surface scan not changed", False)
-                else:
-                    if int(newSurfaceScan) < 0:
-                        self.zero.printText("+ Invalid input: Surface scan not changed", False)
-                    else:
-                        self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_OPTIONS, (newSurfaceScan, self.zero.SURFACE_SCAN_TEXT))
-                        self.zero.SURFACE_SCAN_VALUE = newSurfaceScan
-                        self.zero.printText("+ Surface scan set to: {}".format(newSurfaceScan), True)
-            else:
-                self.zero.printText("+ Invalid input: Surface scan not changed", False)
-
-            if newDetailPrint.isdigit():
-                if int(newDetailPrint) > 1:
-                    self.zero.printText("+ Invalid input: Detail print not changed", False)
-                else:
-                    if int(newDetailPrint) < 0:
-                        self.zero.printText("+ Invalid input: Detail print not changed", False)
-                    else:
-                        self.zero.DETAIL_PRINT_VALUE = newDetailPrint
-                        self.zero.setupJSON(True)
-                        self.zero.printText("+ Detail print set to: {}".format(newDetailPrint), True)
-            else:
-                self.zero.printText("+ Invalid input: Detail print not changed", True)
-
-            if newMysql.isdigit():
-                if int(newMysql) > 1:
-                    self.zero.printText("+ Invalid input: SQL DB not changed", False)
-                else:
-                    if int(newMysql) < 0:
-                        self.zero.printText("+ Invalid input: SQL DB not changed", False)
-                    else:
-                        self.zero.DB_MYSQL_ON = newMysql
-                        self.zero.printText("+ SQL DB set to: {}".format(self.zero.DB_MYSQL_ON), True)
-                        self.zero.setupJSON(True)
-                        self.zero.printText("+ SQL DB changed please RESTART optracker.", True)
-            else:
-                self.zero.printText("+ Invalid input: SQL DB not changed", False)
-
+            self.setDefValue(newMaxFollow, self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT, self.zero.INSTA_MAX_FOLLOW_SCAN_VALUE, False, False)
+            self.setDefValue(newMaxFollowBy, self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, self.zero.INSTA_MAX_FOLLOW_BY_SCAN_VALUE, False, False)
+            self.setDefValue(newSurfaceScan, self.zero.SURFACE_SCAN_TEXT, self.zero.SURFACE_SCAN_VALUE, True, False)
+            self.setDefValue(newDetailPrint, self.zero.DETAIL_PRINT_TEXT, self.zero.DETAIL_PRINT_VALUE, True, True)
+            self.setDefValue(newSavePhoto, self.zero.DOWNLOAD_PROFILE_INSTA_TEXT, self.zero.DOWNLOAD_PROFILE_INSTA_TEXT, True, False)
         else:
             self.zero.printText("+ Nothing changed.", True)
 

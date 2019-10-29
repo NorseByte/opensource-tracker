@@ -64,6 +64,7 @@ class Optracker():
             { self.zero.RUN_EXPORT_DATA: self.dispExport},
             { self.zero.RUN_EDIT_OPTIONS: self.runEditDefault},
             { self.zero.RUN_GET_DEEP: self.runDeepfromDB},
+            { self.zero.RUN_UPDATE_IMG: self.updateImg},
             { self.zero.RUN_EXIT_DISP: exit},
         ]
 
@@ -76,8 +77,8 @@ class Optracker():
         self.mainFunc.setCurrentUser(self.zero.INSTA_USER)
         self.runCurrentScan()
 
-    def dbSelect(self):
-        print("+ Selecting DB")
+    def updateImg(self):
+        self.mainFunc.updateProfileImg()
 
     def selectUserAndLogin(self):
         #Setusername
@@ -136,17 +137,26 @@ class Optracker():
     def root_path(self):
         return os.path.abspath(os.sep)
 
+    def createFolder(self, folder):
+        if not os.path.exists(folder):
+            os.mkdir(folder)
+            self.zero.printText("+ Folder created: {}".format(folder), True)
+        else:
+            self.zero.printText("+ Folder loacted: {}".format(folder), True)
+
     def createRootfolder(self):
         self.zero.OP_ROOT_FOLDER_PATH_VALUE = self.root_path()
-        currentFolder = self.zero.OP_ROOT_FOLDER_PATH_VALUE + self.zero.OP_ROOT_FOLDER_NAME_VALUE
-        self.zero.OP_ROOT_FOLDER_PATH_VALUE = currentFolder
+        self.zero.OP_ROOT_FOLDER_PATH_VALUE = self.zero.OP_ROOT_FOLDER_PATH_VALUE + self.zero.OP_ROOT_FOLDER_NAME_VALUE
+        self.createFolder(self.zero.OP_ROOT_FOLDER_PATH_VALUE)
 
-        if not os.path.exists(currentFolder):
-            os.mkdir(currentFolder)
-            self.zero.printText("+ Root folder created at: {}".format(self.zero.OP_ROOT_FOLDER_PATH_VALUE), True)
+        #Setup INSTA_FOLDER
+        self.zero.OP_INSTA_FOLDER_NAME_VALUE =  self.zero.OP_ROOT_FOLDER_PATH_VALUE + self.zero.OP_INSTA_FOLDER_NAME_VALUE
+        self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE = self.zero.OP_INSTA_FOLDER_NAME_VALUE + self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE
+        self.zero.OP_INSTA_INSTAID_FOLDER_VALUE = self.zero.OP_INSTA_FOLDER_NAME_VALUE + self.zero.OP_INSTA_INSTAID_FOLDER_VALUE
 
-        else:
-            self.zero.printText("+ Root folder located at: {}".format(self.zero.OP_ROOT_FOLDER_PATH_VALUE), True)
+        self.createFolder(self.zero.OP_INSTA_FOLDER_NAME_VALUE)
+        self.createFolder(self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE)
+        self.createFolder(self.zero.OP_INSTA_INSTAID_FOLDER_VALUE)
 
         #Setting up full path starting
         self.zero.DB_DATABASE_FOLDER = self.zero.OP_ROOT_FOLDER_PATH_VALUE + self.zero.DB_DATABASE_FOLDER

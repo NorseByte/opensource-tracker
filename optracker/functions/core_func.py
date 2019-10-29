@@ -1,4 +1,6 @@
 import os
+import requests
+import shutil
 from ..functions.instagram_func import *
 
 class coreFunc():
@@ -17,6 +19,15 @@ class coreFunc():
             return s[start:end]
         except ValueError:
             return ""
+
+    def downloadImage(self, name, type, folder, url):
+        self.zero.printText("+ Downloading Image: {}".format(name), True)
+        resp = requests.get(url, stream=True)
+        local_file = open(folder + name + type, 'wb')
+        resp.raw.decode_content = True
+        shutil.copyfileobj(resp.raw, local_file)
+        del resp
+        self.zero.printText("+ Download Complete", True)
 
     def exportDBData(self):
         self.zero.printText("\n- Loading current data from DB", True)
@@ -67,10 +78,29 @@ class coreFunc():
         self.zero.printText("+ User data loaded.", False)
         label = self.getLabelforUser(newDataUser)
 
+        #Download profile Image
+        if int(self.zero.DOWNLOAD_PROFILE_INSTA_VALUE) == 1:
+            if os.path.isfile(self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE + newDataUser.identifier + self.zero.INSTA_FILE_EXT) == False:
+                self.downloadImage(newDataUser.identifier, self.zero.INSTA_FILE_EXT, self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE, newDataUser.get_profile_picture_url())
+
+
         UPDATE_DATA = (self.zero.sanTuple(newDataUser.full_name), self.zero.sanTuple(label), newDataUser.get_profile_picture_url(), newDataUser.follows_count, newDataUser.followed_by_count, self.zero.sanTuple(newDataUser.biography), newDataUser.username, newDataUser.is_private, newDataUser.is_verified, newDataUser.media_count, newDataUser.external_url, 1,  newDataUser.identifier)
         self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_NODES, UPDATE_DATA)
         self.zero.printText("+ Update of DB NODE complete.", False)
         return newDataUser
+
+    def updateProfileImg(self):
+        self.zero.printText("\n- Starting Profile Img Update", True)
+        user_img_list = self.dbTool.getValueSQLnoinput(self.dbConn, self.zero.DB_SELECT_IMG)
+        lengList = len(user_img_list)
+        counter = 1
+        for u in user_img_list:
+            self.zero.printText("+ {} of {}: {}".format(counter, lengList, u[0]), True)
+            counter += 1
+            #Download profile Image
+            if os.path.isfile(self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE + str(u[1]) + self.zero.INSTA_FILE_EXT) == False:
+                self.downloadImage(str(u[1]), self.zero.INSTA_FILE_EXT, self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE, str(u[2]))
+
 
     def updateNodesUserLoaded(self, newDataUser):
         self.zero.printText("+ Updating user data for: {} ({})".format(newDataUser.username, newDataUser.identifier), False)
@@ -91,6 +121,12 @@ class coreFunc():
                         user = line.strip()
                         zero.printText("+ Getting user info for {}:".format(user), True)
                         updatenode = self.instaTool.get_insta_account_info(user)
+
+                        #Download profile Image
+                        if int(self.zero.DOWNLOAD_PROFILE_INSTA_VALUE) == 1:
+                            if os.path.isfile(self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE + updatenode.identifier + self.zero.INSTA_FILE_EXT) == False:
+                                self.downloadImage(updatenode.identifier, self.zero.INSTA_FILE_EXT, self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE, updatenode.get_profile_picture_url())
+
                         self.updateNodesUserLoaded(updatenode)
                     line = fp.readline()
         else:
@@ -106,6 +142,12 @@ class coreFunc():
             user = u[0]
             self.zero.printText("+ {} of {} - Getting user info for {}:".format(counter, lengDeep, user), True)
             updatenode = self.instaTool.get_insta_account_info(user)
+
+            #Download profile Image
+            if int(self.zero.DOWNLOAD_PROFILE_INSTA_VALUE) == 1:
+                if os.path.isfile(self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE + updatenode.identifier + self.zero.INSTA_FILE_EXT) == False:
+                    self.downloadImage(updatenode.identifier, self.zero.INSTA_FILE_EXT, self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE, updatenode.get_profile_picture_url())
+
             self.updateNodesUserLoaded(updatenode)
             counter += 1
 
@@ -243,6 +285,11 @@ class coreFunc():
         self.curPrivate = self.currentUser.is_private
         self.check_user_db_node(self.currentUser, False)
 
+        #Download profile Image
+        if int(self.zero.DOWNLOAD_PROFILE_INSTA_VALUE) == 1:
+            if os.path.isfile(self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE + self.currentUser.identifier + self.zero.INSTA_FILE_EXT) == False:
+                self.downloadImage(self.currentUser.identifier, self.zero.INSTA_FILE_EXT, self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE, self.currentUser.get_profile_picture_url())
+
         #Update User information
         self.updateNodesUserLoaded(self.currentUser)
 
@@ -303,6 +350,11 @@ class coreFunc():
                     self.zero.printText("+ Getting user data for: {}".format(user.username), False)
                     user = self.instaTool.get_insta_account_info_id(tempID)
 
+                    #Download profile
+                    if int(self.zero.DOWNLOAD_PROFILE_INSTA_VALUE) == 1:
+                        if os.path.isfile(self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE + user.identifier + self.zero.INSTA_FILE_EXT) == False:
+                            self.downloadImage(user.identifier, self.zero.INSTA_FILE_EXT, self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE, user.get_profile_picture_url())
+
                 label = self.getLabelforUser(user)
                 self.zero.INSERT_DATA = (self.zero.sanTuple(user.full_name), self.zero.sanTuple(label), user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, self.zero.sanTuple(user.biography), user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 1, user.identifier)
 
@@ -325,9 +377,6 @@ class coreFunc():
             counterF += 1
             self.zero.printText("\n", False)
             self.zero.printText("- {} of {} :: Username: {} - ID: {}".format(counterF, self.lenImpF, following.username, following.identifier), True)
-
-
-            #TODO: merge nide user db and new insta and add edge in one query.
 
             #Add in Node DB
             tempID = self.check_user_db_node(following, True)

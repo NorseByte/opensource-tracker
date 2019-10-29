@@ -24,6 +24,7 @@ class zerodata():
 	RUN_EDIT_OPTIONS = "Change default values"
 	RUN_LOAD_SCAN = "Deepscan from list"
 	RUN_GET_DEEP = "Deepscan from database"
+	RUN_UPDATE_IMG = "Update Profile Images"
 	RUN_EXIT_DISP = "Exit"
 
 	#ERROR codes
@@ -35,6 +36,15 @@ class zerodata():
 
 	OP_ROOT_FOLDER_NAME_TEXT = "OP_ROOT_FOLDER_NAME"
 	OP_ROOT_FOLDER_NAME_VALUE = "optracker/"
+
+	OP_INSTA_FOLDER_NAME_TEXT = "INSTA_FOLDER_NAME"
+	OP_INSTA_FOLDER_NAME_VALUE = "instadata/"
+
+	OP_INSTA_PROFILEFOLDER_NAME_TEXT = "INSTA_PROFILE_FOLDER_NAME"
+	OP_INSTA_PROFILEFOLDER_NAME_VALUE = "profile_pic/"
+
+	OP_INSTA_INSTAID_FOLDER_TEXT = "INSTA_INSTAID_FOLDER_NAME"
+	OP_INSTA_INSTAID_FOLDER_VALUE = "post/"
 
 	#Config filename
 	OP_ROOT_CONFIG = "optracker.config"
@@ -194,6 +204,7 @@ class zerodata():
 	DB_UPDATE_MYSQL_ACCOUNT_LAST_USED = 'UPDATE accounts SET last_used = %s WHERE username = %s'
 	DB_UPDATE_MYSQL_NODES = 'UPDATE nodes SET name = %s, label = %s, insta_img = %s, insta_follow = %s, insta_follower = %s, insta_bio = %s, insta_username = %s, insta_private = %s, insta_verifyed = %s, insta_post = %s, insta_exturl = %s, insta_deepscan = %s WHERE insta_id = %s'
 
+	DB_SELECT_MYSQL_IMG = 'SELECT insta_username, insta_id, insta_img FROM nodes WHERE insta_img IS NOT NULL AND insta_img IS NOT "None"'
 	DB_SELECT_MYSQL_EXPORT_ID_USER = 'SELECT id, insta_username FROM nodes'
 	DB_SELECT_MYSQL_ID_NODE = 'SELECT id FROM nodes WHERE insta_id = %s'
 	DB_SELECT_MYSQL_USERNAME_NODE = 'SELECT insta_username FROM nodes WHERE insta_id = %s'
@@ -226,6 +237,7 @@ class zerodata():
 	DB_UPDATE_ACCOUNT_LAST_USED = 'UPDATE "main"."accounts" SET ("last_used") = ? WHERE username = ?'
 	DB_UPDATE_NODES = 'UPDATE "main"."nodes" SET "name" = ?, "label" = ?, "insta_img" = ?, "insta_follow" = ?, "insta_follower" = ?, "insta_bio" = ?, "insta_username" = ?, "insta_private" = ?, "insta_verifyed" = ?, "insta_post" = ?, "insta_exturl" = ?, "insta_deepscan" = ? WHERE "insta_id" = ?'
 
+	DB_SELECT_IMG = 'SELECT insta_username, insta_id, insta_img FROM nodes WHERE insta_img IS NOT NULL AND insta_img IS NOT "None"'
 	DB_SELECT_DEEPSCAN_NEED = 'SELECT insta_username FROM nodes WHERE insta_deepscan = 0'
 	DB_SELECT_ID_NODE = 'SELECT id FROM "main"."nodes" WHERE ("insta_id") = ?'
 	DB_SELECT_USERNAME_NODE = 'SELECT insta_username FROM "main"."nodes" WHERE insta_id = ?'
@@ -251,6 +263,7 @@ class zerodata():
 	TOTAL_USER_COUNT = 0
 	WRITE_ENCODING = "utf-8"
 	ON_ERROR_ENCODING = "replace"
+	INSTA_FILE_EXT = ".jpg"
 
 	INSTA_MAX_FOLLOW_SCAN_TEXT = "INSTA_MAX_FOLLOW_SCAN"
 	INSTA_MAX_FOLLOW_SCAN_VALUE = 2000
@@ -266,6 +279,9 @@ class zerodata():
 
 	LAST_INSTA_TEXT = "LAST_INSTA"
 	LAST_INSTA_VALUE = ""
+
+	DOWNLOAD_PROFILE_INSTA_TEXT = "DOWNLOAD_PROFILE_INSTA"
+	DOWNLOAD_PROFILE_INSTA_VALUE = "1"
 
 
 	#Help TEXT
@@ -416,6 +432,7 @@ class zerodata():
 			self.DB_SELECT_FOLLOW_OF = self.DB_SELECT_MYSQL_FOLLOW_OF
 			self.DB_SELECT_DEEPSCAN_NEED = self.DB_SELECT_MYSQL_DEEPSCAN_NEED
 			self.DB_SELECT_EXPORT_ID_USER = self.DB_SELECT_MYSQL_EXPORT_ID_USER
+			self.DB_SELECT_IMG = self.DB_SELECT_MSQL_IMG
 
 	def __init__(self):
 		#Starting up
