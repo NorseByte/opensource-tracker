@@ -1,16 +1,18 @@
 import os
 import requests
 import shutil
+from PIL import Image
 from ..functions.instagram_func import *
 
 class coreFunc():
-    def __init__(self, dbTool, dbConn, instagram, Zero):
+    def __init__(self, dbTool, dbConn, instagram, Zero, Facerec):
         self.dbTool = dbTool
         self.dbConn = dbConn
         self.instagram = instagram
         self.zero = Zero
         self.instaTool = InstagramFunc(self.instagram)
         self.curPrivate = 0
+        self.facerec = Facerec
 
     def find_between_r(s, first, last,):
         try:
@@ -40,12 +42,40 @@ class coreFunc():
         file = self.createInstaProfileFolder(name) + name + type
         if os.path.exists(file) == False:
             self.zero.printText("+ Downloading Image: {}".format(name), True)
+            downloadok = True
             resp = requests.get(url, stream=True)
             local_file = open(file, 'wb')
             resp.raw.decode_content = True
-            shutil.copyfileobj(resp.raw, local_file)
-            del resp
-            self.zero.printText("+ Download Complete", True)
+            print(resp.raw)
+            if resp.raw != "Content not found":
+                shutil.copyfileobj(resp.raw, local_file)
+                del resp
+                self.zero.printText("+ Download Complete", True)
+            else:
+                del resp
+                downloadok = False
+                self.zero.printText("+ Image not found", True)
+
+            local_file.close()
+
+            if downloadok == True:
+                if int(self.zero.FACEREC_ON_VALUE) == 1:
+                    self.zero.printText("+ Face scan active, scanning image", True)
+                    face, image = self.facerec.findFaceinImg(file)
+                    if len(face) == 0:
+                        self.zero.printText("+ Found no face in image, deleting file", True)
+                        os.remove(file)
+                    else:
+                        self.zero.printText("+ Found {} faces in image".format(len(face)), True)
+                        for face_location in face:
+                            # Print the location of each face in this image
+                            top, right, bottom, left = face_location
+                            self.zero.printText("A face is located at pixel location Top: {}, Left: {}, Bottom: {}, Right: {}".format(top, left, bottom, right), True)
+
+                            # You can access the actual face itself like this:
+                            face_image = image[top:bottom, left:right]
+                            pil_image = Image.fromarray(face_image)
+                            pil_image.show()
 
     def exportDBData(self):
         self.zero.printText("\n- Loading current data from DB", True)

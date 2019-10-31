@@ -19,7 +19,7 @@ class Optracker():
         self.zero.setupJSON(False)
 
         #Load face_recognition
-        myFace = facerec(self.zero)
+        self.myFace = facerec(self.zero)
 
         #Iniatlaize DB_DATABASE
         print("+ Setting up DB")
@@ -57,7 +57,7 @@ class Optracker():
 
         #Setup coreFunc
         print("+ Setting up core functions")
-        self.mainFunc = coreFunc(self.dbTool, self.dbConn, self.instagram, self.zero)
+        self.mainFunc = coreFunc(self.dbTool, self.dbConn, self.instagram, self.zero, self.myFace)
 
         self.MENU_ITEMS = [
             { self.zero.HELP_TEXT_DISP: self.dispHelp },
