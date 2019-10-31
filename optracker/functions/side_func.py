@@ -121,6 +121,7 @@ class sideFunc():
         self.zero.printText("+ Surface scan set to: {} (0 = OFF, 1 = ON)".format(getSurfaceScan), True)
         self.zero.printText("+ Download profile set to: {} (0 = OFF, 1 = ON)".format(getDownload), True)
         self.zero.printText("+ Detail print set to: {} (0 = OFF, 1 = ON)".format(self.zero.DETAIL_PRINT_VALUE), True)
+        self.zero.printText("+ Face Recognition on download: {} (0 = OFF, 1 = ON)".format(self.zero.FACEREC_ON_VALUE), True)
         self.zero.printText("+ Mysql(1) - Sqlite(0): {}".format(self.zero.DB_MYSQL_ON), True)
 
         change = input("+ Change value? [y/N] ")
@@ -131,13 +132,15 @@ class sideFunc():
             newSurfaceScan = input("+ Surface scan on[1]/off[0]: ")
             newDetailPrint = input("+ Detail print on[1]/off[0]: ")
             newSavePhoto = input("+ Download profile on[1]/off[0]: ")
+            newFace = input("+ Face recognition on download on[1]/off[0]: ")
             newMysql = input("+ Mysql[1] - Sqlite[0]: ")
 
             self.setDefValue(newMaxFollow, self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT, self.zero.INSTA_MAX_FOLLOW_SCAN_VALUE, False, False)
             self.setDefValue(newMaxFollowBy, self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, self.zero.INSTA_MAX_FOLLOW_BY_SCAN_VALUE, False, False)
             self.setDefValue(newSurfaceScan, self.zero.SURFACE_SCAN_TEXT, self.zero.SURFACE_SCAN_VALUE, True, False)
             self.setDefValue(newDetailPrint, self.zero.DETAIL_PRINT_TEXT, self.zero.DETAIL_PRINT_VALUE, True, True)
-            self.setDefValue(newSavePhoto, self.zero.DOWNLOAD_PROFILE_INSTA_TEXT, self.zero.DOWNLOAD_PROFILE_INSTA_TEXT, True, False)
+            self.setDefValue(newSavePhoto, self.zero.DOWNLOAD_PROFILE_INSTA_TEXT, self.zero.DOWNLOAD_PROFILE_INSTA_VALUE, True, False)
+            self.setDefValue(newFace, self.zero.FACEREC_ON_TEXT, self.zero.FACEREC_ON_VALUE, False, False)
         else:
             self.zero.printText("+ Nothing changed.", True)
 

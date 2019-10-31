@@ -22,7 +22,10 @@ setuptools.setup(
     install_requires=[
         'python-slugify==3.0.2',
         'unicodecsv==0.14.1',
-        'mysql-connector-python==8.0.18'
+        'mysql-connector-python==8.0.18',
+        'cmake',
+        'Pillow',
+        'dlib>=19.7'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

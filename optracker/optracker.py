@@ -4,6 +4,7 @@ from .functions.db_func import *
 from .functions.side_func import *
 from .functions.core_func import *
 from .igramscraper.instagram import Instagram
+from .facerec.facerec import facerec
 from time import sleep
 
 class Optracker():
@@ -16,6 +17,9 @@ class Optracker():
 
         #Load Config
         self.zero.setupJSON(False)
+
+        #Load face_recognition
+        myFace = facerec(self.zero)
 
         #Iniatlaize DB_DATABASE
         print("+ Setting up DB")

@@ -130,4 +130,5 @@ class dbFunc():
         self.setDefaultValue(conn, self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, self.zero.INSTA_MAX_FOLLOW_BY_SCAN_VALUE)
         self.setDefaultValue(conn, self.zero.SURFACE_SCAN_TEXT, self.zero.SURFACE_SCAN_VALUE)
         self.setDefaultValue(conn, self.zero.DOWNLOAD_PROFILE_INSTA_TEXT, self.zero.DOWNLOAD_PROFILE_INSTA_VALUE)
+        self.setDefaultValue(conn, self.zero.FACEREC_ON_TEXT, self.zero.FACEREC_ON_VALUE)
         self.zero.printText("+ Setup of default DONE", False)
