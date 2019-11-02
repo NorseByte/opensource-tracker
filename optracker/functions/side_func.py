@@ -82,13 +82,14 @@ class sideFunc():
                 return userList
 
     def setDefValue(self, newValue, text, value_text, oneup, json):
+        change = False
         if newValue.isdigit():
             if oneup == False:
                 if int(newValue) < 1:
                     self.zero.printText("+ Invalid input {} not changed".format(text), False)
                 else:
                     self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_OPTIONS, (newValue, text))
-                    value_text = newMaxFollow
+                    change = True
                     self.zero.printText("+ {} set to: {}".format(text, value_text), True)
             if oneup == True:
                 if int(newValue) > 1:
@@ -97,15 +98,28 @@ class sideFunc():
                     if int(newValue) < 0:
                         self.zero.printText("+ Invalid input {} not changed".format(text), False)
                     else:
+                        change = True
                         if json == False:
                             self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_OPTIONS, (newValue, text))
-                            value_text = newValue
                             self.zero.printText("+ {} set to: {}".format(text, value_text), True)
                         else:
-                            value_text = newValue
                             self.zero.setupJSON(True)
-                            self.zero.printText("+ {} set to: {}".format(text, value_text), True)
+                            self.zero.printText("+ {} set to: {}".format(text, newValue), True)
                             self.zero.printText("+ IF SQL CHANGE RESTART PROGRAM", True)
+
+            if change == True:
+                if value_text == self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT:
+                    self.zero.INSTA_MAX_FOLLOW_SCAN_VALUE = newValue
+                if value_text == self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT:
+                    self.zero.INSTA_MAX_FOLLOW_BY_SCAN_VALUE = newValue
+                if value_text == self.zero.SURFACE_SCAN_TEXT:
+                    self.zero.SURFACE_SCAN_VALUE = newValue
+                if value_text == self.zero.DETAIL_PRINT_TEXT:
+                    self.zero.DETAIL_PRINT_VALUE = newValue
+                if value_text == self.zero.DOWNLOAD_PROFILE_INSTA_TEXT:
+                    self.zero.DOWNLOAD_PROFILE_INSTA_VALUE = newValue
+                if value_text == self.zero.FACEREC_ON_TEXT:
+                    self.zero.FACEREC_ON_VALUE = newValue
         else:
             self.zero.printText("+ Invalid input {} not changed".format(text), False)
 
@@ -140,7 +154,7 @@ class sideFunc():
             self.setDefValue(newSurfaceScan, self.zero.SURFACE_SCAN_TEXT, self.zero.SURFACE_SCAN_VALUE, True, False)
             self.setDefValue(newDetailPrint, self.zero.DETAIL_PRINT_TEXT, self.zero.DETAIL_PRINT_VALUE, True, True)
             self.setDefValue(newSavePhoto, self.zero.DOWNLOAD_PROFILE_INSTA_TEXT, self.zero.DOWNLOAD_PROFILE_INSTA_VALUE, True, False)
-            self.setDefValue(newFace, self.zero.FACEREC_ON_TEXT, self.zero.FACEREC_ON_VALUE, False, False)
+            self.setDefValue(newFace, self.zero.FACEREC_ON_TEXT, self.zero.FACEREC_ON_VALUE, True, False)
         else:
             self.zero.printText("+ Nothing changed.", True)
 

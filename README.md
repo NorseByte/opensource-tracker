@@ -230,6 +230,7 @@ When searhing profiles sometimes the user have set it to private after first scr
 - instagram-php-scraper [here](https://github.com/postaddictme/instagram-php-scraper/)<br />
 - instagram-scraper [here](https://github.com/realsirjoe/instagram-scraper)<br />
 - logo-design [here](http://freepik.com)  
+- face-recognition [here](https://github.com/ageitgey/face_recognition)
 
 
 <br /><a href="https://www.buymeacoffee.com/knoph" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-black.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;" ></a>
