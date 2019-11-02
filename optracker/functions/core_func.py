@@ -447,6 +447,17 @@ class coreFunc():
 
             else:
                 self.zero.printText("+ Surfacescan are ON", False)
+
+                if user.is_private == False:
+                    user.is_private = 0
+                else:
+                    user.is_private = 1
+
+                if user.is_verified == False:
+                    user.is_verified = 0
+                else:
+                    user.is_verified = 1
+
                 label = self.getLabelforUser(user)
                 self.zero.INSERT_DATA = (self.zero.sanTuple(user.full_name), self.zero.sanTuple(label), user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, self.zero.sanTuple(user.biography), user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 0, user.identifier)
 

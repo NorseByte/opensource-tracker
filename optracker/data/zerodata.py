@@ -435,7 +435,7 @@ class zerodata():
 			self.DB_SELECT_FOLLOW_OF = self.DB_SELECT_MYSQL_FOLLOW_OF
 			self.DB_SELECT_DEEPSCAN_NEED = self.DB_SELECT_MYSQL_DEEPSCAN_NEED
 			self.DB_SELECT_EXPORT_ID_USER = self.DB_SELECT_MYSQL_EXPORT_ID_USER
-			self.DB_SELECT_IMG = self.DB_SELECT_MSQL_IMG
+			self.DB_SELECT_IMG = self.DB_SELECT_MYSQL_IMG
 
 	def __init__(self):
 		#Starting up
