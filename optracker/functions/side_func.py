@@ -89,7 +89,7 @@ class sideFunc():
                     self.zero.printText("+ Invalid input {} not changed".format(text), False)
                 else:
                     self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_OPTIONS, (newValue, text))
-                    change = True
+                    self.changeValue(text, newValue)
                     self.zero.printText("+ {} set to: {}".format(text, value_text), True)
             if oneup == True:
                 if int(newValue) > 1:
@@ -98,7 +98,7 @@ class sideFunc():
                     if int(newValue) < 0:
                         self.zero.printText("+ Invalid input {} not changed".format(text), False)
                     else:
-                        change = True
+                        self.changeValue(text, newValue)
                         if json == False:
                             self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_OPTIONS, (newValue, text))
                             self.zero.printText("+ {} set to: {}".format(text, value_text), True)
@@ -107,21 +107,22 @@ class sideFunc():
                             self.zero.printText("+ {} set to: {}".format(text, newValue), True)
                             self.zero.printText("+ IF SQL CHANGE RESTART PROGRAM", True)
 
-            if change == True:
-                if value_text == self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT:
-                    self.zero.INSTA_MAX_FOLLOW_SCAN_VALUE = newValue
-                if value_text == self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT:
-                    self.zero.INSTA_MAX_FOLLOW_BY_SCAN_VALUE = newValue
-                if value_text == self.zero.SURFACE_SCAN_TEXT:
-                    self.zero.SURFACE_SCAN_VALUE = newValue
-                if value_text == self.zero.DETAIL_PRINT_TEXT:
-                    self.zero.DETAIL_PRINT_VALUE = newValue
-                if value_text == self.zero.DOWNLOAD_PROFILE_INSTA_TEXT:
-                    self.zero.DOWNLOAD_PROFILE_INSTA_VALUE = newValue
-                if value_text == self.zero.FACEREC_ON_TEXT:
-                    self.zero.FACEREC_ON_VALUE = newValue
         else:
             self.zero.printText("+ Invalid input {} not changed".format(text), False)
+
+    def changeValue(self, value_text, newValue):
+        if str(value_text).strip() == str(self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT).strip():
+            self.zero.INSTA_MAX_FOLLOW_SCAN_VALUE = newValue
+        if str(value_text).strip() == str(self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT).strip():
+            self.zero.INSTA_MAX_FOLLOW_BY_SCAN_VALUE = newValue
+        if str(value_text).strip() == str(self.zero.SURFACE_SCAN_TEXT).strip():
+            self.zero.SURFACE_SCAN_VALUE = newValue
+        if str(value_text).strip() == str(self.zero.DETAIL_PRINT_TEXT).strip():
+            self.zero.DETAIL_PRINT_VALUE = newValue
+        if str(value_text).strip() == str(self.zero.DOWNLOAD_PROFILE_INSTA_TEXT).strip():
+            self.zero.DOWNLOAD_PROFILE_INSTA_VALUE = newValue
+        if str(value_text).strip() == str(self.zero.FACEREC_ON_TEXT).strip():
+            self.zero.FACEREC_ON_VALUE = newValue
 
     def editDefaultValue(self):
         getMaxValueFOLLOW = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_OPTIONS, (self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT, ))[0][1]

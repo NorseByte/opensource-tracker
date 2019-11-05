@@ -94,6 +94,7 @@ class coreFunc():
 
         print(str(resp.raw))
 
+        #TODO: Read Image is it image
         if resp.text != "Content not found":
             self.zero.printText("+ Download Complete", True)
         else:
@@ -446,6 +447,7 @@ class coreFunc():
                 self.zero.INSERT_DATA = (self.zero.sanTuple(user.full_name), self.zero.sanTuple(label), user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, self.zero.sanTuple(user.biography), user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 1, user.identifier)
 
             else:
+                #TODO: Add image download to surface`?
                 self.zero.printText("+ Surfacescan are ON", False)
 
                 if user.is_private == False:
