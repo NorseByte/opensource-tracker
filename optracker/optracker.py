@@ -1,5 +1,5 @@
 import os
-from .data.zerodata import zerodata
+from .zerodata import zerodata
 from .functions.db_func import *
 from .functions.side_func import *
 from .functions.core_func import *

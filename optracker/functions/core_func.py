@@ -104,7 +104,6 @@ class coreFunc():
             downloadok = False
             self.zero.printText("+ File dont contain image, deleting file", True)
             os.remove(file)
-            input()
 
         if downloadok == True:
             if self.compareImage(instaFolder, file) == False:

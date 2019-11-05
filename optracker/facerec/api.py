@@ -2,15 +2,12 @@ import PIL.Image
 import dlib
 import numpy as np
 from PIL import ImageFile
-from .face_recognition_models import *
+from ..data import *
 
 class face_recognition():
     def __init__(self):
         ImageFile.LOAD_TRUNCATED_IMAGES = True
         self.face_detector = dlib.get_frontal_face_detector()
-
-        self.predictor_68_point_model = pose_predictor_model_location()
-        self.pose_predictor_68_point = dlib.shape_predictor(self.predictor_68_point_model)
 
         self.predictor_5_point_model = pose_predictor_five_point_model_location()
         self.pose_predictor_5_point = dlib.shape_predictor(self.predictor_5_point_model)
@@ -150,10 +147,8 @@ class face_recognition():
         else:
             face_locations = [_css_to_rect(face_location) for face_location in face_locations]
 
-        pose_predictor = pose_predictor_68_point
 
-        if model == "small":
-            pose_predictor = pose_predictor_5_point
+        pose_predictor = pose_predictor_5_point
 
         return [pose_predictor(face_image, face_location) for face_location in face_locations]
 
