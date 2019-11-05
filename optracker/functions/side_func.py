@@ -170,7 +170,6 @@ class sideFunc():
         if lastInsta == 0:
             #Add loop for user
             self.zero.printText("+ Not able to add to scraper", True)
-            sys.exit()
 
         else:
             self.zero.INSTA_USER = lastInsta

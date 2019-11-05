@@ -2,6 +2,7 @@ import os
 import requests
 import shutil
 import filecmp
+import imghdr
 from PIL import Image
 from ..functions.instagram_func import *
 
@@ -86,26 +87,27 @@ class coreFunc():
         self.zero.printText("+ Downloading Image: {}".format(file), True)
         downloadok = True
 
+        #Write Image
         resp = requests.get(url, stream=True)
         local_file = open(file, 'wb')
         resp.raw.decode_content = True
         shutil.copyfileobj(resp.raw, local_file)
         local_file.close()
+        del resp
 
-        print(str(resp.raw))
+        #Read Image to verify
+        type = imghdr.what(file)
 
-        #TODO: Read Image is it image
-        if resp.text != "Content not found":
+        if str(type) != "None":
             self.zero.printText("+ Download Complete", True)
         else:
             downloadok = False
-            self.zero.printText("+ Image not found, deleting file", True)
+            self.zero.printText("+ File dont contain image, deleting file", True)
             os.remove(file)
-        del resp
+            input()
 
         if downloadok == True:
             if self.compareImage(instaFolder, file) == False:
-                print(self.zero.FACEREC_ON_VALUE)
                 if int(self.zero.FACEREC_ON_VALUE) == int(1):
                     self.zero.printText("+ Face scan active, scanning image", True)
                     face, image = self.facerec.findFaceinImg(file)
@@ -114,16 +116,6 @@ class coreFunc():
                         os.remove(file)
                     else:
                         self.zero.printText("+ Found {} faces in image".format(len(face)), True)
-                        for face_location in face:
-                            # Print the location of each face in this image
-                            top, right, bottom, left = face_location
-                            self.zero.printText("A face is located at pixel location Top: {}, Left: {}, Bottom: {}, Right: {}".format(top, left, bottom, right), True)
-
-                            # You can access the actual face itself like this:
-                            face_image = image[top:bottom, left:right]
-                            pil_image = Image.fromarray(face_image)
-                            pil_image.show()
-
 
     def exportDBData(self):
         self.zero.printText("\n- Loading current data from DB", True)
@@ -158,7 +150,7 @@ class coreFunc():
             selectUser = input("+ Select user (1-{}): ".format(count))
 
             if not selectUser.isnumeric():
-                printText("+ Invalid input, #1 selected", True)
+                self.zero.printText("+ Invalid input, #1 selected", True)
                 selectUser = 1
 
             if int(selectUser) > count:
