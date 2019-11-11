@@ -1,3 +1,5 @@
+<p align="center"><img src="https://i.imgur.com/i1FMPUZ.png" alt="drawing" width="300" /></p>
+
 # Contributing
 
 When contributing to this repository, please first discuss the change you wish to make via issue,
