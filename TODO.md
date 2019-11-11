@@ -18,7 +18,10 @@
 - [x] 18-10-2019 (U) Added scan options for users in txt document.
 - [x] 19-10-2019 (P) updateNodesUser() ERROR fix.
 - [x] 28-10-2019 (U) Detail print added show minimum text or all.
+- [x] 11-11-2019 (N) Facerecognition added.
+- [x] 11-11-2019 (U) Scan profile image for a face and add it to collection for later use.
 - [ ] Add node-type to node, is it person, page with more.
+- [ ] Add download post, and scan faces to create relationship status between users for a more detail map scan.
 
 ## Rules
 When something are done, mark it as finnish and add date of completions and what kind of edit was made.
