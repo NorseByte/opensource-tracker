@@ -1,3 +1,5 @@
+<p align="center"><img src="https://i.imgur.com/i1FMPUZ.png" alt="drawing" width="300" /></p>
+
 # Contributor Covenant Code of Conduct
 
 ## Our Pledge
