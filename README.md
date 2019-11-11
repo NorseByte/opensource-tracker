@@ -258,6 +258,3 @@ Something went wrong with instagram login. The username and password could not b
 - instagram-scraper [here](https://github.com/realsirjoe/instagram-scraper)<br />
 - logo-design [here](http://freepik.com)  
 - face-recognition [here](https://github.com/ageitgey/face_recognition)
-
-
-<br /><a href="https://www.buymeacoffee.com/knoph" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-black.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;" ></a>
