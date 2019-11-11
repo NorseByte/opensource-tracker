@@ -1,18 +1,22 @@
 import os
 import requests
 import shutil
+import filecmp
+import imghdr
+from PIL import Image
 from ..functions.instagram_func import *
 
 class coreFunc():
-    def __init__(self, dbTool, dbConn, instagram, Zero):
+    def __init__(self, dbTool, dbConn, instagram, Zero, Facerec):
         self.dbTool = dbTool
         self.dbConn = dbConn
         self.instagram = instagram
         self.zero = Zero
         self.instaTool = InstagramFunc(self.instagram)
         self.curPrivate = 0
+        self.facerec = Facerec
 
-    def find_between_r(s, first, last,):
+    def find_between_r(self, s, first, last,):
         try:
             start = s.rindex( first ) + len( first )
             end = s.rindex( last, start )
@@ -20,14 +24,97 @@ class coreFunc():
         except ValueError:
             return ""
 
-    def downloadImage(self, name, type, folder, url):
-        self.zero.printText("+ Downloading Image: {}".format(name), True)
+    def is_similar(self, image1, image2):
+        return filecmp.cmp(image1, image2)
+
+    def createFolderIf(self, folder):
+        if not os.path.exists(folder):
+            os.mkdir(folder)
+            self.zero.printText("+ Folder created: {}".format(folder), False)
+        else:
+            self.zero.printText("+ Folder loacted: {}".format(folder), False)
+
+    def setImageName(self, folder, username, type):
+        c = 1
+        d = True
+        currentFile = ""
+        while d == True:
+            currentFile = folder + username + "-" + str(c) + type
+            if os.path.isfile(currentFile) == False:
+                d = False
+            else:
+                self.zero.printText("+ File: {} exist trying next.".format(currentFile), False)
+                c += 1
+
+        self.zero.printText("+ Setting filename: {}".format(currentFile), False)
+        return currentFile
+
+    def compareImage(self, path, currentFile):
+        #Get files in directory # r=root, d=directories, f = files
+        files = []
+        for r, d, f in os.walk(path):
+            for file in f:
+                    files.append(os.path.join(r, file))
+
+        #Check if its the only ones
+        for f in files:
+            if f != currentFile:
+                self.zero.printText("+ Checking {} and {} if same.".format(currentFile, f), False)
+                if self.is_similar(currentFile, f) == True:
+                    self.zero.printText("+ Image same deleting: {}".format(currentFile), False)
+                    os.remove(currentFile)
+                    return True
+        return False
+
+    def createInstaProfileFolder(self, ID):
+        curr = self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE
+        counter = 1
+
+        for i in range(0, len(ID), 2):
+            if counter <= 2:
+                curr = curr + ID[i:i + 2] + '\\'
+                self.createFolderIf(curr)
+                counter += 1
+
+        curr = curr + ID + "\\"
+        self.createFolderIf(curr)
+        return curr
+
+    def downloadProfileImage(self, name, username, type, url):
+        instaFolder = self.createInstaProfileFolder(name)
+        file = self.setImageName(instaFolder, username, type)
+
+        self.zero.printText("+ Downloading Image: {}".format(file), True)
+        downloadok = True
+
+        #Write Image
         resp = requests.get(url, stream=True)
-        local_file = open(folder + name + type, 'wb')
+        local_file = open(file, 'wb')
         resp.raw.decode_content = True
         shutil.copyfileobj(resp.raw, local_file)
+        local_file.close()
         del resp
-        self.zero.printText("+ Download Complete", True)
+
+        #Read Image to verify
+        type = imghdr.what(file)
+
+        if str(type) != "None":
+            self.zero.printText("+ Download Complete", True)
+        else:
+            downloadok = False
+            self.zero.printText("+ File dont contain image, deleting file", True)
+            os.remove(file)
+
+        if downloadok == True:
+            if self.compareImage(instaFolder, file) == False:
+                if int(self.zero.FACEREC_ON_VALUE) == int(1):
+                    self.zero.printText("+ Face scan active, scanning image", True)
+                    face, image = self.facerec.findFaceinImg(file)
+                    if len(face) == 0:
+                        self.zero.printText("+ Found no face in image, deleting file", True)
+                        os.remove(file)
+                    else:
+                        self.zero.printText("+ Found {} faces in image".format(len(face)), True)
 
     def exportDBData(self):
         self.zero.printText("\n- Loading current data from DB", True)
@@ -58,11 +145,11 @@ class coreFunc():
             count = 0
             for i in userList:
                 count += 1
-                self.zero.printText("[{}] {} ({})".format(count, i[0], i[1].strip()), True)
+                self.zero.printText("[{}] {} ({})".format(count, i[0], str(i[1]).strip()), True)
             selectUser = input("+ Select user (1-{}): ".format(count))
 
             if not selectUser.isnumeric():
-                printText("+ Invalid input, #1 selected", True)
+                self.zero.printText("+ Invalid input, #1 selected", True)
                 selectUser = 1
 
             if int(selectUser) > count:
@@ -80,9 +167,7 @@ class coreFunc():
 
         #Download profile Image
         if int(self.zero.DOWNLOAD_PROFILE_INSTA_VALUE) == 1:
-            if os.path.isfile(self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE + newDataUser.identifier + self.zero.INSTA_FILE_EXT) == False:
-                self.downloadImage(newDataUser.identifier, self.zero.INSTA_FILE_EXT, self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE, newDataUser.get_profile_picture_url())
-
+            self.downloadProfileImage(newDataUser.identifier, newDataUser.username, self.zero.INSTA_FILE_EXT, newDataUser.get_profile_picture_url())
 
         UPDATE_DATA = (self.zero.sanTuple(newDataUser.full_name), self.zero.sanTuple(label), newDataUser.get_profile_picture_url(), newDataUser.follows_count, newDataUser.followed_by_count, self.zero.sanTuple(newDataUser.biography), newDataUser.username, newDataUser.is_private, newDataUser.is_verified, newDataUser.media_count, newDataUser.external_url, 1,  newDataUser.identifier)
         self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_NODES, UPDATE_DATA)
@@ -95,12 +180,10 @@ class coreFunc():
         lengList = len(user_img_list)
         counter = 1
         for u in user_img_list:
-            self.zero.printText("+ {} of {}: {}".format(counter, lengList, u[0]), True)
+            self.zero.printText("\n+ {} of {}: {}".format(counter, lengList, u[0]), True)
             counter += 1
             #Download profile Image
-            if os.path.isfile(self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE + str(u[1]) + self.zero.INSTA_FILE_EXT) == False:
-                self.downloadImage(str(u[1]), self.zero.INSTA_FILE_EXT, self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE, str(u[2]))
-
+            self.downloadProfileImage(str(u[1]), str(u[0]), self.zero.INSTA_FILE_EXT, str(u[2]))
 
     def updateNodesUserLoaded(self, newDataUser):
         self.zero.printText("+ Updating user data for: {} ({})".format(newDataUser.username, newDataUser.identifier), False)
@@ -124,8 +207,7 @@ class coreFunc():
 
                         #Download profile Image
                         if int(self.zero.DOWNLOAD_PROFILE_INSTA_VALUE) == 1:
-                            if os.path.isfile(self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE + updatenode.identifier + self.zero.INSTA_FILE_EXT) == False:
-                                self.downloadImage(updatenode.identifier, self.zero.INSTA_FILE_EXT, self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE, updatenode.get_profile_picture_url())
+                            self.downloadProfileImage(updatenode.identifier, updatenode.username, self.zero.INSTA_FILE_EXT, updatenode.get_profile_picture_url())
 
                         self.updateNodesUserLoaded(updatenode)
                     line = fp.readline()
@@ -145,8 +227,7 @@ class coreFunc():
 
             #Download profile Image
             if int(self.zero.DOWNLOAD_PROFILE_INSTA_VALUE) == 1:
-                if os.path.isfile(self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE + updatenode.identifier + self.zero.INSTA_FILE_EXT) == False:
-                    self.downloadImage(updatenode.identifier, self.zero.INSTA_FILE_EXT, self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE, updatenode.get_profile_picture_url())
+                self.downloadProfileImage(updatenode.identifier, updatenode.username, self.zero.INSTA_FILE_EXT, updatenode.get_profile_picture_url())
 
             self.updateNodesUserLoaded(updatenode)
             counter += 1
@@ -287,8 +368,7 @@ class coreFunc():
 
         #Download profile Image
         if int(self.zero.DOWNLOAD_PROFILE_INSTA_VALUE) == 1:
-            if os.path.isfile(self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE + self.currentUser.identifier + self.zero.INSTA_FILE_EXT) == False:
-                self.downloadImage(self.currentUser.identifier, self.zero.INSTA_FILE_EXT, self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE, self.currentUser.get_profile_picture_url())
+            self.downloadProfileImage(self.currentUser.identifier, self.currentUser.username, self.zero.INSTA_FILE_EXT, self.currentUser.get_profile_picture_url())
 
         #Update User information
         self.updateNodesUserLoaded(self.currentUser)
@@ -352,14 +432,25 @@ class coreFunc():
 
                     #Download profile
                     if int(self.zero.DOWNLOAD_PROFILE_INSTA_VALUE) == 1:
-                        if os.path.isfile(self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE + user.identifier + self.zero.INSTA_FILE_EXT) == False:
-                            self.downloadImage(user.identifier, self.zero.INSTA_FILE_EXT, self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE, user.get_profile_picture_url())
+                        self.downloadProfileImage(user.identifier, user.username, self.zero.INSTA_FILE_EXT, user.get_profile_picture_url())
 
                 label = self.getLabelforUser(user)
                 self.zero.INSERT_DATA = (self.zero.sanTuple(user.full_name), self.zero.sanTuple(label), user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, self.zero.sanTuple(user.biography), user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 1, user.identifier)
 
             else:
+                #TODO: Add image download to surface`?
                 self.zero.printText("+ Surfacescan are ON", False)
+
+                if user.is_private == False:
+                    user.is_private = 0
+                else:
+                    user.is_private = 1
+
+                if user.is_verified == False:
+                    user.is_verified = 0
+                else:
+                    user.is_verified = 1
+
                 label = self.getLabelforUser(user)
                 self.zero.INSERT_DATA = (self.zero.sanTuple(user.full_name), self.zero.sanTuple(label), user.identifier, user.get_profile_picture_url(), user.follows_count, user.followed_by_count, self.zero.sanTuple(user.biography), user.username, user.is_private, user.is_verified, user.media_count, user.external_url, 0, user.identifier)
 

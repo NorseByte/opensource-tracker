@@ -3,11 +3,12 @@ from pathlib import Path
 
 setuptools.setup(
     name="optracker",
-    version="1.2.7",
+    version="1.3.6",
     description=('Scrapes medias, likes, followers from social media. Organize them in a database for more deeper analyze.'),
     long_description=Path("README.md").read_text(),
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),
+    package_data={'optracker': ['data/face_models/*.dat']},
     license="MIT",
     maintainer="suxSx",
     author='suxSx',
@@ -22,7 +23,10 @@ setuptools.setup(
     install_requires=[
         'python-slugify==3.0.2',
         'unicodecsv==0.14.1',
-        'mysql-connector-python==8.0.18'
+        'mysql-connector-python==8.0.18',
+        'cmake',
+        'Pillow',
+        'dlib>=19.7'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

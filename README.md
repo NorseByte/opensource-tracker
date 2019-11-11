@@ -111,7 +111,7 @@ Content of the list need to be one username per line:
 On Default is it turned **OFF** you will only get the minimum of info to see if it is working properly. If you turn it **ON** will you be presented with all the output the scraper have.
 
 ### 10. Download Profile Image
-The program will download every Instagram profile image it scans for face recognition. It saves it to **profile_pic**. You can turn it of from default value menu.
+The program will download every Instagram profile image it scans for face recognition. It saves it to **profile_pic_insta**. You can turn it of from default value menu.
 
 ```cmd
 optracker/
@@ -123,8 +123,10 @@ optracker/
         node.csv
         egdes.csv
     instadata/
-        profilepic/
-            **INSTA ID**.jpg
+        profile_pic_insta/
+          /**FIRST TWO IN ID**
+            /**SECOND TWO IN ID**
+              /**INSTA USER**-**INT INC**.jpg
         post/
 ```
 
@@ -133,6 +135,8 @@ Running this will check the DB agenst profile image folder, and download all the
 
 ### 12. Change default value
 From the menu can you change default values like surfacescan, max follow and mysql or sqlite with more. To change select yes, fill in new value, if you dont want to change one value leave it blank.
+
+### 13. Face reco
 
 
 ## Database Information
@@ -220,8 +224,31 @@ optracker.igramscraper.exception.instagram_exception.InstagramException: Failed 
 ```
 When searhing profiles sometimes the user have set it to private after first scraping. When extracting data after this the program will stop and give an error that the profile is private. Just run it once more, the program have updated the profile automatic to private so it wont happen on the next scan. 
 
-## Common Information
+### 4. Two step verification. Please report issue., Code:20
+```
+Traceback (most recent call last):
+  File "python37-32\lib\runpy.py", line 193, in _run_module_as_main
+    "__main__", mod_spec)
+  File "python37-32\lib\runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "Python37-32\Scripts\optracker.exe\__main__.py", line 7, in <module>
+  File "python37-32\lib\site-packages\optracker\optracker.py", line 174, in run
+    myOptracker = Optracker()
+  File "python37-32\lib\site-packages\optracker\optracker.py", line 56, in __init__
+    self.autoSelectAndLogin()
+  File "python37-32\lib\site-packages\optracker\optracker.py", line 97, in autoSelectAndLogin
+    self.loginInstagram(self.instagram)
+  File "python37-32\lib\site-packages\optracker\optracker.py", line 138, in loginInstagram
+    self.instagram.login(force=False,two_step_verificator=True)
+  File "python37-32\lib\site-packages\optracker\igramscraper\instagram.py", line 1324, in login
+    two_step_verificator)
+  File "python37-32\lib\site-packages\optracker\igramscraper\instagram.py", line 1414, in __verify_two_step
+    response.status_code)
+optracker.igramscraper.exception.instagram_auth_exception.InstagramAuthException: Something went wrong when try two step verification. Please report issue., Code:20
+```
+Something went wrong with instagram login. The username and password could not be used to loggin. Change the user value or add a new user, try once more and it schould work.
 
+## Common Information
 - Look at TODO if you want to help: [TODO](https://github.com/suxSx/opensource-tracker/blob/master/TODO.md) <br />
 - Read the CODE of Conduct before you edit: [Code of Conduct](https://github.com/suxSx/opensource-tracker/blob/master/CODE_OF_CONDUCT.md)<br />
 - We use MIT License: [MIT](https://github.com/suxSx/opensource-tracker/blob/master/LICENSE.md)
@@ -230,6 +257,7 @@ When searhing profiles sometimes the user have set it to private after first scr
 - instagram-php-scraper [here](https://github.com/postaddictme/instagram-php-scraper/)<br />
 - instagram-scraper [here](https://github.com/realsirjoe/instagram-scraper)<br />
 - logo-design [here](http://freepik.com)  
+- face-recognition [here](https://github.com/ageitgey/face_recognition)
 
 
 <br /><a href="https://www.buymeacoffee.com/knoph" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-black.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;" ></a>

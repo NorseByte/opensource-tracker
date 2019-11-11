@@ -121,7 +121,27 @@ class dbFunc():
             self.inserttoTabel(conn, self.zero.DB_INSERT_OPTIONS_LASTINSTA, (value, text, ))
             self.zero.printText("+ {} set to: {}".format(text, value), True)
         else:
-            self.zero.printText("+ {} in database, value set to: {}".format(text, getValue[0][1]), False)
+            value = getValue[0][1]
+            self.zero.printText("+ {} in database, value set to: {}".format(text, value, True), False)
+
+            if text == self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT:
+                self.zero.INSTA_MAX_FOLLOW_SCAN_VALUE = value
+
+            if text == self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT:
+                self.zero.INSTA_MAX_FOLLOW_BY_SCAN_VALUE = value
+
+            if text == self.zero.SURFACE_SCAN_TEXT:
+                self.zero.SURFACE_SCAN_VALUE = value
+
+            if text == self.zero.DETAIL_PRINT_TEXT:
+                self.zero.DETAIL_PRINT_VALUE = value
+
+            if text == self.zero.DOWNLOAD_PROFILE_INSTA_TEXT:
+                self.zero.DOWNLOAD_PROFILE_INSTA_VALUE = value
+
+            if text == self.zero.FACEREC_ON_TEXT:
+                self.zero.FACEREC_ON_VALUE = value
+
 
     def setDefaultValueOptions(self, conn):
         #Set max value for scan
@@ -130,4 +150,5 @@ class dbFunc():
         self.setDefaultValue(conn, self.zero.INSTA_MAX_FOLLOW_BY_SCAN_TEXT, self.zero.INSTA_MAX_FOLLOW_BY_SCAN_VALUE)
         self.setDefaultValue(conn, self.zero.SURFACE_SCAN_TEXT, self.zero.SURFACE_SCAN_VALUE)
         self.setDefaultValue(conn, self.zero.DOWNLOAD_PROFILE_INSTA_TEXT, self.zero.DOWNLOAD_PROFILE_INSTA_VALUE)
+        self.setDefaultValue(conn, self.zero.FACEREC_ON_TEXT, self.zero.FACEREC_ON_VALUE)
         self.zero.printText("+ Setup of default DONE", False)
