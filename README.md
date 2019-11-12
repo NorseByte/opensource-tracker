@@ -136,8 +136,7 @@ Running this will check the DB agenst profile image folder, and download all the
 ### 12. Change default value
 From the menu can you change default values like surfacescan, max follow and mysql or sqlite with more. To change select yes, fill in new value, if you dont want to change one value leave it blank.
 
-### 13. Face reco
-
+### 13. Face reco-
 
 ## Database Information
 By default the scraper use **SQLite**, all the data are stored in **optracker/db/openSource-tracker.db**. 
@@ -247,6 +246,20 @@ Traceback (most recent call last):
 optracker.igramscraper.exception.instagram_auth_exception.InstagramAuthException: Something went wrong when try two step verification. Please report issue., Code:20
 ```
 Something went wrong with instagram login. The username and password could not be used to loggin. Change the user value or add a new user, try once more and it schould work.
+
+## What to do with the data?
+When you have gathered enough data its time to put them to some good. You have plenty of options first thing first, you can export the standar values from the program its self. It will generate to files: nodes.csv and egdes.csv<br />
+<br />
+This files are made to be used with [gephi](https://gephi.org). Import it to gephi and start the analyzeing. There are plenty of good tutorials out there for how to process the data. Some tips along the way is:
+- Import nodes first then egdes
+- Filter out extra nodes: **Filter -> Topology -> Degree Range** set to 2 is a good start.
+- Run statistics: **Network Diameter, Avereage Degree, Modularity**
+- Set size on nodes attribute: **Betweenness Centrallity**
+- Set color on nodes: **Modularity Class**
+
+This is an exampel of how it can look when finnish to easy see the pattern. You can also turn on label to see the names of the nodes.¨
+
+![Imgur](https://i.imgur.com/cSYySMu.png)
 
 ## Common Information
 - Look at TODO if you want to help: [TODO](https://github.com/suxSx/opensource-tracker/blob/master/TODO.md) <br />
