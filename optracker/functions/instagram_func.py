@@ -24,7 +24,7 @@ class InstagramFunc():
         medias = self.instagram.get_medias(user, 25)
         media = medias[6]
         print(media)
-        account = media.owner
+        #account = media.owner
 
     def get_insta_account_info(self, currentUser):
         newInfo = self.instagram.get_account(currentUser)

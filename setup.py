@@ -3,7 +3,7 @@ from pathlib import Path
 
 setuptools.setup(
     name="optracker",
-    version="1.3.6",
+    version="1.3.7",
     description=('Scrapes medias, likes, followers from social media. Organize them in a database for more deeper analyze.'),
     long_description=Path("README.md").read_text(),
     long_description_content_type="text/markdown",
@@ -26,7 +26,13 @@ setuptools.setup(
         'mysql-connector-python==8.0.18',
         'cmake',
         'Pillow',
-        'dlib>=19.7'
+        'dlib>=19.7',
+        'requests',
+        'numpy',
+        'tabulate',
+        'bs4',
+        'urllib',
+        'lxml'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

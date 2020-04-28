@@ -4,6 +4,8 @@ import shutil
 import filecmp
 import imghdr
 from PIL import Image
+from bs4 import BeautifulSoup
+from urllib.request import urlopen
 from ..functions.instagram_func import *
 
 class coreFunc():
@@ -23,6 +25,17 @@ class coreFunc():
             return s[start:end]
         except ValueError:
             return ""
+
+    def video_r(self, url, original):
+        video_link = ""
+        webpageLink = urlopen("https://www.instagram.com/p/"+url+"/").read()
+        soup = BeautifulSoup(webpageLink, "lxml")
+        videourl = soup.find("meta",  property="og:video")
+        if videourl == None:
+            video_link = original #"No video"
+        else:
+            video_link = videourl["content"]
+        return video_link
 
     def is_similar(self, image1, image2):
         return filecmp.cmp(image1, image2)
@@ -66,8 +79,136 @@ class coreFunc():
                     return True
         return False
 
-    def createInstaProfileFolder(self, ID):
-        curr = self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE
+    def downloadCurrentUserPost(self):
+        self.zero.printText("+ Loading post for user: {}".format(self.currentUser.username), True)
+        
+        instaFolderPost = self.createInstaProfileFolder(self.currentUser.identifier, False)
+        self.zero.printText("+ Post folder created: {}".format(instaFolderPost), False)
+
+        self.zero.printText("+ CurrentUser post count: {}".format(self.currentUser.media_count), False)
+
+        #TODO: ADD Try and Catch code 404 media private
+        if(self.currentUser.media_count != 0):
+            mediaPost = self.instagram.get_medias_by_user_id(self.currentUser.identifier, self.currentUser.media_count, "")
+            total = len(mediaPost)
+            count = 0
+
+            self.zero.printText("+ Post loaded: {}".format(total), False)
+
+            for x in mediaPost:
+                count = count + 1
+                self.zero.printText("\n- {} of {} - {}".format(count, total, x.identifier), True)
+
+                node_id = self.currentUserNodeId
+                media_id = x.identifier
+                created = x.created_time
+                caption = x.caption
+                nr_comments = x.comments_count
+                nr_likes = x.likes_count
+                url_link = x.link
+                url_high_link = x.image_high_resolution_url
+                media_type = x.type
+                local_link_img = instaFolderPost + '\\' + media_id + ".jpg"
+
+                local_link_video = ""
+                video_url = ""
+                video_view = 0
+
+                if media_type == "video": 
+                    local_link_video = instaFolderPost + '\\' + media_id + ".mp4"
+                    video_url = self.video_r(str(x.short_code),str(x.image_high_resolution_url))
+                    video_view = x.video_views
+                
+                location = x.location_id 
+
+                #IS MEDIA IN DB
+                self.zero.printText("+ Checking MEDIA DB for id: {} ({})".format(media_id, media_type), False)
+                userNodeID = self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_NODE_ID_MEDIA, (media_id, ))
+                
+                if userNodeID == 0:
+                    self.zero.printText("+ NOT found in MEDIA DB, ADDING", False)
+                    
+                    #Adding to DB
+                    UPDATE_DATA = node_id, media_id, created, caption, nr_comments, nr_likes, url_link, url_high_link, local_link_img, location, media_type, video_url, local_link_video, video_view
+                    self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_INSERT_MEDIA_BASE, UPDATE_DATA)
+                    
+                #DOWNLOAD IMAGE IS FILE DOWNLOAD
+                if os.path.exists(local_link_img) == False: self.downloadFile(url_high_link, local_link_img, True)
+
+                #DOWNLOAD VIDEO IS FILE DOWNLOAD
+                if media_type == "video":
+                    if os.path.exists(local_link_video) == False: self.downloadFile(video_url, local_link_video, False)
+
+                #Check if POst allready is complete
+                if int(self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_FULLLOAD_BASE, (media_id, ))[0][0]) == 0:
+                    #Sleep Dealy for mimic user
+                    sleep(int(self.zero.DEFAULT_SLEEP_VALUE))
+
+                    #Searching for comments
+                    if int(nr_comments) != 0:
+                        commentCount = 0
+                        self.zero.printText("+ Loading {} comments for: {}".format(nr_comments, media_id), True)
+                        comments = self.instagram.get_media_comments_by_id(media_id, int(nr_comments))
+                        print()
+                        for y in comments['comments']:
+                            commentCount = commentCount + 1
+                            self.zero.printText("+ {} of {} Comment checked".format(commentCount, len(comments['comments'])), True)
+
+                            nodeIDComment = self.check_user_db_node(y.owner, True)
+                            COMMENT_DATA = media_id, nodeIDComment, y.text
+
+                            if self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELCT_ALL_MEDIA_COMMENT, COMMENT_DATA) == 0:                            
+                                self.zero.printText("+ Adding comment to DB", False)
+                                self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_INSERT_MEDIA_COMMENT, COMMENT_DATA)
+                            
+                            else: self.zero.printText("+ Comment allready exist in DB", False)
+                    else: self.zero.printText("+ No comments on post", True)
+
+                    #Sleep Dealy for mimic user
+                    sleep(int(self.zero.DEFAULT_SLEEP_VALUE))
+
+                    #Searching for Like
+                    if int(nr_likes) != 0:
+                        likeCount = 0
+                        self.zero.printText("+ Loading {} likes for: {}".format(nr_likes, media_id), True)
+                        likes = self.instagram.get_media_likes_by_code(x.short_code, int(nr_likes))
+                        for y in likes['accounts']:
+                            likeCount = likeCount + 1
+                            self.zero.printText("+ {} of {} Liked checked".format(likeCount, len(likes['accounts'])), True)
+
+                            nodeIDLike = self.check_user_db_node(y, True)
+                            LIKE_DATA = media_id, nodeIDLike
+
+                            if self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_ALL_MEDIA_LIKES, LIKE_DATA) == 0:
+                                self.zero.printText("+ Adding like to DB", False)
+                                self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_INSERT_MEDIA_LIKE, LIKE_DATA)
+                            else: self.zero.printText("+ Like allready exist in DB", False)
+                    else: self.zero.printText("+ No likes on post", True)
+
+                    #Update Media to fullload
+                    self.zero.printText("+ Setting COMMENT and LIKE to complete", False)
+                    self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_FULLLOAD, ("1", media_id ))
+                else: self.zero.printText("+ COMMENT and LIKE allready complete", False)
+          
+            #Set deeppost to finnish
+            self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_INSTADEEP, ("1", self.currentUser.identifier ))
+        else:
+            self.zero.printText("+ ERROR :: CurrentUser is private or have zero post. Try to follow user!", False)
+    
+    def generateFolderNameID(self, id):
+        curr = ""
+
+        for i in range(0, len(id), 2):
+            if counter <= 2:
+                curr = curr + id[i:i + 2] + '\\'
+                counter += 1
+
+        return curr
+
+    def createInstaProfileFolder(self, ID, Profile):
+        if Profile == True: curr = self.zero.OP_INSTA_PROFILEFOLDER_NAME_VALUE
+        else: curr = self.zero.OP_INSTA_INSTAID_FOLDER_VALUE
+
         counter = 1
 
         for i in range(0, len(ID), 2):
@@ -80,8 +221,31 @@ class coreFunc():
         self.createFolderIf(curr)
         return curr
 
+    def downloadFile(self, url, file, image):
+        self.zero.printText("+ Downloading file: {}".format(url), True)
+        self.zero.printText("+ Local path: {}".format(file), True)
+
+        #Write File
+        resp = requests.get(url, stream=True)
+        local_file = open(file, 'wb')
+        resp.raw.decode_content = True
+        shutil.copyfileobj(resp.raw, local_file)
+        local_file.close()
+        del resp
+
+        if image == True:
+            #Read Image to verify
+            type = imghdr.what(file)
+
+            if str(type) != "None":
+                self.zero.printText("+ Download Complete", True)
+            else:
+                self.zero.printText("+ File dont contain image, deleting file", True)
+                os.remove(file)
+
+
     def downloadProfileImage(self, name, username, type, url):
-        instaFolder = self.createInstaProfileFolder(name)
+        instaFolder = self.createInstaProfileFolder(name, True)
         file = self.setImageName(instaFolder, username, type)
 
         self.zero.printText("+ Downloading Image: {}".format(file), True)
@@ -202,7 +366,7 @@ class coreFunc():
                 while line:
                     if line != 0:
                         user = line.strip()
-                        zero.printText("+ Getting user info for {}:".format(user), True)
+                        self.zero.printText("+ Getting user info for {}:".format(user), True)
                         updatenode = self.instaTool.get_insta_account_info(user)
 
                         #Download profile Image
@@ -330,7 +494,7 @@ class coreFunc():
         if inOut == False:
             #Getting following
             self.zero.printText("\n- Loading follows list for: {}".format(self.currentUser.username), True)
-            self.followNumber = self.currentUser.follows_count;
+            self.followNumber = self.currentUser.follows_count
             if self.followNumber != 0:
                 self.zero.printText("+ {} are following {} starting info extract.".format(self.currentUser.full_name, self.followNumber), False)
                 self.imported_follow = self.instaTool.get_insta_following(self.followNumber, self.currentUser.identifier)
@@ -343,7 +507,7 @@ class coreFunc():
         else:
             #Getting following
             self.zero.printText("\n- Loading followed by list for: {}".format(self.currentUser.username), True)
-            self.followNumber = self.currentUser.followed_by_count;
+            self.followNumber = self.currentUser.followed_by_count
             if self.followNumber != 0:
                 self.zero.printText("+ {} are followed by {} starting info extract".format(self.currentUser.full_name, self.followNumber), False)
                 self.imported_follow = self.instaTool.get_insta_follow_by(self.followNumber, self.currentUser.identifier)
@@ -364,7 +528,7 @@ class coreFunc():
         self.zero.printText("+ Getting user information from Instagram", True)
         self.currentUser = self.instaTool.get_insta_account_info(user)
         self.curPrivate = self.currentUser.is_private
-        self.check_user_db_node(self.currentUser, False)
+        self.currentUserNodeId = self.check_user_db_node(self.currentUser, False)
 
         #Download profile Image
         if int(self.zero.DOWNLOAD_PROFILE_INSTA_VALUE) == 1:
@@ -423,7 +587,7 @@ class coreFunc():
         self.zero.printText("+ Checking NODE DB for id: {} ({})".format(user.identifier, user.username), False)
         if userNodeID == 0:
             self.zero.printText("+ NOT found in node", False)
-            tempID = user.identifier;
+            tempID = user.identifier
 
             if getSurfaceScan == 0:
                 if getInfo == True:

@@ -82,7 +82,6 @@ class sideFunc():
                 return userList
 
     def setDefValue(self, newValue, text, value_text, oneup, json):
-        change = False
         if newValue.isdigit():
             if oneup == False:
                 if int(newValue) < 1:
@@ -137,6 +136,8 @@ class sideFunc():
         self.zero.printText("+ Download profile set to: {} (0 = OFF, 1 = ON)".format(getDownload), True)
         self.zero.printText("+ Detail print set to: {} (0 = OFF, 1 = ON)".format(self.zero.DETAIL_PRINT_VALUE), True)
         self.zero.printText("+ Face Recognition on download: {} (0 = OFF, 1 = ON)".format(self.zero.FACEREC_ON_VALUE), True)
+        self.zero.printText("+ Post download: {} (0 = OFF, 1 = ON)".format(self.zero.DOWNLOAD_USER_POST_ON_VALUE), True)
+        self.zero.printText("+ Sleep Time: {} (secound):".format(self.zero.DEFAULT_SLEEP_VALUE), True)
         self.zero.printText("+ Mysql(1) - Sqlite(0): {}".format(self.zero.DB_MYSQL_ON), True)
 
         change = input("+ Change value? [y/N] ")
@@ -148,6 +149,8 @@ class sideFunc():
             newDetailPrint = input("+ Detail print on[1]/off[0]: ")
             newSavePhoto = input("+ Download profile on[1]/off[0]: ")
             newFace = input("+ Face recognition on download on[1]/off[0]: ")
+            newPost = input("+ Post download on[1]/off[0]: ")
+            newSleep = input("+ Sleep time: ")
             newMysql = input("+ Mysql[1] - Sqlite[0]: ")
 
             self.setDefValue(newMaxFollow, self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT, self.zero.INSTA_MAX_FOLLOW_SCAN_VALUE, False, False)
@@ -155,7 +158,10 @@ class sideFunc():
             self.setDefValue(newSurfaceScan, self.zero.SURFACE_SCAN_TEXT, self.zero.SURFACE_SCAN_VALUE, True, False)
             self.setDefValue(newDetailPrint, self.zero.DETAIL_PRINT_TEXT, self.zero.DETAIL_PRINT_VALUE, True, True)
             self.setDefValue(newSavePhoto, self.zero.DOWNLOAD_PROFILE_INSTA_TEXT, self.zero.DOWNLOAD_PROFILE_INSTA_VALUE, True, False)
+            self.setDefValue(newPost, self.zero.DOWNLOAD_USER_POST_ON_TEXT, self.zero.DOWNLOAD_USER_POST_ON_VALUE, True, True)
             self.setDefValue(newFace, self.zero.FACEREC_ON_TEXT, self.zero.FACEREC_ON_VALUE, True, False)
+            self.setDefValue(newSleep, self.zero.DEFAULT_SLEEP_TEXT, self.zero.DEFAULT_SLEEP_VALUE, True, True)
+            self.setDefValue(newMysql, self.zero.DB_MYSQL_ON_TEXT, self.zero.DB_MYSQL_ON, True, False)
         else:
             self.zero.printText("+ Nothing changed.", True)
 

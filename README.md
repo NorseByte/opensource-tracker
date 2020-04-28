@@ -5,8 +5,8 @@
 ![PyPI - Status](https://img.shields.io/pypi/status/optracker)
 ![PyPI - License](https://img.shields.io/pypi/l/optracker)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/optracker)
+![GitHub issues](https://img.shields.io/github/issues/suxsx/opensource-tracker)
 ![Discord](https://img.shields.io/discord/633751704868749322)
-
 
 # openSource Tracker
 Easy to use program for scraping openSources, saves data and enable you to analyze it in your favorite graphic display. I created the projected based on <a href="https://github.com/realsirjoe/instagram-scraper">instagram scraper</a>, witch allows you to get data from Instagram without API. The goal of this project is to make it easy for everyone to gather openSource content and analyze it.
@@ -136,7 +136,11 @@ Running this will check the DB agenst profile image folder, and download all the
 ### 12. Change default value
 From the menu can you change default values like surfacescan, max follow and mysql or sqlite with more. To change select yes, fill in new value, if you dont want to change one value leave it blank.
 
-### 13. Face reco-
+### 13. Face reco
+opTracker uses light face scanner to identifi of a person is in the image, and will later used this to identify if a person are in other images by other users to generate a link between more profiles. 
+
+### 14. Post, likes, comments
+When you have scanned a user, or as a first time scan you want more data on one profile you can download all the post and comments. Select download post, and you can enter the username you wish to propbe. When finnish the program will try to sort out the common simulairtys, and display them at the statistic page. You can also run face scan after the post are downloaded to connect a bigger picture and display even better analytics at the statistic page. All this data wil also be exported when you choose to export data and can be used in other programs f.eks gephi.
 
 ## Database Information
 By default the scraper use **SQLite**, all the data are stored in **optracker/db/openSource-tracker.db**. 
@@ -151,7 +155,7 @@ By default the scraper use **SQLite**, all the data are stored in **optracker/db
 > * DB_MYSQL_COLLATION = "utf8mb4_general_ci"
 > * DB_MYSQL_CHARSET = "utf8mb4"  
 >   
->***Scraping big amount of data can be really slow if you use SQLite, therefore are MySQL an option if you plan on collectingg huge amounts.*** 
+>***Scraping big amount of data can be really slow if you use SQLite, therefore are MySQL an option if you plan on collectingg huge amounts. This is still under development so MYSQL might not work as the database are under development and MYSQL are not prioritesed.*** 
 
 **The database consist of the following tabels:**
 - accounts
@@ -179,7 +183,7 @@ Temporary table to store information like follow list, last search and so on for
 This table have a list of all instagram accounts that have been found during scraping. The program will used this to see witch account have not yet been fully scraped. When it is finnish are the account set to DONE. If you dont want the account to be scraped set the WAIT value to True. 0 = False, 1 = True. ***This can also be used in the case of a user have to many follower, or non at all so you dont want to scan it. When the user pop up, the scanner jumps over it.***
 
 ### 6. Export
-To export the data you can connect to the DB file under the db/folder. Or you can export it from the program. From main menu choose export. It will the generate two files **nodes.csv** and **egdes.csv**. You can then import this into your favorite graphic display
+To export the data you can connect to the DB file under the db/folder. Or you can export it from the program. From main menu choose export. It will the generate two files **nodes.csv** and **egdes.csv**. You can then import this into your favorite graphic display. 
 
 ## Common Error
 ### 1. F String
@@ -246,6 +250,30 @@ Traceback (most recent call last):
 optracker.igramscraper.exception.instagram_auth_exception.InstagramAuthException: Something went wrong when try two step verification. Please report issue., Code:20
 ```
 Something went wrong with instagram login. The username and password could not be used to loggin. Change the user value or add a new user, try once more and it schould work.
+
+### 5.  ERROR: Failed building wheel for dlib
+During install of optracker you come across this error. Telling you that dlib cant be innstalled. 
+```
+-- Building for: NMake Makefiles
+    -- The C compiler identification is unknown
+    -- The CXX compiler identification is unknown
+    CMake Error at CMakeLists.txt:3 (project):
+      The CMAKE_C_COMPILER:
+
+        cl
+
+      is not a full path and was not found in the PATH.
+```
+
+The reason you get this kind of error is because you dont have any C Compiler innstalled on your system. For Windows users the best fix is to install visual studio and make sure you install the c++ addon. Fo linux users install any c++ compiler of your choice. You need it to make the dlib file. DLIB is used for the face reconition part of the program.
+
+### 6. ERROR CODE 429
+```
+ Response code is 429. Body: {"message": "rate limited", "status": "fail"}
+ Something went wrong. Please report issue., Code:429
+```
+
+This is because of to many request to instagram. Wait for a while and try agen or turn up the delay time between each request. 
 
 ## What to do with the data?
 When you have gathered enough data its time to put them to some good. You have plenty of options first thing first, you can export the standar values from the program its self. It will generate to files: nodes.csv and egdes.csv<br />

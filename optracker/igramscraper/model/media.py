@@ -157,6 +157,7 @@ class Media(InitializerModel):
 
         elif prop == 'videos':
             self.video_low_resolution_url = arr[prop]['low_resolution']['url']
+            #self.video_standard_resolution_url = arr[prop]['video']
             self.video_standard_resolution_url = \
             arr[prop]['standard_resolution']['url']
             self.video_low_bandwith_url = arr[prop]['low_bandwidth']['url']
@@ -189,7 +190,7 @@ class Media(InitializerModel):
             self.short_code = value
             self.link = endpoints.get_media_page_link(self.short_code)
 
-        elif prop == 'edge_media_to_comment':
+        elif any([prop == i for i in ['edge_media_to_comment', 'edge_media_to_parent_comment', 'edge_media_preview_comment']]):
             try:
                 self.comments_count = int(arr[prop]['count'])
             except KeyError:

@@ -4,3 +4,9 @@ mysql-connector-python==8.0.18
 cmake
 Pillow
 dlib>=19.7
+requests
+numpy
+tabulate
+bs4
+urllib
+lxml

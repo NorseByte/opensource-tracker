@@ -1,11 +1,12 @@
 import os
 from .zerodata import zerodata
-from .functions.db_func import *
-from .functions.side_func import *
-from .functions.core_func import *
+from .functions.db_func import dbFunc
+from .functions.side_func import sideFunc
+from .functions.core_func import coreFunc
 from .igramscraper.instagram import Instagram
 from .facerec.facerec import facerec
 from time import sleep
+from tabulate import tabulate
 
 class Optracker():
     def __init__(self):
@@ -33,6 +34,10 @@ class Optracker():
             self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_NEW_INSTA)
             self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_LOGIN_INSTA)
             self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_OPTIONS)
+            self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_MEDIA)
+            self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_MEDIA_LINKS)
+            self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_MEDIA_COMMENT)
+            self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_MEDIA_LIKE)
         else:
             self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_MYSQL_NODES)
             self.dbTool.createTabels(self.dbConn, self.zero.DB_TABLE_MYSQL_EGDES)
@@ -69,6 +74,7 @@ class Optracker():
             { self.zero.RUN_EDIT_OPTIONS: self.runEditDefault},
             { self.zero.RUN_GET_DEEP: self.runDeepfromDB},
             { self.zero.RUN_UPDATE_IMG: self.updateImg},
+            { self.zero.RUN_DOWNLOAD_POST: self.updatePost},
             { self.zero.RUN_EXIT_DISP: exit},
         ]
 
@@ -84,11 +90,22 @@ class Optracker():
     def updateImg(self):
         self.mainFunc.updateProfileImg()
 
+    def updatePost(self):
+        #Setup zeroPoint
+        self.sideTool.lastSearch()
+
+        #Downloading user post
+        self.mainFunc.setCurrentUser(self.zero.INSTA_USER)
+
+        if int(self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_DEEPPOST, (self.mainFunc.currentUser.identifier, ))[0][0]) == 1:
+            if input("+ User are allready scanned, continue? [y/N] ").lower().strip() == "y":self.mainFunc.downloadCurrentUserPost()
+        else:self.mainFunc.downloadCurrentUserPost()
+
     def selectUserAndLogin(self):
         #Setusername
         self.sideTool.setupLogin()
         #Login Instagram
-        self.loginInstagram(instagram)
+        self.loginInstagram(self.instagram)
 
     def autoSelectAndLogin(self):
         #Find user
@@ -124,7 +141,9 @@ class Optracker():
         self.mainFunc.deepScanAll()
 
     def dispHelp(self):
-        print(self.zero.HELP_TEXT)
+        print(tabulate(self.zero.HELP_TEXT_TABLE, headers=self.zero.HELP_TEXT_TABLE_HEAD, tablefmt='grid'))
+        print("")
+        print(tabulate(self.zero.ERROR_TEXT_TABLE, headers=self.zero.ERROR_TEXT_TABLE_HEAD, tablefmt='grid'))
         input("\nPress [Enter] to continue...")
 
     def dispExport(self):

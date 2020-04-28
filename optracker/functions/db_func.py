@@ -5,8 +5,6 @@ import sys
 import mysql.connector
 from sqlite3 import Error
 
-
-
 class dbFunc():
     def __init__(self, dbname, Zero):
         self.zero = Zero
@@ -122,7 +120,7 @@ class dbFunc():
             self.zero.printText("+ {} set to: {}".format(text, value), True)
         else:
             value = getValue[0][1]
-            self.zero.printText("+ {} in database, value set to: {}".format(text, value, True), False)
+            self.zero.printText("+ {} in database, value set to: {}".format(text, value), False)
 
             if text == self.zero.INSTA_MAX_FOLLOW_SCAN_TEXT:
                 self.zero.INSTA_MAX_FOLLOW_SCAN_VALUE = value
