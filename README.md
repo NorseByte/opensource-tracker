@@ -29,7 +29,18 @@ python .\run_tracker.py
 The projects found here are for my own study for confirming and testing out theory according to social network analyzing. They can be used and altered as you see fit. To use it you need to install some required library for python see install.
 
 ### 1. Running the program
-To run simply type: **optracker** in console if you installed it from PIP. If you downloaded it from github: **python .\run_tracker.py** from the optracker directory.<br />
+To run simply type: **optracker** in console if you installed it from PIP. If you downloaded it from github: **python .\run_tracker.py** from the optracker directory.<br /> You can also run optracker in offline modus. Add **-o** ad the end.
+```cmd
+Offline
+--------
+python .\run_tracker.py -o
+optracker -o
+
+Online
+--------
+python .\run_tracker.py 
+optracker 
+```
 <br />
 ***NB! You will need to run the script as administrator if you are using windows***
 

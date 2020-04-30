@@ -744,7 +744,7 @@ class Instagram:
 
         return Location(json_response['graphql']['location'])
 
-    def get_media_likes_by_code(self, code, count=10, max_id=None):
+    def get_media_likes_by_code(self, code, count=10, max_id=''):
         """
         :param code:
         :param count:
@@ -768,9 +768,6 @@ class Instagram:
                 number_of_likes_to_receive = remain
                 index += remain
                 remain = 0
-
-            if (max_id != None):
-                max_id = ''
 
             variables = {
                 "shortcode": str(code),

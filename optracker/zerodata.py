@@ -1,6 +1,8 @@
 import os
 import json
 
+from tabulate import tabulate
+
 class zerodata():
 	#Define username and password
 	LOGIN_USERNAME_INSTA = ""
@@ -33,10 +35,8 @@ class zerodata():
 	RUN_GET_DEEP = "Deepscan from database"
 	RUN_UPDATE_IMG = "Update Profile Images"
 	RUN_DOWNLOAD_POST = "Download User Post"
+	RUN_VIEW_STAT = "View Statistic"
 	RUN_EXIT_DISP = "Exit"
-
-	#ERROR codes
-	ERROR_429 = "429 - To many request"
 
 	#FOLDER Setup
 	OP_ROOT_FOLDER_PATH_TEXT = "OP_ROOT_FOLDER_PATH"
@@ -308,6 +308,8 @@ class zerodata():
 	DB_SELECT_LOGIN_PASSWORD_INSTA = 'SELECT password FROM "main"."accounts" WHERE ("username") = ? AND account_type = "instagram"'
 	DB_SELECT_OPTIONS = 'SELECT * FROM options WHERE what = ?'
 	DB_SELECT_ALL_DONE_NEW_INSTA = 'SELECT * FROM "main"."new_insta" WHERE done = 1'
+	DB_SELECT_ALL_NODE_ID = 'SELECT * FROM "main"."nodes" WHERE id = ?'
+	DB_SELECT_ALL_SCAN_COMP = 'SELECT * FROM main.nodes WHERE insta_deeppost = 1 AND insta_deeppost = 1'
 	DB_SELECT_ALL_NODE = "SELECT * FROM main.nodes"
 	DB_SELECT_ALL_INSTA_EDGES = "SELECT source, target, type, weight FROM main.egdes_insta"
 	DB_SELECT_COUNT_NODES = "SELECT count(*) FROM main.nodes"
@@ -319,6 +321,23 @@ class zerodata():
 	DB_SELECT_ALL_MEDIA_LIKES = 'SELECT * FROM "main"."media_likes" WHERE "media_id" = ? AND "node_id" = ?'
 	DB_SELECT_FULLLOAD_BASE = 'SELECT fullload FROM "main"."media_base" WHERE "media_id" = ?'
 	DB_SELECT_DEEPPOST = 'SELECT "insta_deeppost" FROM "main"."nodes" WHERE insta_id = ?'
+	DB_SELECT_NODE_LIKE_MEDIA = 'SELECT DISTINCT Likes.node_id FROM "main"."media_likes" as Likes INNER JOIN "main"."media_base" as Media ON Likes.media_id = Media.media_id WHERE Media.node_id = ?'
+	DB_SELECT_COUNT_LIKES = 'SELECT COUNT(*) FROM  "main"."media_base" as Media INNER JOIN "main"."media_likes" as Likes ON Media.media_id = Likes.media_id WHERE Likes.node_id = ? AND Media.node_id = ?'
+	DB_SELECT_NODE_COMMENT_MEDIA = 'SELECT DISTINCT Comment.node_id FROM "main"."media_comment" as Comment INNER JOIN "main"."media_base" as Media ON Comment.media_id = Media.media_id WHERE Media.node_id = ?'
+	DB_SELECT_COUNT_COMMENT = 'SELECT COUNT(*) FROM  "main"."media_base" as Media INNER JOIN "main"."media_comment" as Comment ON Media.media_id = Comment.media_id WHERE Comment.node_id = ? AND Media.node_id = ?'
+	DB_SELECT_MEDIA_COMMENT_MEDIA = 'SELECT DISTINCT Comment.media_id FROM "main"."media_comment" as Comment INNER JOIN "main"."media_base" as Media ON Comment.media_id = Media.media_id WHERE Media.node_id = ?'
+	DB_SELECT_COUNT_MEDIA_COMMENT_MEDIA = 'SELECT COUNT(*) FROM  "main"."media_comment" as Comment INNER JOIN "main"."media_base" as Media ON Media.media_id = Comment.media_id WHERE Comment.media_id = ?'
+	DB_SELECT_ALL_MEDIA_BASE = 'SELECT * FROM main.media_base WHERE media_id = ?'
+	DB_SELECT_MEDIA_LIKE_MEDIA = 'SELECT DISTINCT Likes.media_id FROM "main"."media_likes" as Likes INNER JOIN "main"."media_base" as Media ON Likes.media_id = Media.media_id WHERE Media.node_id = ?'
+	DB_SELECT_COUNT_MEDIA_LIKES_MEDIA = 'SELECT COUNT(*) FROM  "main"."media_likes" WHERE media_id = ?'
+
+	DB_SELECT_COMMENT_BY_NODE = 'SELECT * FROM media_comment WHERE node_id = ?'
+	DB_SELECT_LIKE_BY_NODE = 'SELECT * FROM media_likes WHERE node_id = ?'
+
+	DB_SELECT_MEDIA_JOIN_NODE = 'SELECT * FROM main.media_base as Media INNER JOIN main.nodes AS Node ON Media.node_id = Node.id WHERE Media.media_id = ?' 
+
+	DB_SELECT_DISTINCT_LIKEID_NODEID = 'SELECT DISTINCT Media.node_id, Node.name, Node.insta_username FROM main.media_likes AS Likes INNER JOIN main.media_base AS Media ON Likes.media_id = Media.media_id INNER JOIN main.nodes AS Node ON Media.node_id = Node.id WHERE Likes.node_id = ?'
+	DB_SELECT_COUNT_LIKE_ID_NODE_ID = 'SELECT COUNT(*) FROM main.media_likes AS Likes INNER JOIN main.media_base AS Media ON Likes.media_id = Media.media_id WHERE Likes.node_id = ? AND Media.node_id = ?'
 
 	#Startpoint information
 	INSTA_USER = ""
@@ -329,6 +348,7 @@ class zerodata():
 	WRITE_ENCODING = "utf-8"
 	ON_ERROR_ENCODING = "replace"
 	INSTA_FILE_EXT = ".jpg"
+	RUN_OFFLINE = False
 
 	INSTA_MAX_FOLLOW_SCAN_TEXT = "INSTA_MAX_FOLLOW_SCAN"
 	INSTA_MAX_FOLLOW_SCAN_VALUE = 2000
@@ -378,10 +398,19 @@ class zerodata():
 	ERROR_TEXT_TABLE_HEAD = ["ERROR CODE", "INFO"]
 
 	#EROOR LIST
-	ERROR_TEXT_TABLE = [("001", "INSTAGRAM USER BLOCKED"),
-				        ("002", "TO MANY REQUEST FROM CURRENT USER"),
-						("003", "ERROR LOGIN"),
-						("004", "USER DONT HAVE ACCESS TO DATA, RETURNING JSON ERROR")]
+	ERROR_TEXT_TABLE = [["001", "INSTAGRAM USER BLOCKED"],
+				        ["002", "TO MANY REQUEST FROM CURRENT USER"],
+						["003", "ERROR LOGIN"],
+						["004", "USER DONT HAVE ACCESS TO DATA, RETURNING JSON ERROR"],
+						["005", "NO RECORDS FOUND FOR CURRENT USER"],
+						["006", "INVALID INNPUT"],
+						["007", "PRIVATE PROFILE, FOLLOW USER TO CONTINUE"]]
+
+	def insert_newlines(self, string, every=30):
+		lines = []
+		for i in range(0, len(string), every):
+			lines.append(string[i:i+every].strip())
+		return '\n'.join(lines)
 
 	def printText(self, text, override):
 		if int(self.DETAIL_PRINT_VALUE) == 1:
@@ -389,6 +418,10 @@ class zerodata():
 		else:
 			if override == True:
 				print(text)
+
+	def printError(self, code):
+		error = [[self.ERROR_TEXT_TABLE[code][0], self.ERROR_TEXT_TABLE[code][1]]]
+		print(tabulate(error, self.ERROR_TEXT_TABLE_HEAD, tablefmt='grid'))
 
 	#Removes unwanted symbols in string
 	def sanTuple(self, text):

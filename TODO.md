@@ -22,6 +22,9 @@
 - [x] 11-11-2019 (U) Scan profile image for a face and add it to collection for later use.
 - [ ] Add node-type to node, is it person, page with more.
 - [ ] Add download post, and scan faces to create relationship status between users for a more detail map scan.
+- [x] 28-04-2020 (N) Comment and likes for Post download added. 
+- [ ] Use less request for gathering of information from Post.
+- [x] 30-04-2020 (N) Offline function
 
 ## Rules
 When something are done, mark it as finnish and add date of completions and what kind of edit was made.

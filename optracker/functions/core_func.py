@@ -172,11 +172,11 @@ class coreFunc():
                         likeCount = 0
                         self.zero.printText("+ Loading {} likes for: {}".format(nr_likes, media_id), True)
                         likes = self.instagram.get_media_likes_by_code(x.short_code, int(nr_likes))
-                        for y in likes['accounts']:
+                        for z in likes['accounts']:
                             likeCount = likeCount + 1
                             self.zero.printText("+ {} of {} Liked checked".format(likeCount, len(likes['accounts'])), True)
 
-                            nodeIDLike = self.check_user_db_node(y, True)
+                            nodeIDLike = self.check_user_db_node(z, True)
                             LIKE_DATA = media_id, nodeIDLike
 
                             if self.dbTool.getValueSQL(self.dbConn, self.zero.DB_SELECT_ALL_MEDIA_LIKES, LIKE_DATA) == 0:
@@ -193,7 +193,7 @@ class coreFunc():
             #Set deeppost to finnish
             self.dbTool.inserttoTabel(self.dbConn, self.zero.DB_UPDATE_INSTADEEP, ("1", self.currentUser.identifier ))
         else:
-            self.zero.printText("+ ERROR :: CurrentUser is private or have zero post. Try to follow user!", False)
+            self.zero.printError(4)
     
     def generateFolderNameID(self, id):
         curr = ""

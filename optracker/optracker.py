@@ -1,17 +1,22 @@
 import os
+from sys import argv
 from .zerodata import zerodata
 from .functions.db_func import dbFunc
 from .functions.side_func import sideFunc
 from .functions.core_func import coreFunc
 from .igramscraper.instagram import Instagram
 from .facerec.facerec import facerec
+from .functions.statinfo import statInfo
 from time import sleep
 from tabulate import tabulate
 
 class Optracker():
-    def __init__(self):
+    def __init__(self, offline):
         #Adding Text source
         self.zero = zerodata()
+
+        #Sett ofline to false or true
+        self.zero.RUN_OFFLINE = offline
 
         #Setting up OP_ROOT_FOLDER
         self.createRootfolder()
@@ -47,24 +52,29 @@ class Optracker():
 
         self.dbTool.setDefaultValueOptions(self.dbConn)
         self.zero.printText("+ DB setup complete", False)
-
-        #Get usernames
+        
+        #Setup side tools
         self.sideTool = sideFunc(self.dbTool, self.dbConn, self.zero)
+        
+        #Get username
         self.sideTool.loadLoginText()
         self.sideTool.countCurrentUser()
 
         #Init INSTAGRAM
         self.instagram = Instagram()
 
-        #User Select and Login
-        #selectUserAndLogin()
-        self.autoSelectAndLogin()
+        if self.zero.RUN_OFFLINE == False:
+            #User Select and Login
+            self.autoSelectAndLogin()
 
         #Setup coreFunc
         print("+ Setting up core functions")
         self.mainFunc = coreFunc(self.dbTool, self.dbConn, self.instagram, self.zero, self.myFace)
 
-        self.MENU_ITEMS = [
+        #Setup Stat dbTool, dbConn, Zero
+        self.userStat = statInfo(self.dbTool, self.dbConn, self.zero)
+
+        self.MENU_ITEMS_ONLINE = [
             { self.zero.HELP_TEXT_DISP: self.dispHelp },
             { self.zero.RUN_CURRENT_DISP: self.runSingelScan },
             { self.zero.RUN_FOLLOW_DISP: self.runFollowScan },
@@ -75,8 +85,25 @@ class Optracker():
             { self.zero.RUN_GET_DEEP: self.runDeepfromDB},
             { self.zero.RUN_UPDATE_IMG: self.updateImg},
             { self.zero.RUN_DOWNLOAD_POST: self.updatePost},
+            { self.zero.RUN_VIEW_STAT: self.runStat},
             { self.zero.RUN_EXIT_DISP: exit},
         ]
+
+        self.MENU_ITEMS_OFFLINE = [
+            { self.zero.HELP_TEXT_DISP: self.dispHelp },
+            { self.zero.RUN_EXPORT_DATA: self.dispExport},
+            { self.zero.RUN_EDIT_OPTIONS: self.runEditDefault},
+            { self.zero.RUN_VIEW_STAT: self.runStat},
+            { self.zero.RUN_EXIT_DISP: exit},
+        ]
+
+        if self.zero.RUN_OFFLINE == False: self.MENU_ITEMS = self.MENU_ITEMS_ONLINE
+        else: self.MENU_ITEMS = self.MENU_ITEMS_OFFLINE
+
+    #Run stat
+    def runStat(self):
+        self.userStat.getStatforUserNode()
+        input("+ Press [Enter] to continue...")
 
     #Core Functions to main
     def runSingelScan(self):
@@ -190,7 +217,14 @@ class Optracker():
         self.zero.printText("+ Config file are loacted {}".format(self.zero.OP_ROOT_CONFIG), False)
 
 def run():
-    myOptracker = Optracker()
+    #Run argv check
+    try: offline = argv[1]
+    except: offline = False
+
+    if offline == "-o": offline = True
+    else: offline = False
+
+    myOptracker = Optracker(offline)
     while True:
         print("\n- Main menu")
         for item in myOptracker.MENU_ITEMS:
