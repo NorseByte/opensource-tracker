@@ -221,6 +221,10 @@ def run():
     try: offline = argv[1]
     except: offline = False
 
+    if offline == "-h":
+        print("Usage: -o <start in offline>, -h <view help>")
+        exit()
+
     if offline == "-o": offline = True
     else: offline = False
 

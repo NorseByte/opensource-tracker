@@ -99,11 +99,23 @@ class dbFunc():
 
         cur = conn.cursor()
         cur.execute(sql)
+
         with open(filename, 'wb') as csvfile:
-            print("+ Creating and writing to: {}".format(filename))
-            writer = csv.writer(csvfile, encoding=self.zero.WRITE_ENCODING)
+            writer = csv.writer(csvfile, quoting=csv.QUOTE_MINIMAL, encoding=self.zero.WRITE_ENCODING)
             writer.writerow([ i[0] for i in cur.description ])
-            writer.writerows(cur.fetchall())
+
+            rows = cur.fetchall()
+            for y in rows:
+                WRITE_ROW = []
+                for x in y:
+                    short = self.zero.sanTuple(x)
+                    short = short.replace("\n", "")
+
+                    if short == "": short = "N/A"
+                    elif short == None: short = "N/A"
+                    elif short == "None": short = "N/A"
+                    WRITE_ROW.append(short)
+                writer.writerow(WRITE_ROW)
 
     def createDBfolder(self):
         if not os.path.exists(self.zero.DB_DATABASE_FOLDER):

@@ -279,7 +279,8 @@ class zerodata():
 
 
 	#SQLite
-	DB_SELECT_EXPORT_ID_USER = 'SELECT id, insta_username FROM nodes'
+	DB_SELECT_EXPORT_ID_USER = 'SELECT id, label, insta_username, insta_bio FROM main.nodes'
+
 	DB_INSERT_NODE = """INSERT INTO "main"."nodes" ("name", "label", "insta_id", "insta_img", "insta_follow", "insta_follower", "insta_bio", "insta_username", "insta_private", "insta_verifyed", "insta_post", "insta_exturl", "insta_deepscan") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); SELECT id FROM nodes where insta_id = ?;"""
 	DB_INSERT_INSTA_EGDE = 'INSERT INTO "main"."egdes_insta" ("source", "target") VALUES (?, ?);'
 	DB_INSERT_NEW_INSTA = 'INSERT INTO "main"."new_insta" ("insta_id", "insta_user") VALUES (?, ?);'
@@ -381,18 +382,19 @@ class zerodata():
 	HELP_TEXT_TABLE_HEAD = ["COMMAND", "INFO"]
 
 	#Help Text Tabel Data
-	HELP_TEXT_TABLE = [(RUN_CURRENT_DISP, "Scan a specific node - This mode will allow you to run a scan for a specific user and is your first\nstep to generate nodes and edges. You will need to enter a startpoint, it is a instagram\nusername. The program will look it up find follow and followed by.\nFor then to add it to the database with connections." ),
-					   (RUN_FOLLOW_DISP, "Scan all follower - You will be presented with a list of users that you have finnished adding to your\ndatabase.\nThe program til then scan all the connections it has as it was a first time\nuse and add the data to the database. Short and sweet scan the follow\nto the follow for a user."),
-					   (RUN_CHANGE_USER, "Allow you to change users - This will give you a list of all avalible users so you can change before\nthe scan if you are not happy with the choice from startup."),
-					   ("Nodes - Main database", "The node database is a collection of all the users that have been scanned. It contains basic\ndata as ID, username, instagram description with more."),
-					   ("Edges - connections", "The edges database is a database with connections between nodes. This is used to create a visual\ndisplay for how a social nettwork are connected."),
-					   ("SQLite - The Database", "All data are saved in the database found in folder 'db/'.\nYou need to open it in a SQL browser\nand then export the data in node table and edges table to a .CSV file witch you can\nimport into a visualising program (eks. gephi)."),
-					   (RUN_EXPORT_DATA, "Gives you an overveiew of data collected so far, and exports it to folder" + DB_DATABASE_EXPORT_FOLDER),
-					   (RUN_LOAD_SCAN, "Loads a list of users from root folder, scraps all info from instagram and updates node DB."),
-					   ("Max Follows and Max Followed by", "During search of follows by, where you scan the profile for one user that have\ncompletet the singel search you can set a limit to how many followers a user can have or\nhow many it are following.\n\nThis is to prevent to scan uninterested profils\nlike public organizations and so on as they can have up to 10K.\nDefault is 2000 and is considerated a normal amount of followes/followed by."),
-					   ("Deepscan and Surfacescan", "On default are SurfaceScan turned off. By turning on surfacescan you only extract\nusername and instagram id when scraping. This is to save you for request to the server so you\ncan use one user for a longer periode of time, and make the scan go quicker\nif you are scraping a big nettwork. You can later add specific users\nfound in the graphic to a text file and scan only the ones that are interesting and get all the data."),
-					   ("Print Detail","On Default is it turned ON. You will be presented with all the output the scraper have. If turned OFF\nyou will only get the minimum of info to see if it is working properly."),
-					   (RUN_DOWNLOAD_POST, "Select one user and download all the post for that user to your libray in optracker")]
+	HELP_TEXT_TABLE = [[RUN_CURRENT_DISP,"Scan a specific node - This mode will allow you to run a scan for a specific user and is your first step to generate nodes and edges. You will need to enter a startpoint, it is a instagram username. The program will look it up find follow and followed by. For then to add it to the database with connections."],
+					   [RUN_FOLLOW_DISP, "Scan all follower - You will be presented with a list of users that you have finnished adding to your database. The program til then scan all the connections it has as it was a first time use and add the data to the database. Short and sweet scan the follow to the follow for a user."],
+					   [RUN_CHANGE_USER, "Allow you to change users - This will give you a list of all avalible users so you can change before the scan if you are not happy with the choice from startup."],
+					   ["Nodes - Main database", "The node database is a collection of all the users that have been scanned. It contains basic\ndata as ID, username, instagram description with more."],
+					   ["Edges - connections", "The edges database is a database with connections between nodes. This is used to create a visual\ndisplay for how a social nettwork are connected."],
+					   ["SQLite - The Database", "All data are saved in the database found in folder 'db/'.\nYou need to open it in a SQL browser\nand then export the data in node table and edges table to a .CSV file witch you can\nimport into a visualising program (eks. gephi)."],
+					   [RUN_EXPORT_DATA, "Gives you an overveiew of data collected so far, and exports it to folder" + DB_DATABASE_EXPORT_FOLDER],
+					   [RUN_LOAD_SCAN, "Loads a list of users from root folder, scraps all info from instagram and updates node DB."],
+					   ["Max Follows and Max Followed by", "During search of follows by, where you scan the profile for one user that have\ncompletet the singel search you can set a limit to how many followers a user can have or\nhow many it are following.\n\nThis is to prevent to scan uninterested profils\nlike public organizations and so on as they can have up to 10K.\nDefault is 2000 and is considerated a normal amount of followes/followed by."],
+					   ["Deepscan and Surfacescan", "On default are SurfaceScan turned off. By turning on surfacescan you only extract\nusername and instagram id when scraping. This is to save you for request to the server so you\ncan use one user for a longer periode of time, and make the scan go quicker\nif you are scraping a big nettwork. You can later add specific users\nfound in the graphic to a text file and scan only the ones that are interesting and get all the data."],
+					   ["Print Detail","On Default is it turned ON. You will be presented with all the output the scraper have. If turned OFF\nyou will only get the minimum of info to see if it is working properly."],
+					   [RUN_DOWNLOAD_POST, "Select one user and download all the post for that user to your libray in optracker"],
+					   ["- o on startup", "Using -o when you run optracker will start the program in offline modus. You can here view stat and run export but all items that need online function are turned off."]]
 
 	#ERROR TABLE HEAD
 	ERROR_TEXT_TABLE_HEAD = ["ERROR CODE", "INFO"]
@@ -406,11 +408,13 @@ class zerodata():
 						["006", "INVALID INNPUT"],
 						["007", "PRIVATE PROFILE, FOLLOW USER TO CONTINUE"]]
 
-	def insert_newlines(self, string, every=30):
-		lines = []
-		for i in range(0, len(string), every):
-			lines.append(string[i:i+every].strip())
-		return '\n'.join(lines)
+	def insert_newlines(self, string, every=50):
+		if string != None:
+			lines = []
+			for i in range(0, len(string), every):	
+				lines.append(string[i:i+every].strip())
+			return '\n'.join(lines)
+		else: return string
 
 	def printText(self, text, override):
 		if int(self.DETAIL_PRINT_VALUE) == 1:
@@ -429,6 +433,8 @@ class zerodata():
 		text = text.replace("'", "")
 		text = text.replace('"', "")
 		text = text.replace(";", "")
+		text = text.replace("|", "")
+		text = text.strip()
 
 		return text
 
@@ -530,4 +536,10 @@ class zerodata():
 	def __init__(self):
 		#Starting up
 		print(self.PROGRAM_NAME)
+
+		help_count = 0
+		for x in self.HELP_TEXT_TABLE:
+			self.HELP_TEXT_TABLE[help_count][1] = self.insert_newlines(x[1])
+			help_count = help_count + 1
+
 		print("+ Text Libray loaded")
