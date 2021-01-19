@@ -1,5 +1,5 @@
 <!-- PROJECT LOGO -->
-![Imgur](https://i.imgur.com/YpzZFfg.png)
+![Imgur](https://i.imgur.com/rGPKaNb.png)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/optracker)
 ![PyPI](https://img.shields.io/pypi/v/optracker)
 ![PyPI - Status](https://img.shields.io/pypi/status/optracker)
